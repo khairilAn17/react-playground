@@ -61,11 +61,6 @@ export interface FormRadioGroupProps<T extends FieldValues>
  * FormRadioGroup
  *
  * A type-safe, reusable MUI RadioGroup wrapper for React Hook Form.
- *
- * Features:
- * - Works inside <FormProvider> OR with explicit `control` prop
- * - Supports horizontal (`row`) or vertical layout
- * - Displays validation error state and helper messages automatically
  */
 export function FormRadioGroup<T extends FieldValues>({
   name,

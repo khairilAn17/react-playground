@@ -43,14 +43,6 @@ export interface FormCheckboxProps<T extends FieldValues>
  * FormCheckbox
  *
  * A type-safe, reusable MUI Checkbox wrapper for React Hook Form.
- *
- * MUI v9 note: Ref is forwarded via `slotProps={{ input: { ref } }}`.
- * The legacy `inputRef` and `inputProps` props no longer exist in v9.
- *
- * Features:
- * - Works inside <FormProvider> OR with explicit `control` prop
- * - Automatically binds `checked` and `onChange` to RHF state
- * - Displays validation error state and helper messages automatically
  */
 export function FormCheckbox<T extends FieldValues>({
   name,

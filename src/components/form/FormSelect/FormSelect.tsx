@@ -72,14 +72,6 @@ export interface FormSelectProps<T extends FieldValues>
  * FormSelect
  *
  * A type-safe, reusable MUI Select dropdown wrapper for React Hook Form.
- *
- * Features:
- * - Works inside <FormProvider> OR with explicit `control` prop
- * - Supports both Props API (`options={...}`) AND Composable API (`children={<MenuItem/>}`)
- * - Optional `searchable` prop enables live filtering inside the dropdown menu
- * - Automatically handles FormControl, InputLabel, Select, MenuItems, and FormHelperText
- * - Displays validation errors automatically
- * - Safe against uncontrolled/controlled warnings via `value ?? ''`
  */
 export function FormSelect<T extends FieldValues>({
   name,
@@ -193,7 +185,6 @@ export function FormSelect<T extends FieldValues>({
               </ListSubheader>
             )}
 
-            {/* Hybrid rendering: custom children take priority if provided */}
             {children ? (
               children
             ) : filteredOptions.length > 0 ? (

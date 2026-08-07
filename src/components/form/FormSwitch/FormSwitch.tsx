@@ -43,14 +43,6 @@ export interface FormSwitchProps<T extends FieldValues>
  * FormSwitch
  *
  * A type-safe, reusable MUI Switch wrapper for React Hook Form.
- *
- * MUI v9 note: Ref is forwarded via `slotProps={{ input: { ref } }}`.
- * The legacy `inputRef` and `inputProps` props no longer exist in v9.
- *
- * Features:
- * - Works inside <FormProvider> OR with explicit `control` prop
- * - Binds `checked` and `onChange` to RHF state
- * - Displays validation error state and helper messages automatically
  */
 export function FormSwitch<T extends FieldValues>({
   name,

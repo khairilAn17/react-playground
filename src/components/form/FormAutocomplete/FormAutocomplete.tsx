@@ -60,12 +60,6 @@ export interface FormAutocompleteProps<
  * FormAutocomplete
  *
  * A type-safe, reusable MUI Autocomplete wrapper for React Hook Form.
- *
- * Features:
- * - Bridges RHF Controller with MUI Autocomplete's custom `onChange` signature
- * - Works inside <FormProvider> OR with explicit `control` prop
- * - Supports custom options, single/multiple selections, freeSolo
- * - Displays validation errors on the inner TextField automatically
  */
 export function FormAutocomplete<
   T extends FieldValues,
@@ -98,7 +92,6 @@ export function FormAutocomplete<
       name={name}
       control={resolvedControl}
       render={({ field: { value, onChange, onBlur, ref }, fieldState: { error } }) => {
-        // Resolve current option object matching the stored primitive value (if value is string/number)
         const selectedOption =
           options.find((opt) => opt.value === value) ?? (value ? { label: String(value), value } : null)
 
@@ -112,7 +105,6 @@ export function FormAutocomplete<
             getOptionLabel={getOptionLabel}
             isOptionEqualToValue={(opt, val) => opt.value === val.value}
             onChange={(_, newValue) => {
-              // Extract string/number value or entire object based on preference
               const val = newValue as Option | null
               onChange(val ? val.value : null)
             }}

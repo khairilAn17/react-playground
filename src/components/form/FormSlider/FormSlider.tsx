@@ -50,12 +50,6 @@ export interface FormSliderProps<T extends FieldValues>
  * FormSlider
  *
  * A type-safe, reusable MUI Slider wrapper for React Hook Form.
- *
- * Features:
- * - Binds numeric value (or range value) to RHF state
- * - Works inside <FormProvider> OR with explicit `control` prop
- * - Handles min, max, step, marks, valueLabelDisplay
- * - Displays validation error state and helper messages automatically
  */
 export function FormSlider<T extends FieldValues>({
   name,
