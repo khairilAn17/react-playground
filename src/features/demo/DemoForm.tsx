@@ -19,10 +19,14 @@ import { demoSchema } from '../../features/demo/demoSchema'
 import type { DemoFormValues } from '../../features/demo/demoSchema'
 
 const ROLE_OPTIONS: SelectOption[] = [
-  { label: 'Developer', value: 'developer' },
-  { label: 'Designer', value: 'designer' },
+  { label: 'Frontend Developer', value: 'frontend_developer' },
+  { label: 'Backend Developer', value: 'backend_developer' },
+  { label: 'Full Stack Developer', value: 'fullstack_developer' },
+  { label: 'UI/UX Designer', value: 'designer' },
   { label: 'Product Manager', value: 'product_manager' },
   { label: 'QA Engineer', value: 'qa_engineer' },
+  { label: 'DevOps Engineer', value: 'devops_engineer' },
+  { label: 'Data Scientist', value: 'data_scientist' },
 ]
 
 /**
@@ -73,7 +77,7 @@ export function DemoForm() {
           RHF + MUI Form Demo
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Hybrid pattern with <code>FormTextField</code> and <code>FormSelect</code>.
+          Hybrid pattern with <code>FormTextField</code> and searchable <code>FormSelect</code>.
         </Typography>
       </Stack>
 
@@ -108,11 +112,13 @@ export function DemoForm() {
                   helperText="Min 8 chars, 1 uppercase, 1 number"
                 />
 
-                {/* Select field */}
+                {/* Searchable Select field */}
                 <FormSelect<DemoFormValues>
                   name="role"
                   label="Role"
                   options={ROLE_OPTIONS}
+                  searchable
+                  searchPlaceholder="Type to filter roles..."
                 />
 
                 {/* Multiline textarea — same component, different MUI props */}
