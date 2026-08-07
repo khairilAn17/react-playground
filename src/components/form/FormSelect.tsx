@@ -36,8 +36,9 @@ export interface FormSelectProps<T extends FieldValues>
 
   /**
    * Options list to populate MenuItems.
+   * Optional if custom `children` are passed instead.
    */
-  options: SelectOption[]
+  options?: SelectOption[]
 
   /**
    * Enable in-dropdown search input for filtering options.
@@ -60,6 +61,11 @@ export interface FormSelectProps<T extends FieldValues>
    * Optional. Pass `control` explicitly when used outside a FormProvider.
    */
   control?: Control<T>
+
+  /**
+   * Optional custom children (e.g. custom MenuItems) for composable usage.
+   */
+  children?: ReactNode
 }
 
 /**
@@ -69,6 +75,7 @@ export interface FormSelectProps<T extends FieldValues>
  *
  * Features:
  * - Works inside <FormProvider> OR with explicit `control` prop
+ * - Supports both Props API (`options={...}`) AND Composable API (`children={<MenuItem/>}`)
  * - Optional `searchable` prop enables live filtering inside the dropdown menu
  * - Automatically handles FormControl, InputLabel, Select, MenuItems, and FormHelperText
  * - Displays validation errors automatically
@@ -78,6 +85,7 @@ export function FormSelect<T extends FieldValues>({
   name,
   label,
   options,
+  children,
   searchable = false,
   searchPlaceholder = 'Search...',
   control,
@@ -104,11 +112,12 @@ export function FormSelect<T extends FieldValues>({
 
   const labelId = `${String(name)}-label`
 
+  const safeOptions = options ?? []
   const filteredOptions = searchable
-    ? options.filter((opt) =>
+    ? safeOptions.filter((opt) =>
         opt.label.toLowerCase().includes(searchTerm.toLowerCase())
       )
-    : options
+    : safeOptions
 
   const handleClose = (event: React.SyntheticEvent) => {
     setSearchTerm('')
@@ -142,7 +151,6 @@ export function FormSelect<T extends FieldValues>({
             onBlur={onBlur}
             inputRef={ref}
             onClose={handleClose}
-            // Auto focus search input when dropdown opens
             MenuProps={{
               autoFocus: false,
               disableAutoFocusItem: searchable,
@@ -167,7 +175,6 @@ export function FormSelect<T extends FieldValues>({
                   placeholder={searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  // Prevent spacebar or keyboard typing inside TextField from closing/navigating Select
                   onKeyDown={(e) => {
                     if (e.key !== 'Escape') {
                       e.stopPropagation()
@@ -186,7 +193,10 @@ export function FormSelect<T extends FieldValues>({
               </ListSubheader>
             )}
 
-            {filteredOptions.length > 0 ? (
+            {/* Hybrid rendering: custom children take priority if provided */}
+            {children ? (
+              children
+            ) : filteredOptions.length > 0 ? (
               filteredOptions.map((opt) => (
                 <MenuItem key={opt.value} value={opt.value}>
                   {opt.label}
