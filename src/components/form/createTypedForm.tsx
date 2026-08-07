@@ -10,6 +10,7 @@ import { FormCheckbox, type FormCheckboxProps } from './FormCheckbox'
 import { FormRadioGroup, type FormRadioGroupProps } from './FormRadioGroup'
 import { FormSlider, type FormSliderProps } from './FormSlider'
 import { FormSwitch, type FormSwitchProps } from './FormSwitch'
+import { FormDatePicker, type FormDatePickerProps } from './FormDatePicker'
 
 type ZodResolverSchema = Parameters<typeof zodResolver>[0]
 
@@ -94,6 +95,9 @@ export function createTypedForm<T extends FieldValues>() {
     ),
     Switch: (props: Omit<FormSwitchProps<T>, 'control'>) => (
       <FormSwitch<T> {...props} />
+    ),
+    DatePicker: (props: Omit<FormDatePickerProps<T>, 'control'>) => (
+      <FormDatePicker<T> {...props} />
     ),
   }
 

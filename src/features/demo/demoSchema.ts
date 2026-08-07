@@ -21,6 +21,8 @@ export const demoSchema = z.object({
     .regex(/[A-Z]/, 'Must contain at least one uppercase letter')
     .regex(/[0-9]/, 'Must contain at least one number'),
 
+  birthDate: z.any().nullable().optional(),
+
   role: z.string().min(1, 'Please select a role'),
 
   framework: z.string().min(1, 'Please select a framework'),

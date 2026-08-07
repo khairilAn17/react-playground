@@ -43,13 +43,14 @@ const PLAN_OPTIONS: RadioOption[] = [
 
 // 🚀 GOLD STANDARD FACTORY PATTERN:
 // Defined ONCE at module scope outside the render loop.
-// Component references (Field.Text, Field.Select, Form) are 100% static across re-renders!
+// Component references (Field.Text, Field.Select, Form, Field.DatePicker) are 100% static across re-renders!
 const { Form, Field } = createTypedForm<DemoFormValues>()
 
 const DEFAULT_VALUES: DemoFormValues = {
   fullName: '',
   email: '',
   password: '',
+  birthDate: null,
   role: '',
   framework: '',
   experienceYears: 3,
@@ -114,7 +115,14 @@ export function DemoForm() {
                 helperText="Min 8 chars, 1 uppercase, 1 number"
               />
 
-              {/* 4. Field.Select */}
+              {/* 4. Field.DatePicker */}
+              <Field.DatePicker
+                name="birthDate"
+                label="Date of Birth"
+                helperText="Select your birth date"
+              />
+
+              {/* 5. Field.Select */}
               <Field.Select
                 name="role"
                 label="Role"
@@ -123,14 +131,14 @@ export function DemoForm() {
                 searchPlaceholder="Filter roles..."
               />
 
-              {/* 5. Field.Autocomplete */}
+              {/* 6. Field.Autocomplete */}
               <Field.Autocomplete
                 name="framework"
                 label="Primary Tech Framework"
                 options={FRAMEWORK_OPTIONS}
               />
 
-              {/* 6. Field.Slider */}
+              {/* 7. Field.Slider */}
               <Field.Slider
                 name="experienceYears"
                 label="Years of Experience"
@@ -141,14 +149,14 @@ export function DemoForm() {
                 formatValue={(val) => `${val} year${val === 1 ? '' : 's'}`}
               />
 
-              {/* 7. Field.Radio */}
+              {/* 8. Field.Radio */}
               <Field.Radio
                 name="plan"
                 label="Subscription Plan"
                 options={PLAN_OPTIONS}
               />
 
-              {/* 8. Multiline Field.Text */}
+              {/* 9. Multiline Field.Text */}
               <Field.Text
                 name="bio"
                 label="Bio (optional)"
@@ -159,13 +167,13 @@ export function DemoForm() {
 
               <Divider />
 
-              {/* 9. Field.Switch */}
+              {/* 10. Field.Switch */}
               <Field.Switch
                 name="subscribeNewsletter"
                 label="Subscribe to weekly developer updates"
               />
 
-              {/* 10. Field.Checkbox */}
+              {/* 11. Field.Checkbox */}
               <Field.Checkbox
                 name="agreeTerms"
                 label="I agree to the Terms of Service and Privacy Policy"
@@ -212,7 +220,7 @@ export function DemoForm() {
                   <Box key={key} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Chip label={key} size="small" variant="outlined" />
                     <Typography variant="body2" color="text.secondary">
-                      {String(value) || '—'}
+                      {typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value) || '—'}
                     </Typography>
                   </Box>
                 ))}
