@@ -1,8 +1,7 @@
 import { z } from 'zod'
 
 /**
- * Demo schema to showcase FormTextField validation.
- * In a real app, each feature would have its own schema file.
+ * Demo schema to showcase all form field components and validations.
  */
 export const demoSchema = z.object({
   fullName: z
@@ -23,6 +22,21 @@ export const demoSchema = z.object({
     .regex(/[0-9]/, 'Must contain at least one number'),
 
   role: z.string().min(1, 'Please select a role'),
+
+  framework: z.string().min(1, 'Please select a framework'),
+
+  experienceYears: z
+    .number()
+    .min(1, 'At least 1 year of experience is required')
+    .max(20),
+
+  plan: z.enum(['free', 'pro', 'enterprise']),
+
+  subscribeNewsletter: z.boolean(),
+
+  agreeTerms: z
+    .boolean()
+    .refine((val) => val === true, 'You must agree to the Terms & Conditions'),
 
   bio: z.string().max(200, 'Bio must be 200 characters or fewer').optional(),
 })

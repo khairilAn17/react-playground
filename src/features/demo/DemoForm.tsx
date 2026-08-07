@@ -13,10 +13,18 @@ import {
   Chip,
 } from '@mui/material'
 import { useState } from 'react'
-import { FormTextField, FormSelect } from '../../components/form'
-import type { SelectOption } from '../../components/form'
-import { demoSchema } from '../../features/demo/demoSchema'
-import type { DemoFormValues } from '../../features/demo/demoSchema'
+import {
+  FormTextField,
+  FormSelect,
+  FormAutocomplete,
+  FormRadioGroup,
+  FormSwitch,
+  FormCheckbox,
+  FormSlider,
+} from '../../components/form'
+import type { SelectOption, RadioOption, AutocompleteOption } from '../../components/form'
+import { demoSchema } from './demoSchema'
+import type { DemoFormValues } from './demoSchema'
 
 const ROLE_OPTIONS: SelectOption[] = [
   { label: 'Frontend Developer', value: 'frontend_developer' },
@@ -29,13 +37,21 @@ const ROLE_OPTIONS: SelectOption[] = [
   { label: 'Data Scientist', value: 'data_scientist' },
 ]
 
-/**
- * DemoForm
- *
- * Showcases FormTextField and FormSelect in two modes:
- *   1. Inside <FormProvider> — recommended for app-level forms
- *   2. With explicit `control` prop — for standalone / library usage
- */
+const FRAMEWORK_OPTIONS: AutocompleteOption[] = [
+  { label: 'React', value: 'react' },
+  { label: 'Vue.js', value: 'vue' },
+  { label: 'Next.js', value: 'nextjs' },
+  { label: 'Svelte', value: 'svelte' },
+  { label: 'Angular', value: 'angular' },
+  { label: 'SolidJS', value: 'solid' },
+]
+
+const PLAN_OPTIONS: RadioOption[] = [
+  { label: 'Free Plan ($0/mo)', value: 'free' },
+  { label: 'Pro Plan ($19/mo)', value: 'pro' },
+  { label: 'Enterprise Plan (Custom)', value: 'enterprise' },
+]
+
 export function DemoForm() {
   const [submittedData, setSubmittedData] = useState<DemoFormValues | null>(null)
 
@@ -46,9 +62,13 @@ export function DemoForm() {
       email: '',
       password: '',
       role: '',
+      framework: '',
+      experienceYears: 3,
+      plan: 'free',
+      subscribeNewsletter: false,
+      agreeTerms: false,
       bio: '',
     },
-    // Validate on blur for better UX — fields only show errors after user leaves them
     mode: 'onBlur',
   })
 
@@ -59,7 +79,6 @@ export function DemoForm() {
   } = methods
 
   const onSubmit: SubmitHandler<DemoFormValues> = async (data) => {
-    // Simulate async submission (e.g. API call)
     await new Promise((resolve) => setTimeout(resolve, 800))
     setSubmittedData(data)
   }
@@ -70,33 +89,31 @@ export function DemoForm() {
   }
 
   return (
-    <Box sx={{ maxWidth: 520, mx: 'auto', py: 4, px: 2 }}>
+    <Box sx={{ maxWidth: 560, mx: 'auto', py: 4, px: 2 }}>
       {/* Header */}
       <Stack spacing={0.5} sx={{ mb: 3 }}>
         <Typography variant="h5" sx={{ fontWeight: 700 }}>
-          RHF + MUI Form Demo
+          RHF + MUI Form Component Kit
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Hybrid pattern with <code>FormTextField</code> and searchable <code>FormSelect</code>.
+          Type-safe fields: Text, Select, Autocomplete, Slider, Radio, Switch & Checkbox.
         </Typography>
       </Stack>
 
       {/* Form card */}
       <Card variant="outlined">
         <CardContent>
-          {/* FormProvider wraps the form — children access control via useFormContext */}
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
               <Stack spacing={2.5}>
-
-                {/* Standard text field */}
+                {/* 1. FormTextField */}
                 <FormTextField<DemoFormValues>
                   name="fullName"
                   label="Full Name"
                   placeholder="John Doe"
                 />
 
-                {/* Email field — type="email" enables browser semantics */}
+                {/* 2. Email FormTextField */}
                 <FormTextField<DemoFormValues>
                   name="email"
                   label="Email Address"
@@ -104,7 +121,7 @@ export function DemoForm() {
                   placeholder="john@example.com"
                 />
 
-                {/* Password field */}
+                {/* 3. Password FormTextField */}
                 <FormTextField<DemoFormValues>
                   name="password"
                   label="Password"
@@ -112,23 +129,61 @@ export function DemoForm() {
                   helperText="Min 8 chars, 1 uppercase, 1 number"
                 />
 
-                {/* Searchable Select field */}
+                {/* 4. FormSelect */}
                 <FormSelect<DemoFormValues>
                   name="role"
                   label="Role"
                   options={ROLE_OPTIONS}
                   searchable
-                  searchPlaceholder="Type to filter roles..."
+                  searchPlaceholder="Filter roles..."
                 />
 
-                {/* Multiline textarea — same component, different MUI props */}
+                {/* 5. FormAutocomplete */}
+                <FormAutocomplete<DemoFormValues>
+                  name="framework"
+                  label="Primary Tech Framework"
+                  options={FRAMEWORK_OPTIONS}
+                />
+
+                {/* 6. FormSlider */}
+                <FormSlider<DemoFormValues>
+                  name="experienceYears"
+                  label="Years of Experience"
+                  min={0}
+                  max={20}
+                  step={1}
+                  valueLabelDisplay="auto"
+                  formatValue={(val) => `${val} year${val === 1 ? '' : 's'}`}
+                />
+
+                {/* 7. FormRadioGroup */}
+                <FormRadioGroup<DemoFormValues>
+                  name="plan"
+                  label="Subscription Plan"
+                  options={PLAN_OPTIONS}
+                />
+
+                {/* 8. Multiline FormTextField */}
                 <FormTextField<DemoFormValues>
                   name="bio"
                   label="Bio (optional)"
                   multiline
                   rows={3}
                   placeholder="Tell us about yourself..."
-                  helperText="Max 200 characters"
+                />
+
+                <Divider />
+
+                {/* 9. FormSwitch */}
+                <FormSwitch<DemoFormValues>
+                  name="subscribeNewsletter"
+                  label="Subscribe to weekly developer updates"
+                />
+
+                {/* 10. FormCheckbox */}
+                <FormCheckbox<DemoFormValues>
+                  name="agreeTerms"
+                  label="I agree to the Terms of Service and Privacy Policy"
                 />
 
                 <Divider />
@@ -183,7 +238,7 @@ export function DemoForm() {
         </Box>
       )}
 
-      {/* Live error summary (dev aid) */}
+      {/* Live error summary */}
       {Object.keys(errors).length > 0 && (
         <Box sx={{ mt: 2 }}>
           <Alert severity="warning">
@@ -195,4 +250,3 @@ export function DemoForm() {
     </Box>
   )
 }
-
