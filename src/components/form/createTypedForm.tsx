@@ -53,7 +53,7 @@ export function createTypedForm<T extends FieldValues>() {
     schema,
     defaultValues,
     onSubmit,
-    mode = 'onBlur',
+    mode = 'onTouched',
     noValidate = true,
     useFormOptions,
   }: TypedFormProps<T>) {
@@ -101,8 +101,12 @@ export function createTypedForm<T extends FieldValues>() {
     return useRHFFormContext<T>()
   }
 
+  // Cast useRHFWatch to a stable function type since Parameters<overloadedFn>
+  // resolves to [] for the last (no-arg) overload and cannot index [0].
+  const typedWatch = useRHFWatch as (props?: UseWatchProps<T>) => unknown
+
   function useWatch(props?: UseWatchProps<T>) {
-    return useRHFWatch<T>(props as any)
+    return typedWatch(props)
   }
 
   return {
