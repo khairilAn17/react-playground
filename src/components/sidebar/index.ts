@@ -1,6 +1,9 @@
 export { Sidebar } from './Sidebar'
 export type { SidebarProps } from './Sidebar'
 
+export { SidebarProvider } from './SidebarProvider'
+export type { SidebarProviderProps } from './SidebarProvider'
+
 export { useSidebar } from './SidebarContext'
 export { SidebarHeader } from './SidebarHeader'
 export type { SidebarHeaderProps } from './SidebarHeader'

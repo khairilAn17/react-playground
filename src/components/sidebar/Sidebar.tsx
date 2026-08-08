@@ -1,4 +1,4 @@
-import { useState, useMemo, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import {
   Box,
   Drawer,
@@ -7,7 +7,8 @@ import {
   styled,
 } from '@mui/material'
 
-import { SidebarContext } from './SidebarContext'
+import { useSidebarOptional } from './SidebarContext'
+import { SidebarProvider } from './SidebarProvider'
 import { SidebarHeader } from './SidebarHeader'
 import { SidebarNav } from './SidebarNav'
 import { SidebarSection } from './SidebarSection'
@@ -19,7 +20,6 @@ import { SidebarToggle } from './SidebarToggle'
 import type {
   SidebarItemConfig,
   SidebarVariant,
-  SidebarContextValue,
 } from './types'
 
 export interface SidebarProps {
@@ -107,12 +107,7 @@ function renderDataDrivenItems(items: SidebarItemConfig[], level = 0): ReactNode
   })
 }
 
-export function Sidebar({
-  collapsed: controlledCollapsed,
-  defaultCollapsed = false,
-  onToggleCollapsed,
-  activeKey,
-  onSelect,
+function SidebarContent({
   width = 260,
   collapsedWidth = 68,
   items,
@@ -121,39 +116,15 @@ export function Sidebar({
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
-  const [uncontrolledCollapsed, setUncontrolledCollapsed] = useState(defaultCollapsed)
-  const [mobileOpen, setMobileOpen] = useState(false)
-
-  const isCollapsed = controlledCollapsed ?? uncontrolledCollapsed
-
-  const handleSetCollapsed = (action: boolean | ((prev: boolean) => boolean)) => {
-    const nextState = typeof action === 'function' ? action(isCollapsed) : action
-    if (controlledCollapsed === undefined) {
-      setUncontrolledCollapsed(nextState)
-    }
-    if (onToggleCollapsed) {
-      onToggleCollapsed(nextState)
-    }
-  }
-
-  const contextValue: SidebarContextValue = useMemo(
-    () => ({
-      collapsed: isMobile ? false : isCollapsed,
-      setCollapsed: handleSetCollapsed,
-      mobileOpen,
-      setMobileOpen,
-      activeKey,
-      onSelect,
-      width,
-      collapsedWidth,
-    }),
-    [isMobile, isCollapsed, mobileOpen, activeKey, onSelect, width, collapsedWidth]
-  )
+  const existingContext = useSidebarOptional()
+  const collapsed = existingContext ? existingContext.collapsed : false
+  const mobileOpen = existingContext ? existingContext.mobileOpen : false
+  const setMobileOpen = existingContext ? existingContext.setMobileOpen : () => {}
 
   const sidebarBody = (
     <StyledSidebarContainer
       width={width}
-      collapsed={isMobile ? false : isCollapsed}
+      collapsed={isMobile ? false : collapsed}
       collapsedWidth={collapsedWidth}
     >
       {children
@@ -166,25 +137,47 @@ export function Sidebar({
     </StyledSidebarContainer>
   )
 
+  if (isMobile) {
+    return (
+      <Drawer
+        anchor="left"
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        slotProps={{
+          paper: {
+            sx: { width, borderRight: 'none' },
+          },
+        }}
+      >
+        {sidebarBody}
+      </Drawer>
+    )
+  }
+
+  return sidebarBody
+}
+
+export function Sidebar(props: SidebarProps) {
+  const existingContext = useSidebarOptional()
+
+  // If already inside an existing SidebarProvider (e.g. at app layout level), render content directly
+  if (existingContext) {
+    return <SidebarContent {...props} />
+  }
+
+  // Otherwise, automatically wrap inside a new SidebarProvider
   return (
-    <SidebarContext.Provider value={contextValue}>
-      {isMobile ? (
-        <Drawer
-          anchor="left"
-          open={mobileOpen}
-          onClose={() => setMobileOpen(false)}
-          slotProps={{
-            paper: {
-              sx: { width, borderRight: 'none' },
-            },
-          }}
-        >
-          {sidebarBody}
-        </Drawer>
-      ) : (
-        sidebarBody
-      )}
-    </SidebarContext.Provider>
+    <SidebarProvider
+      collapsed={props.collapsed}
+      defaultCollapsed={props.defaultCollapsed}
+      onToggleCollapsed={props.onToggleCollapsed}
+      activeKey={props.activeKey}
+      onSelect={props.onSelect}
+      width={props.width}
+      collapsedWidth={props.collapsedWidth}
+    >
+      <SidebarContent {...props} />
+    </SidebarProvider>
   )
 }
 
@@ -196,3 +189,4 @@ Sidebar.Item = SidebarItem
 Sidebar.Collapse = SidebarCollapse
 Sidebar.Footer = SidebarFooter
 Sidebar.Toggle = SidebarToggle
+Sidebar.Provider = SidebarProvider

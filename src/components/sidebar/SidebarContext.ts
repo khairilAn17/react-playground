@@ -12,3 +12,7 @@ export function useSidebar(): SidebarContextValue {
   }
   return context
 }
+
+export function useSidebarOptional(): SidebarContextValue | null {
+  return useContext(SidebarContext)
+}
