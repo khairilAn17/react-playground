@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react'
 import type { ReactNode } from 'react'
-import { Box, AppBar, Toolbar } from '@mui/material'
+import { Box } from '@mui/material'
 
-import { Sidebar, SidebarProvider, SidebarToggle } from '../sidebar'
+import { Sidebar, SidebarProvider } from '../sidebar'
 import type { SidebarItemConfig } from '../sidebar'
 import { AppBarContext } from './AppBarContext'
 
@@ -19,7 +19,10 @@ export interface AppShellProps {
   sidebarChildren?: ReactNode
   /** User profile info for sidebar footer */
   user?: { name: string; email?: string; avatarUrl?: string }
-  /** Right-hand global shell actions (always visible, e.g. theme toggle, GitHub link) */
+  /**
+   * Right-hand global shell actions (always visible in the AppBar, e.g. theme toggle, GitHub link).
+   * Passed into AppBarContext so PageLayout can render them in its own AppBar.
+   */
   toolbarActions?: ReactNode
   /** Controlled collapsed state */
   collapsed?: boolean
@@ -29,7 +32,7 @@ export interface AppShellProps {
   activeKey?: string
   /** Callback when navigation item is selected */
   onSelect?: (key: string) => void
-  /** Page content body */
+  /** Page content body — typically a <PageLayout> */
   children: ReactNode
 }
 
@@ -49,12 +52,23 @@ export function AppShell({
 }: AppShellProps) {
   const [topBarSlot, setTopBarSlotState] = useState<ReactNode>(null)
 
-  const appBarContextValue = useMemo(
+  const stableCallbacks = useMemo(
     () => ({
       setTopBarSlot: (content: ReactNode) => setTopBarSlotState(content),
       clearTopBarSlot: () => setTopBarSlotState(null),
+      headerRight: toolbarActions,
     }),
-    []
+    // toolbarActions is typically a stable element
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [toolbarActions]
+  )
+
+  const appBarContextValue = useMemo(
+    () => ({
+      ...stableCallbacks,
+      topBarSlot,
+    }),
+    [stableCallbacks, topBarSlot]
   )
 
   return (
@@ -66,7 +80,7 @@ export function AppShell({
     >
       <AppBarContext.Provider value={appBarContextValue}>
         <Box sx={{ display: 'flex', height: '100vh', width: '100%', overflow: 'hidden' }}>
-          {/* Sidebar Component */}
+          {/* Sidebar */}
           <Sidebar items={sidebarChildren ? undefined : sidebarItems}>
             {sidebarChildren ?? (
               <>
@@ -82,55 +96,20 @@ export function AppShell({
             )}
           </Sidebar>
 
-          {/* Main View Area */}
+          {/* Main scrollable content — AppBar is rendered inside PageLayout */}
           <Box
+            component="main"
             sx={{
               flexGrow: 1,
               display: 'flex',
               flexDirection: 'column',
               minWidth: 0,
               height: '100vh',
-              overflow: 'hidden',
+              overflowY: 'auto',
+              bgcolor: 'background.default',
             }}
           >
-            {/* Top Header Bar */}
-            <AppBar
-              position="static"
-              color="inherit"
-              elevation={0}
-              sx={{ borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'background.paper' }}
-            >
-              <Toolbar sx={{ justifyContent: 'space-between', gap: 1 }}>
-                {/* Left — SidebarToggle always present */}
-                <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
-                  <SidebarToggle />
-                </Box>
-
-                {/* Center/Fill — injected by PageLayout.TopBar */}
-                <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', minWidth: 0 }}>
-                  {topBarSlot}
-                </Box>
-
-                {/* Right — global shell actions */}
-                {toolbarActions && (
-                  <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
-                    {toolbarActions}
-                  </Box>
-                )}
-              </Toolbar>
-            </AppBar>
-
-            {/* Page Body Container */}
-            <Box
-              component="main"
-              sx={{
-                flexGrow: 1,
-                overflowY: 'auto',
-                bgcolor: 'background.default',
-              }}
-            >
-              {children}
-            </Box>
+            {children}
           </Box>
         </Box>
       </AppBarContext.Provider>

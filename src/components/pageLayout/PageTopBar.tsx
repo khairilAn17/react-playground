@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
-import type { ReactNode } from 'react'
+import type { ReactNode, ReactElement } from 'react'
 import { useAppBar } from '../appShell/AppBarContext'
+import type { PageTopBarSearchProps } from './PageTopBarSearch'
 
 export interface PageTopBarProps {
   children: ReactNode
@@ -20,6 +21,7 @@ export interface PageTopBarProps {
  *   <PageLayout.TopBar>
  *     <Typography variant="subtitle1" fontWeight={700}>Page Title</Typography>
  *     <Chip label="Status" color="primary" size="small" />
+ *     <PageLayout.TopBar.Search placeholder="Search..." onSearch={handleSearch} />
  *   </PageLayout.TopBar>
  *   <PageLayout.Header ... />
  *   <PageLayout.Content>...</PageLayout.Content>
@@ -41,3 +43,6 @@ export function PageTopBar({ children }: PageTopBarProps) {
   // Renders nothing in the page content flow
   return null
 }
+
+// Sub-component type declaration — attached in PageLayout.tsx
+PageTopBar.Search = null as unknown as (props: PageTopBarSearchProps) => ReactElement | null

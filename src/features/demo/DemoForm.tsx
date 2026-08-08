@@ -84,7 +84,8 @@ export function DemoForm() {
         <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '0.875rem' }}>
           Single Page Form
         </Typography>
-        <Chip label="Type-Safe" color="primary" size="small" sx={{ ml: 1 }} />
+        <Chip label="Type-Safe" color="primary" size="small" sx={{ ml: 1, mr: 1 }} />
+        <PageLayout.TopBar.Search placeholder="Search fields…" />
       </PageLayout.TopBar>
 
       <PageLayout.Header

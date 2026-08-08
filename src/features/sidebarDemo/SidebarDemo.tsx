@@ -72,7 +72,8 @@ export function SidebarDemo() {
         <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '0.875rem' }}>
           Sidebar Architecture
         </Typography>
-        <Chip label="Live Preview" color="success" size="small" sx={{ ml: 1 }} />
+        <Chip label="Live Preview" color="success" size="small" sx={{ ml: 1, mr: 1 }} />
+        <PageLayout.TopBar.Search placeholder="Search components…" />
       </PageLayout.TopBar>
 
       <PageLayout.Header

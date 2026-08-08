@@ -4,6 +4,8 @@ export type { PageLayoutProps } from './types'
 export { usePageLayout } from './PageLayoutContext'
 export { PageTopBar } from './PageTopBar'
 export type { PageTopBarProps } from './PageTopBar'
+export { PageTopBarSearch } from './PageTopBarSearch'
+export type { PageTopBarSearchProps } from './PageTopBarSearch'
 export { PageHeader } from './PageHeader'
 export type { PageHeaderProps } from './PageHeader'
 

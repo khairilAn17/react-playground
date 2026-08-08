@@ -107,7 +107,8 @@ export function PageLayoutDemo() {
         <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '0.875rem' }}>
           PageLayout Specification
         </Typography>
-        <Chip label="Architecture" color="primary" size="small" sx={{ ml: 1 }} />
+        <Chip label="Architecture" color="primary" size="small" sx={{ ml: 1, mr: 1 }} />
+        <PageLayout.TopBar.Search placeholder="Search specification…" />
       </PageLayout.TopBar>
 
       <PageLayout.Header

@@ -253,7 +253,8 @@ export function MultiStepForm() {
         <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '0.875rem' }}>
           Multi-Step Wizard
         </Typography>
-        <Chip label="Wizard Flow" color="secondary" size="small" sx={{ ml: 1 }} />
+        <Chip label="Wizard Flow" color="secondary" size="small" sx={{ ml: 1, mr: 1 }} />
+        <PageLayout.TopBar.Search placeholder="Search steps…" />
       </PageLayout.TopBar>
 
       <PageLayout.Header

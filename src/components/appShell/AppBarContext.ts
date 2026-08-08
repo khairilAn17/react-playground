@@ -2,10 +2,14 @@ import { createContext, useContext } from 'react'
 import type { ReactNode } from 'react'
 
 export interface AppBarContextValue {
-  /** Inject arbitrary content into the AppBar slot (called by PageLayout.TopBar) */
+  /** Current injected TopBar slot content — managed by PageLayout.TopBar */
+  topBarSlot: ReactNode
+  /** Inject content into the AppBar slot */
   setTopBarSlot: (content: ReactNode) => void
-  /** Clear the injected content on unmount */
+  /** Clear the AppBar slot on unmount */
   clearTopBarSlot: () => void
+  /** Static right-side actions provided by AppShell (e.g. theme toggle, GitHub link) */
+  headerRight?: ReactNode
 }
 
 export const AppBarContext = createContext<AppBarContextValue | null>(null)
