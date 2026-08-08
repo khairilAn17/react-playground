@@ -13,6 +13,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DemoForm } from './features/demo/DemoForm'
 import { MultiStepForm } from './features/multiStepDemo/MultiStepForm'
+import { SidebarDemo } from './features/sidebarDemo/SidebarDemo'
 
 const theme = createTheme({
   palette: {
@@ -31,7 +32,7 @@ function App() {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <CssBaseline />
         <Box sx={{ bgcolor: 'grey.50', minHeight: '100vh', pb: 6 }}>
-          <Container maxWidth="md" sx={{ pt: 3 }}>
+          <Container maxWidth={tabIndex === 2 ? 'xl' : 'md'} sx={{ pt: 3 }}>
             <Paper variant="outlined" sx={{ mb: 2 }}>
               <Tabs
                 value={tabIndex}
@@ -42,11 +43,13 @@ function App() {
               >
                 <Tab label="1. Single Page Form" />
                 <Tab label="2. Multi-Step Wizard Form" />
+                <Tab label="3. Reusable Sidebar Component" />
               </Tabs>
             </Paper>
 
             {tabIndex === 0 && <DemoForm />}
             {tabIndex === 1 && <MultiStepForm />}
+            {tabIndex === 2 && <SidebarDemo />}
           </Container>
         </Box>
       </LocalizationProvider>
@@ -55,3 +58,4 @@ function App() {
 }
 
 export default App
+
