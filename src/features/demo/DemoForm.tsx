@@ -71,6 +71,22 @@ export function DemoForm() {
 
   return (
     <PageLayout maxWidth="sm">
+      <PageLayout.TopBar>
+        <Chip
+          label="Form Workspaces"
+          size="small"
+          variant="outlined"
+          sx={{ mr: 0.5, fontSize: '0.72rem' }}
+        />
+        <Typography variant="body2" color="text.secondary" sx={{ mx: 0.5 }}>
+          /
+        </Typography>
+        <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '0.875rem' }}>
+          Single Page Form
+        </Typography>
+        <Chip label="Type-Safe" color="primary" size="small" sx={{ ml: 1 }} />
+      </PageLayout.TopBar>
+
       <PageLayout.Header
         title="RHF + MUI Form Component Kit"
         subtitle={

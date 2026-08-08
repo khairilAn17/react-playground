@@ -240,6 +240,22 @@ export function MultiStepForm() {
 
   return (
     <PageLayout maxWidth="md">
+      <PageLayout.TopBar>
+        <Chip
+          label="Form Workspaces"
+          size="small"
+          variant="outlined"
+          sx={{ mr: 0.5, fontSize: '0.72rem' }}
+        />
+        <Typography variant="body2" color="text.secondary" sx={{ mx: 0.5 }}>
+          /
+        </Typography>
+        <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '0.875rem' }}>
+          Multi-Step Wizard
+        </Typography>
+        <Chip label="Wizard Flow" color="secondary" size="small" sx={{ ml: 1 }} />
+      </PageLayout.TopBar>
+
       <PageLayout.Header
         title="Multi-Step Wizard Form"
         subtitle="Step-by-step wizard flow with MUI Stepper & per-step schema validation using dot-paths."

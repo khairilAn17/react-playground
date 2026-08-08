@@ -9,6 +9,7 @@ import { PageSection } from './PageSection'
 import { PageGrid } from './PageGrid'
 import { PageStickyFooter } from './PageStickyFooter'
 import { PageSkeleton } from './PageSkeleton'
+import { PageTopBar } from './PageTopBar'
 
 import type { PageLayoutProps, PageLayoutContextValue } from './types'
 
@@ -64,6 +65,7 @@ export function PageLayout({
 }
 
 // Compound sub-component attachments
+PageLayout.TopBar = PageTopBar
 PageLayout.Header = PageHeader
 PageLayout.Breadcrumbs = PageBreadcrumbs
 PageLayout.Content = PageContent

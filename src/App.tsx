@@ -43,21 +43,6 @@ function App() {
   const [activeKey, setActiveKey] = useState<string>('single-form')
   const [collapsed, setCollapsed] = useState(false)
 
-  const getPageTitle = (key: string) => {
-    switch (key) {
-      case 'single-form':
-        return 'Single Page Form Workspace'
-      case 'wizard-form':
-        return 'Multi-Step Wizard Form'
-      case 'page-layout-architecture':
-        return 'PageLayout Specification & Architecture'
-      case 'sidebar-architecture':
-        return 'Sidebar Component Kit Architecture'
-      default:
-        return 'React Playground'
-    }
-  }
-
   return (
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -67,7 +52,6 @@ function App() {
           onToggleCollapsed={setCollapsed}
           activeKey={activeKey}
           onSelect={setActiveKey}
-          pageTitle={getPageTitle(activeKey)}
           toolbarActions={
             <Tooltip title="View Source Workspace">
               <IconButton

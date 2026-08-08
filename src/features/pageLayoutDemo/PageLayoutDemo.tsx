@@ -51,6 +51,7 @@ const propRows = [
 ]
 
 const subComponents = [
+  { name: 'PageLayout.TopBar', desc: 'Injects arbitrary children into the AppShell AppBar slot via context — renders nothing in-place' },
   { name: 'PageLayout.Header', desc: 'Page title, breadcrumbs, subtitle, status chip, actions, back button' },
   { name: 'PageLayout.Breadcrumbs', desc: 'Standalone breadcrumb navigation hierarchy' },
   { name: 'PageLayout.Content', desc: 'Vertical flex container for spacing children' },
@@ -92,22 +93,32 @@ export function PageLayoutDemo() {
   const [activeTab, setActiveTab] = useState(0)
 
   return (
-    <Box sx={{ py: 1 }}>
-      {/* ── Page Header ── */}
-      <Box sx={{ mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-          <LayersIcon sx={{ color: 'primary.main', fontSize: 20 }} />
-          <Typography variant="caption" color="primary.main" sx={{ fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-            Component Architecture
-          </Typography>
-        </Box>
-        <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
-          PageLayout — Living Specification
+    <PageLayout maxWidth="lg">
+      <PageLayout.TopBar>
+        <Chip
+          label="Navigation & Layout"
+          size="small"
+          variant="outlined"
+          sx={{ mr: 0.5, fontSize: '0.72rem' }}
+        />
+        <Typography variant="body2" color="text.secondary" sx={{ mx: 0.5 }}>
+          /
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          A compound component system built on 5 principles: Reusable · Customizable · Scalable · Readable · Maintainable
+        <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '0.875rem' }}>
+          PageLayout Specification
         </Typography>
-      </Box>
+        <Chip label="Architecture" color="primary" size="small" sx={{ ml: 1 }} />
+      </PageLayout.TopBar>
+
+      <PageLayout.Header
+        title="PageLayout — Living Specification"
+        subtitle="A compound component system built on 5 principles: Reusable · Customizable · Scalable · Readable · Maintainable"
+        breadcrumbs={[
+          { label: 'Navigation & Layout', href: '#' },
+          { label: 'PageLayout Specification' },
+        ]}
+        status={<Chip label="Component Architecture" color="primary" size="small" icon={<LayersIcon sx={{ fontSize: '0.9rem !important' }} />} />}
+      />
 
       {/* ── Navigation Tabs ── */}
       <Paper variant="outlined" sx={{ mb: 3, borderRadius: 2 }}>
@@ -636,6 +647,6 @@ export function PageLayoutDemo() {
           </Box>
         </Box>
       )}
-    </Box>
+    </PageLayout>
   )
 }
