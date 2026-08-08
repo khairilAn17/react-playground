@@ -4,9 +4,6 @@ import {
   ThemeProvider,
   createTheme,
   Box,
-  AppBar,
-  Toolbar,
-  Typography,
   Chip,
   IconButton,
   Tooltip,
@@ -19,7 +16,8 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import ViewSidebarIcon from '@mui/icons-material/ViewSidebar'
 import GitHubIcon from '@mui/icons-material/GitHub'
 
-import { Sidebar, SidebarProvider, SidebarToggle } from './components/sidebar'
+import { AppShell } from './components/appShell'
+import { Sidebar } from './components/sidebar'
 import { DemoForm } from './features/demo/DemoForm'
 import { MultiStepForm } from './features/multiStepDemo/MultiStepForm'
 import { SidebarDemo } from './features/sidebarDemo/SidebarDemo'
@@ -46,11 +44,11 @@ function App() {
   const getPageTitle = (key: string) => {
     switch (key) {
       case 'single-form':
-        return 'Single Page Form Component Kit'
+        return 'Single Page Form Workspace'
       case 'wizard-form':
         return 'Multi-Step Wizard Form'
       case 'sidebar-architecture':
-        return 'Sidebar Component Kit Architecture & Playground'
+        return 'Sidebar Component Kit Architecture'
       default:
         return 'React Playground'
     }
@@ -60,15 +58,27 @@ function App() {
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <CssBaseline />
-        <SidebarProvider
+        <AppShell
           collapsed={collapsed}
           onToggleCollapsed={setCollapsed}
           activeKey={activeKey}
           onSelect={setActiveKey}
-        >
-          <Box sx={{ display: 'flex', height: '100vh', width: '100%', overflow: 'hidden' }}>
-            {/* Sidebar Navigation */}
-            <Sidebar>
+          pageTitle={getPageTitle(activeKey)}
+          toolbarActions={
+            <Tooltip title="View Source Workspace">
+              <IconButton
+                color="default"
+                component="a"
+                href="https://github.com"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <GitHubIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          }
+          sidebarChildren={
+            <>
               <Sidebar.Header
                 logo={
                   <Box
@@ -124,65 +134,13 @@ function App() {
                   email: 'khairil@dev.lab',
                 }}
               />
-            </Sidebar>
-
-            {/* Main Application Content Body */}
-            <Box
-              sx={{
-                flexGrow: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                minWidth: 0,
-                height: '100vh',
-                overflow: 'hidden',
-              }}
-            >
-              {/* Top Application Header Bar */}
-              <AppBar
-                position="static"
-                color="inherit"
-                elevation={0}
-                sx={{ borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'background.paper' }}
-              >
-                <Toolbar sx={{ justifyContent: 'space-between' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <SidebarToggle />
-                    <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.1rem' }}>
-                      {getPageTitle(activeKey)}
-                    </Typography>
-                  </Box>
-
-                  <Tooltip title="View Source Workspace">
-                    <IconButton
-                      color="default"
-                      component="a"
-                      href="https://github.com"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <GitHubIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                </Toolbar>
-              </AppBar>
-
-              {/* Scrollable Main View Area */}
-              <Box
-                component="main"
-                sx={{
-                  flexGrow: 1,
-                  overflowY: 'auto',
-                  p: { xs: 2, sm: 3 },
-                  bgcolor: 'background.default',
-                }}
-              >
-                {activeKey === 'single-form' && <DemoForm />}
-                {activeKey === 'wizard-form' && <MultiStepForm />}
-                {activeKey === 'sidebar-architecture' && <SidebarDemo />}
-              </Box>
-            </Box>
-          </Box>
-        </SidebarProvider>
+            </>
+          }
+        >
+          {activeKey === 'single-form' && <DemoForm />}
+          {activeKey === 'wizard-form' && <MultiStepForm />}
+          {activeKey === 'sidebar-architecture' && <SidebarDemo />}
+        </AppShell>
       </LocalizationProvider>
     </ThemeProvider>
   )

@@ -11,9 +11,11 @@ import {
   StepLabel,
   Typography,
   Alert,
+  Chip,
 } from '@mui/material'
 import { createTypedForm } from '../../components/form'
 import type { SelectOption, RadioOption, AutocompleteOption } from '../../components/form'
+import { PageLayout } from '../../components/pageLayout'
 import { multiStepSchema } from './multiStepSchema'
 import type { MultiStepFormValues } from './multiStepSchema'
 
@@ -40,7 +42,6 @@ const PLAN_OPTIONS: RadioOption[] = [
 
 const STEPS = ['Personal Details', 'Professional Info', 'Subscription & Review']
 
-// Create typed form controls bound to MultiStepFormValues schema
 const { Form, Field, useFormContext } = createTypedForm<MultiStepFormValues>()
 
 const DEFAULT_VALUES: MultiStepFormValues = {
@@ -61,11 +62,6 @@ const DEFAULT_VALUES: MultiStepFormValues = {
   },
 }
 
-/**
- * StepActions
- *
- * Inner component to access form methods via useFormContext and control Step Next/Back navigation with validation.
- */
 function StepActions({
   activeStep,
   totalSteps,
@@ -115,17 +111,11 @@ function StepActions({
   )
 }
 
-/**
- * MultiStepWizardContent
- *
- * Inner step wizard renderer using useFormContext to trigger per-step validation.
- */
 function MultiStepWizardContent() {
   const [activeStep, setActiveStep] = useState(0)
   const { trigger, formState: { isSubmitting } } = useFormContext()
 
   const handleNextStep = async () => {
-    // Validate only the current step's nested fields before advancing!
     const stepKeysMap: Record<number, Array<'personal' | 'professional' | 'subscription'>> = {
       0: ['personal'],
       1: ['professional'],
@@ -249,56 +239,54 @@ export function MultiStepForm() {
   }
 
   return (
-    <Box sx={{ maxWidth: 620, mx: 'auto', py: 4, px: 2 }}>
-      {/* Header */}
-      <Stack spacing={0.5} sx={{ mb: 3 }}>
-        <Typography variant="h5" sx={{ fontWeight: 700 }}>
-          Multi-Step Form Wizard Demo
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Step-by-step form with MUI Stepper & per-step schema validation using dot-paths.
-        </Typography>
-      </Stack>
+    <PageLayout maxWidth="md">
+      <PageLayout.Header
+        title="Multi-Step Wizard Form"
+        subtitle="Step-by-step wizard flow with MUI Stepper & per-step schema validation using dot-paths."
+        breadcrumbs={[{ label: 'Form Workspaces', href: '#' }, { label: 'Multi-Step Wizard' }]}
+        status={<Chip label="Wizard Flow" color="secondary" size="small" />}
+      />
 
-      <Card variant="outlined">
-        <CardContent>
-          <Form
-            schema={multiStepSchema}
-            defaultValues={DEFAULT_VALUES}
-            onSubmit={handleSubmit}
-          >
-            <MultiStepWizardContent />
-          </Form>
-        </CardContent>
-      </Card>
+      <PageLayout.Content>
+        <Card variant="outlined">
+          <CardContent>
+            <Form
+              schema={multiStepSchema}
+              defaultValues={DEFAULT_VALUES}
+              onSubmit={handleSubmit}
+            >
+              <MultiStepWizardContent />
+            </Form>
+          </CardContent>
+        </Card>
 
-      {/* Submitted Results */}
-      {submittedData && (
-        <Box sx={{ mt: 3 }}>
-          <Alert severity="success" sx={{ mb: 2 }}>
-            Multi-step form completed successfully!
-          </Alert>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5 }}>
-                Final Form Output (Nested Payload)
-              </Typography>
-              <Box
-                component="pre"
-                sx={{
-                  bgcolor: 'action.hover',
-                  p: 2,
-                  borderRadius: 1,
-                  fontSize: '0.85rem',
-                  overflowX: 'auto',
-                }}
-              >
-                {JSON.stringify(submittedData, null, 2)}
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
-      )}
-    </Box>
+        {submittedData && (
+          <Box sx={{ mt: 1 }}>
+            <Alert severity="success" sx={{ mb: 2 }}>
+              Multi-step form completed successfully!
+            </Alert>
+            <Card variant="outlined">
+              <CardContent>
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5 }}>
+                  Final Form Output (Nested Payload)
+                </Typography>
+                <Box
+                  component="pre"
+                  sx={{
+                    bgcolor: 'action.hover',
+                    p: 2,
+                    borderRadius: 1,
+                    fontSize: '0.85rem',
+                    overflowX: 'auto',
+                  }}
+                >
+                  {JSON.stringify(submittedData, null, 2)}
+                </Box>
+              </CardContent>
+            </Card>
+          </Box>
+        )}
+      </PageLayout.Content>
+    </PageLayout>
   )
 }

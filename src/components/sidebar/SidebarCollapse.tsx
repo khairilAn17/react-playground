@@ -49,6 +49,7 @@ const StyledCollapseButton = styled(ListItemButton, {
 }))
 
 export function SidebarCollapse({
+  itemKey,
   icon,
   label,
   badge,
@@ -89,6 +90,8 @@ export function SidebarCollapse({
     )
   }
 
+  const contentId = itemKey ? `sidebar-collapse-${itemKey}` : undefined
+
   const buttonContent = (
     <ListItem disablePadding sx={{ display: 'block' }}>
       <StyledCollapseButton
@@ -96,6 +99,8 @@ export function SidebarCollapse({
         level={level}
         disabled={disabled}
         onClick={handleToggle}
+        aria-expanded={!collapsed ? open : undefined}
+        aria-controls={contentId}
       >
         {icon && <ListItemIcon>{icon}</ListItemIcon>}
         {!collapsed && (
@@ -128,7 +133,7 @@ export function SidebarCollapse({
         buttonContent
       )}
 
-      <Collapse in={open && !collapsed} timeout="auto" unmountOnExit>
+      <Collapse id={contentId} in={open && !collapsed} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
           {children}
         </List>
