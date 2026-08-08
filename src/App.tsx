@@ -14,6 +14,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import AssignmentIcon from '@mui/icons-material/Assignment'
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import ViewSidebarIcon from '@mui/icons-material/ViewSidebar'
+import ViewQuiltIcon from '@mui/icons-material/ViewQuilt'
 import GitHubIcon from '@mui/icons-material/GitHub'
 
 import { AppShell } from './components/appShell'
@@ -21,6 +22,7 @@ import { Sidebar } from './components/sidebar'
 import { DemoForm } from './features/demo/DemoForm'
 import { MultiStepForm } from './features/multiStepDemo/MultiStepForm'
 import { SidebarDemo } from './features/sidebarDemo/SidebarDemo'
+import { PageLayoutDemo } from './features/pageLayoutDemo/PageLayoutDemo'
 
 const theme = createTheme({
   palette: {
@@ -47,6 +49,8 @@ function App() {
         return 'Single Page Form Workspace'
       case 'wizard-form':
         return 'Multi-Step Wizard Form'
+      case 'page-layout-architecture':
+        return 'PageLayout Specification & Architecture'
       case 'sidebar-architecture':
         return 'Sidebar Component Kit Architecture'
       default:
@@ -121,6 +125,11 @@ function App() {
 
                 <Sidebar.Section title="Navigation & Layout" divider>
                   <Sidebar.Item
+                    itemKey="page-layout-architecture"
+                    icon={<ViewQuiltIcon />}
+                    label="PageLayout Specification"
+                  />
+                  <Sidebar.Item
                     itemKey="sidebar-architecture"
                     icon={<ViewSidebarIcon />}
                     label="Sidebar Architecture"
@@ -139,6 +148,7 @@ function App() {
         >
           {activeKey === 'single-form' && <DemoForm />}
           {activeKey === 'wizard-form' && <MultiStepForm />}
+          {activeKey === 'page-layout-architecture' && <PageLayoutDemo />}
           {activeKey === 'sidebar-architecture' && <SidebarDemo />}
         </AppShell>
       </LocalizationProvider>
