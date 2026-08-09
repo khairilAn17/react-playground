@@ -1,14 +1,11 @@
 import type { ReactNode } from 'react'
 import type { BreadcrumbItem } from '../breadcrumbs'
+import type { StepItem } from '../steps'
 
 export type { BreadcrumbItem }
+/** @deprecated Use StepItem from '../steps' directly */
+export type PageStepItem = StepItem
 export type PageMaxWidth = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'full'
-
-export interface PageStepItem {
-  key?: string
-  label: string
-  completed?: boolean
-}
 
 export interface PageLayoutProps {
   /** Responsive container width preset: 'xs' (440), 'sm' (640), 'md' (900), 'lg' (1200), 'xl' (1536), 'full' (100%) */
@@ -19,7 +16,7 @@ export interface PageLayoutProps {
   loading?: boolean
   /** Custom background color or preset ('default' | 'paper' | 'transparent') */
   bgVariant?: 'default' | 'paper' | 'transparent'
-  
+
   /* ── Shorthand Props (Zero Boilerplate Mode) ── */
   /** Main page title (e.g. "Manajemen Akun", "Payroll", "Assalamualaikum, Shafa") */
   title?: ReactNode
@@ -38,7 +35,7 @@ export interface PageLayoutProps {
   /** Optional back button callback */
   onBack?: () => void
   /** Multi-step flow items array */
-  steps?: (string | PageStepItem)[]
+  steps?: (string | StepItem)[]
   /** Active zero-indexed step in multi-step wizard */
   currentStep?: number
 

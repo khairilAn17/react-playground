@@ -2,8 +2,8 @@ import type { ReactNode } from 'react'
 import { Box, Typography, IconButton, Tooltip, Stack } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { Breadcrumbs } from '../breadcrumbs'
-import { PageSteps } from './PageSteps'
-import type { PageStepItem } from './types'
+import { Steps } from '../steps'
+import type { StepItem } from '../steps'
 import type { BreadcrumbItem } from '../breadcrumbs'
 
 export interface PageHeaderProps {
@@ -16,7 +16,7 @@ export interface PageHeaderProps {
   extra?: ReactNode
   onBack?: () => void
   backTooltip?: string
-  steps?: (string | PageStepItem)[]
+  steps?: (string | StepItem)[]
   currentStep?: number
   onStepClick?: (index: number) => void
 }
@@ -97,7 +97,7 @@ export function PageHeader({
       </Box>
 
       {/* Multi-step progress wizard (if provided) */}
-      {steps && <PageSteps steps={steps} currentStep={currentStep} onStepClick={onStepClick} />}
+      {steps && <Steps steps={steps} currentStep={currentStep} onStepClick={onStepClick} />}
 
       {/* Subtitle row — section label + description + actions (e.g. "Daftar Akun Maker") */}
       {subtitle && (
