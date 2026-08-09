@@ -27,6 +27,7 @@ export function PageLayout({
   actions,
   extra,
   breadcrumbs,
+  status,
   onBack,
   steps,
   currentStep,
@@ -58,7 +59,7 @@ export function PageLayout({
     }
   }
 
-  const hasShorthandHeader = title || subtitle || actions || extra || breadcrumbs || steps || onBack
+  const hasShorthandHeader = title || subtitle || actions || extra || breadcrumbs || steps || onBack || status
 
   return (
     <PageLayoutContext.Provider value={contextValue}>
@@ -83,6 +84,7 @@ export function PageLayout({
                   actions={actions}
                   extra={extra}
                   breadcrumbs={breadcrumbs}
+                  status={status}
                   onBack={onBack}
                   steps={steps}
                   currentStep={currentStep}

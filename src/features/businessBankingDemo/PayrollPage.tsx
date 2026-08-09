@@ -131,7 +131,7 @@ export function PayrollPage({ onBack }: PayrollPageProps) {
 
         <PageLayout.Content>
           {/* ── Summary Cards ── */}
-          <PageLayout.Grid columns={{ xs: 12, sm: 4, md: 4 }}>
+          <PageLayout.Grid cols={3}>
             {summaryCards.map((card) => (
               <Card
                 key={card.label}

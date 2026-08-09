@@ -34,7 +34,7 @@ export const StandardPage: Story = {
         }
       />
       <PageLayout.Content>
-        <PageLayout.Grid columns={{ xs: 12, md: 4 }}>
+        <PageLayout.Grid cols={3}>
           <Card variant="outlined">
             <CardContent>
               <Typography variant="h6" sx={{ fontWeight: 700 }}>

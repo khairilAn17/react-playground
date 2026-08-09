@@ -274,7 +274,7 @@ export function BusinessBankingDashboard() {
             Tabungan
           </Typography>
 
-          <PageLayout.Grid columns={{ xs: 12, md: 12 }}>
+          <PageLayout.Grid cols={1}>
             <PageLayout.Grid.Item size={{ xs: 12, md: 4 }}>
               <Box sx={{ pr: { md: 2 } }}>
                 <Typography variant="caption" sx={{ color: TEXT_MUTED, fontWeight: 600 }}>

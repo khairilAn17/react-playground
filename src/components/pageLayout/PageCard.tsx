@@ -2,6 +2,30 @@ import type { ReactNode } from 'react'
 import { Card, CardContent, Box, Typography, Stack, Divider } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material'
 
+/**
+ * PageCard
+ *
+ * A self-contained outlined card with an optional header (title + subtitle + actions),
+ * optional divider, and a content area.
+ *
+ * **When to use `PageCard` vs `PageLayout.Section`:**
+ * - Use `PageCard` when you need a standalone, reusable card outside a PageLayout flow,
+ *   or when building ad-hoc cards inside grids / custom layouts.
+ * - Use `PageLayout.Section` (variant="card") when composing cards inside a
+ *   `<PageLayout.Content>` flow — it handles spacing, padding, and consistent
+ *   vertical rhythm automatically.
+ *
+ * @example
+ * // Standalone card (e.g. inside a PageLayout.Grid):
+ * <PageLayout.Card title="Limit Harian" subtitle="Rekening Utama">
+ *   <LinearProgress value={75} />
+ * </PageLayout.Card>
+ *
+ * // Section card inside content flow — prefer PageLayout.Section:
+ * <PageLayout.Section variant="card" title="..." description="...">
+ *   <Table>...</Table>
+ * </PageLayout.Section>
+ */
 export interface PageCardProps {
   title?: ReactNode
   subtitle?: ReactNode

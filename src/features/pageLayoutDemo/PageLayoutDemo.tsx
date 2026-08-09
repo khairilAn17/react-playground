@@ -275,7 +275,7 @@ export function PageLayoutDemo() {
               />
 
               <PageLayout.Content>
-                <PageLayout.Grid columns={{ xs: 12, sm: 6, md: 4 }}>
+                <PageLayout.Grid cols={3}>
                   {[
                     { label: 'Engineering', count: 24, note: '+3 this month', color: 'success.main' },
                     { label: 'Design', count: 10, note: 'Full capacity', color: 'text.secondary' },
@@ -445,7 +445,7 @@ export function PageLayoutDemo() {
             <SectionLabel label="PageLayout.Grid — responsive columns" />
             <PageLayout maxWidth="lg" bgVariant="paper">
               <PageLayout.Content>
-                <PageLayout.Grid columns={{ xs: 12, sm: 6, md: 3 }}>
+                <PageLayout.Grid cols={4}>
                   {[1, 2, 3, 4].map((n) => (
                     <Card variant="outlined" key={n}>
                       <CardContent>
@@ -625,7 +625,7 @@ export function PageLayoutDemo() {
   />
 
   <PageLayout.Content>
-    <PageLayout.Grid columns={{ xs: 12, md: 6 }}>
+    <PageLayout.Grid cols={2}>
       <Card>...</Card>
       <Card>...</Card>
     </PageLayout.Grid>
