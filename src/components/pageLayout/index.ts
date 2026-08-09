@@ -9,8 +9,8 @@ export type { PageHeaderProps } from './PageHeader'
 export { PageSteps } from './PageSteps'
 export type { PageStepsProps } from './PageSteps'
 
-export { PageBreadcrumbs } from './PageBreadcrumbs'
-export type { PageBreadcrumbsProps } from './PageBreadcrumbs'
+export { Breadcrumbs } from '../breadcrumbs'
+export type { BreadcrumbsProps, BreadcrumbItem } from '../breadcrumbs'
 
 export { PageContent } from './PageContent'
 export type { PageContentProps } from './PageContent'
@@ -25,7 +25,6 @@ export { PageSkeleton } from './PageSkeleton'
 
 export type {
   PageMaxWidth,
-  BreadcrumbItem,
   PageStepItem,
   PageLayoutContextValue,
 } from './types'

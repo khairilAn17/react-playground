@@ -3,7 +3,7 @@ import { Container, Box } from '@mui/material'
 
 import { PageLayoutContext } from './PageLayoutContext'
 import { PageHeader } from './PageHeader'
-import { PageBreadcrumbs } from './PageBreadcrumbs'
+import { Breadcrumbs } from '../breadcrumbs'
 import { PageContent } from './PageContent'
 import { PageSection } from './PageSection'
 import { PageSteps } from './PageSteps'
@@ -99,7 +99,7 @@ export function PageLayout({
 PageLayout.Header = PageHeader
 PageLayout.Steps = PageSteps
 PageLayout.Section = PageSection
-PageLayout.Breadcrumbs = PageBreadcrumbs
+PageLayout.Breadcrumbs = Breadcrumbs
 PageLayout.Content = PageContent
 PageLayout.StickyFooter = PageStickyFooter
 PageLayout.Skeleton = PageSkeleton

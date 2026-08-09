@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react'
 import { Box, Typography, IconButton, Tooltip, Stack } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import { PageBreadcrumbs } from './PageBreadcrumbs'
+import { Breadcrumbs } from '../breadcrumbs'
 import { PageSteps } from './PageSteps'
-import type { BreadcrumbItem, PageStepItem } from './types'
+import type { PageStepItem } from './types'
+import type { BreadcrumbItem } from '../breadcrumbs'
 
 export interface PageHeaderProps {
   title?: ReactNode
@@ -44,7 +45,7 @@ export function PageHeader({
 
   return (
     <Box sx={{ mb: 3 }}>
-      {breadcrumbs && <PageBreadcrumbs items={breadcrumbs} />}
+      {breadcrumbs && <Breadcrumbs items={breadcrumbs} />}
 
       {/* Main Page Title Row */}
       <Box

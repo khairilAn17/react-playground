@@ -1,12 +1,8 @@
 import type { ReactNode } from 'react'
+import type { BreadcrumbItem } from '../breadcrumbs'
 
+export type { BreadcrumbItem }
 export type PageMaxWidth = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'full'
-
-export interface BreadcrumbItem {
-  label: string
-  href?: string
-  icon?: ReactNode
-}
 
 export interface PageStepItem {
   key?: string

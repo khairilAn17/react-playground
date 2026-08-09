@@ -1,25 +1,47 @@
 import type { ReactNode } from 'react'
-import { Breadcrumbs, Link, Typography, Box } from '@mui/material'
+import { Breadcrumbs as MuiBreadcrumbs, Link, Typography, Box } from '@mui/material'
+import type { SxProps, Theme } from '@mui/material'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext'
-import type { BreadcrumbItem } from './types'
 
-export interface PageBreadcrumbsProps {
-  items?: BreadcrumbItem[]
-  children?: ReactNode
+export interface BreadcrumbItem {
+  label: string
+  href?: string
+  icon?: ReactNode
 }
 
-export function PageBreadcrumbs({ items, children }: PageBreadcrumbsProps) {
+export interface BreadcrumbsProps {
+  items?: BreadcrumbItem[]
+  children?: ReactNode
+  separator?: ReactNode
+  sx?: SxProps<Theme>
+}
+
+/**
+ * Breadcrumbs
+ *
+ * Standalone, type-safe breadcrumb navigation component using MUI Breadcrumbs and Link.
+ * Supports icon items, custom separators, and responsive styling.
+ *
+ * @example
+ * <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Dashboard' }]} />
+ */
+export function Breadcrumbs({
+  items,
+  children,
+  separator = <NavigateNextIcon fontSize="small" />,
+  sx,
+}: BreadcrumbsProps) {
   if (children) {
-    return <Box sx={{ mb: 1 }}>{children}</Box>
+    return <Box sx={{ mb: 1, ...sx }}>{children}</Box>
   }
 
   if (!items || items.length === 0) return null
 
   return (
-    <Breadcrumbs
-      separator={<NavigateNextIcon fontSize="small" />}
+    <MuiBreadcrumbs
+      separator={separator}
       aria-label="breadcrumb navigation"
-      sx={{ mb: 1.5 }}
+      sx={{ mb: 1.5, ...sx }}
     >
       {items.map((item, index) => {
         const isLast = index === items.length - 1
@@ -50,6 +72,6 @@ export function PageBreadcrumbs({ items, children }: PageBreadcrumbsProps) {
           </Link>
         )
       })}
-    </Breadcrumbs>
+    </MuiBreadcrumbs>
   )
 }

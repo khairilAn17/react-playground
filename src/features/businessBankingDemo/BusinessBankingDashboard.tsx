@@ -31,6 +31,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 
 import { PageLayout } from '../../components/pageLayout'
 import { ExpandableSearch } from '../../components/search'
+import { Breadcrumbs } from '../../components/breadcrumbs'
 
 // ─── Theme Colors ─────────────────────────────────────────────────────────────
 const TEAL_PRIMARY = '#00A39D'
@@ -114,7 +115,7 @@ export function BusinessBankingDashboard() {
               <Typography variant="h5" sx={{ fontWeight: 800, color: TEXT_MAIN, letterSpacing: '-0.02em' }}>
                 Assalamualaikum, Shafa
               </Typography>
-              <PageLayout.Breadcrumbs
+              <Breadcrumbs
                 items={[
                   {
                     label: 'Home',
