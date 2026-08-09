@@ -41,6 +41,7 @@ import SettingsIcon from '@mui/icons-material/Settings'
 
 import { PageLayout } from '../../components/pageLayout'
 import type { PageMaxWidth } from '../../components/pageLayout'
+import { ExpandableSearch } from '../../components/search'
 
 // ─── Prop Reference Table ───────────────────────────────────────────────────
 const propRows = [
@@ -52,7 +53,6 @@ const propRows = [
 ]
 
 const subComponents = [
-  { name: 'PageLayout.TopBar', desc: 'Injects arbitrary children into the AppShell AppBar slot via context — renders nothing in-place' },
   { name: 'PageLayout.Header', desc: 'Page title, breadcrumbs, subtitle, status chip, actions, back button, extra widget slot' },
   { name: 'PageLayout.Breadcrumbs', desc: 'Standalone breadcrumb navigation hierarchy' },
   { name: 'PageLayout.Content', desc: 'Vertical flex container for spacing children' },
@@ -94,22 +94,6 @@ export function PageLayoutDemo() {
 
   return (
     <PageLayout maxWidth="lg">
-      <PageLayout.TopBar>
-        <Chip
-          label="Navigation & Layout"
-          size="small"
-          variant="outlined"
-          sx={{ mr: 0.5, fontSize: '0.72rem' }}
-        />
-        <Typography variant="body2" color="text.secondary" sx={{ mx: 0.5 }}>
-          /
-        </Typography>
-        <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '0.875rem' }}>
-          PageLayout Specification
-        </Typography>
-        <Chip label="Architecture" color="primary" size="small" sx={{ ml: 1, mr: 1 }} />
-        <PageLayout.TopBar.Search placeholder="Search specification…" />
-      </PageLayout.TopBar>
 
       <PageLayout.Header
         title="PageLayout — Living Specification"

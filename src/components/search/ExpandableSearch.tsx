@@ -1,10 +1,11 @@
 import { useState, useRef } from 'react'
-import type { ChangeEvent, KeyboardEvent } from 'react'
+import type { ChangeEvent, KeyboardEvent, ReactNode } from 'react'
 import { Box, InputBase, IconButton, Paper, Typography, Fade } from '@mui/material'
+import type { SxProps, Theme } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import CloseIcon from '@mui/icons-material/Close'
 
-export interface PageTopBarSearchProps {
+export interface ExpandableSearchProps {
   /** Input placeholder text */
   placeholder?: string
   /** Controlled value */
@@ -15,33 +16,36 @@ export interface PageTopBarSearchProps {
   onSearch?: (value: string) => void
   /** Label shown to the left of the expanded input */
   label?: string
+  /** Custom icon for the search button */
+  searchIcon?: ReactNode
+  /** Width when expanded (default: 280) */
+  expandedWidth?: number | string
+  /** Sx props for the collapsed trigger button */
+  iconButtonSx?: SxProps<Theme>
+  /** Sx props for the expanded paper container */
+  paperSx?: SxProps<Theme>
 }
 
 /**
- * PageTopBarSearch
+ * ExpandableSearch
  *
- * An expandable search input designed to live inside <PageLayout.TopBar>.
- * Collapses to a magnifier icon; expands to a full input on click.
+ * A standalone, expandable search component that collapses into a search icon
+ * button and smoothly expands into a full input field upon interaction.
+ *
+ * Can be used anywhere: toolbars, page headers, cards, top bars, etc.
  * Supports both controlled and uncontrolled modes.
- *
- * Usage inside PageLayout.TopBar:
- * ```tsx
- * <PageLayout.TopBar>
- *   <Typography variant="subtitle2" fontWeight={700}>Page Title</Typography>
- *   <PageTopBarSearch
- *     placeholder="Search members..."
- *     onSearch={(query) => console.log(query)}
- *   />
- * </PageLayout.TopBar>
- * ```
  */
-export function PageTopBarSearch({
+export function ExpandableSearch({
   placeholder = 'Search…',
   value,
   onChange,
   onSearch,
   label,
-}: PageTopBarSearchProps) {
+  searchIcon = <SearchIcon fontSize="small" />,
+  expandedWidth = 280,
+  iconButtonSx,
+  paperSx,
+}: ExpandableSearchProps) {
   const [expanded, setExpanded] = useState(false)
   const [internalValue, setInternalValue] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -51,7 +55,6 @@ export function PageTopBarSearch({
 
   const handleExpand = () => {
     setExpanded(true)
-    // Wait for animation then focus
     setTimeout(() => inputRef.current?.focus(), 60)
   }
 
@@ -72,7 +75,7 @@ export function PageTopBarSearch({
   }
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
       {!expanded ? (
         <IconButton
           size="small"
@@ -80,11 +83,12 @@ export function PageTopBarSearch({
           aria-label="Open search"
           sx={{
             borderRadius: 1.5,
-            transition: 'background 0.15s',
+            transition: 'all 0.15s ease',
             '&:hover': { bgcolor: 'action.hover' },
+            ...iconButtonSx,
           }}
         >
-          <SearchIcon fontSize="small" />
+          {searchIcon}
         </IconButton>
       ) : (
         <Fade in={expanded} timeout={180}>
@@ -98,12 +102,16 @@ export function PageTopBarSearch({
               px: 1.5,
               py: 0.5,
               borderRadius: 2,
-              minWidth: 260,
-              bgcolor: 'background.default',
+              minWidth: expandedWidth,
+              bgcolor: 'background.paper',
+              borderColor: 'divider',
               transition: 'min-width 0.2s ease',
+              ...paperSx,
             }}
           >
-            <SearchIcon fontSize="small" sx={{ color: 'text.secondary', flexShrink: 0 }} />
+            <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary', flexShrink: 0 }}>
+              {searchIcon}
+            </Box>
 
             {label && (
               <Typography

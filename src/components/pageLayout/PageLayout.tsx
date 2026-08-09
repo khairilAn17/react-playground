@@ -10,8 +10,6 @@ import { PageCard } from './PageCard'
 import { PageSteps } from './PageSteps'
 import { PageStickyFooter } from './PageStickyFooter'
 import { PageSkeleton } from './PageSkeleton'
-import { PageTopBar } from './PageTopBar'
-import { PageTopBarSearch } from './PageTopBarSearch'
 
 import type { PageLayoutProps, PageLayoutContextValue } from './types'
 
@@ -99,8 +97,6 @@ export function PageLayout({
 }
 
 // Compound sub-component attachments
-PageTopBar.Search = PageTopBarSearch
-PageLayout.TopBar = PageTopBar
 PageLayout.Header = PageHeader
 PageLayout.Steps = PageSteps
 PageLayout.Card = PageCard

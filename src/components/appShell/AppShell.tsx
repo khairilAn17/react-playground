@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import type { ReactNode } from 'react'
 import { Box } from '@mui/material'
 
@@ -50,25 +50,11 @@ export function AppShell({
   onSelect,
   children,
 }: AppShellProps) {
-  const [topBarSlot, setTopBarSlotState] = useState<ReactNode>(null)
-
-  const stableCallbacks = useMemo(
-    () => ({
-      setTopBarSlot: (content: ReactNode) => setTopBarSlotState(content),
-      clearTopBarSlot: () => setTopBarSlotState(null),
-      headerRight: toolbarActions,
-    }),
-    // toolbarActions is typically a stable element
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [toolbarActions]
-  )
-
   const appBarContextValue = useMemo(
     () => ({
-      ...stableCallbacks,
-      topBarSlot,
+      headerRight: toolbarActions,
     }),
-    [stableCallbacks, topBarSlot]
+    [toolbarActions]
   )
 
   return (

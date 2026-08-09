@@ -26,6 +26,7 @@ import ViewSidebarIcon from '@mui/icons-material/ViewSidebar'
 import { Sidebar } from '../../components/sidebar'
 import type { SidebarItemConfig } from '../../components/sidebar'
 import { PageLayout } from '../../components/pageLayout'
+import { ExpandableSearch } from '../../components/search'
 
 export function SidebarDemo() {
   const [activeKey, setActiveKey] = useState('dashboard')
@@ -59,22 +60,6 @@ export function SidebarDemo() {
 
   return (
     <PageLayout maxWidth="xl">
-      <PageLayout.TopBar>
-        <Chip
-          label="Navigation & Layout"
-          size="small"
-          variant="outlined"
-          sx={{ mr: 0.5, fontSize: '0.72rem' }}
-        />
-        <Typography variant="body2" color="text.secondary" sx={{ mx: 0.5 }}>
-          /
-        </Typography>
-        <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '0.875rem' }}>
-          Sidebar Architecture
-        </Typography>
-        <Chip label="Live Preview" color="success" size="small" sx={{ ml: 1, mr: 1 }} />
-        <PageLayout.TopBar.Search placeholder="Search components…" />
-      </PageLayout.TopBar>
 
       <PageLayout.Header
         title="Sidebar Navigation Kit"

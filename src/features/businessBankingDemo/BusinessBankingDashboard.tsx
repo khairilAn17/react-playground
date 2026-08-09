@@ -31,6 +31,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import MenuIcon from '@mui/icons-material/Menu'
 
 import { PageLayout } from '../../components/pageLayout'
+import { ExpandableSearch } from '../../components/search'
 
 // ─── Theme Colors ─────────────────────────────────────────────────────────────
 const TEAL_PRIMARY = '#00A39D'
@@ -131,17 +132,16 @@ export function BusinessBankingDashboard() {
 
           actions={
             <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-              {/* Search circular button */}
-              <IconButton
-                sx={{
+              <ExpandableSearch
+                placeholder="Cari transaksi, rekening, atau fitur"
+                iconButtonSx={{
                   bgcolor: 'white',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
                   border: '1px solid #E2E8F0',
                   '&:hover': { bgcolor: '#F8FAFC' },
+                  p: 1,
                 }}
-              >
-                <SearchIcon sx={{ color: TEXT_MAIN, fontSize: 20 }} />
-              </IconButton>
+              />
 
               {/* Notification circular button with badge dot */}
               <Box sx={{ position: 'relative' }}>

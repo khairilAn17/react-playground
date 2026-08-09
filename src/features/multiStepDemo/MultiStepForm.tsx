@@ -13,6 +13,7 @@ import {
 import { createTypedForm } from '../../components/form'
 import type { SelectOption, RadioOption, AutocompleteOption } from '../../components/form'
 import { PageLayout } from '../../components/pageLayout'
+import { ExpandableSearch } from '../../components/search'
 import { multiStepSchema } from './multiStepSchema'
 import type { MultiStepFormValues } from './multiStepSchema'
 
@@ -231,22 +232,6 @@ export function MultiStepForm() {
 
   return (
     <PageLayout maxWidth="md">
-      <PageLayout.TopBar>
-        <Chip
-          label="Form Workspaces"
-          size="small"
-          variant="outlined"
-          sx={{ mr: 0.5, fontSize: '0.72rem' }}
-        />
-        <Typography variant="body2" color="text.secondary" sx={{ mx: 0.5 }}>
-          /
-        </Typography>
-        <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '0.875rem' }}>
-          Multi-Step Wizard
-        </Typography>
-        <Chip label="Wizard Flow" color="secondary" size="small" sx={{ ml: 1, mr: 1 }} />
-        <PageLayout.TopBar.Search placeholder="Search steps…" />
-      </PageLayout.TopBar>
 
       <PageLayout.Header
         title="Multi-Step Wizard Form"
