@@ -36,8 +36,8 @@ export function FormTextField<T extends FieldValues>({
   if (!resolvedControl) {
     throw new Error(
       `<FormTextField name="${String(name)}"> requires either:\n` +
-        `  1. An ancestor <FormProvider> wrapping this component, or\n` +
-        `  2. An explicit "control" prop passed directly.`
+      `  1. An ancestor <FormProvider> wrapping this component, or\n` +
+      `  2. An explicit "control" prop passed directly.`
     )
   }
 
@@ -52,7 +52,10 @@ export function FormTextField<T extends FieldValues>({
           value={field.value ?? ''}
           error={!!error}
           helperText={error?.message ?? helperText}
-          fullWidth={props.fullWidth ?? true}
+          sx={{
+            '& .MuiFormHelperText-root': { mx: 0 },
+            ...props.sx,
+          }}
         />
       )}
     />

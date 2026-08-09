@@ -96,14 +96,12 @@ export function DemoForm() {
                 {/* 1. Field.Text */}
                 <Field.Text
                   name="fullName"
-                  label="Full Name"
                   placeholder="John Doe"
                 />
 
                 {/* 2. Email Field.Text */}
                 <Field.Text
                   name="email"
-                  label="Email Address"
                   type="email"
                   placeholder="john@example.com"
                 />
@@ -111,7 +109,6 @@ export function DemoForm() {
                 {/* 3. Password Field.Text */}
                 <Field.Text
                   name="password"
-                  label="Password"
                   type="password"
                   helperText="Min 8 chars, 1 uppercase, 1 number"
                 />
@@ -160,7 +157,6 @@ export function DemoForm() {
                 {/* 9. Multiline Field.Text */}
                 <Field.Text
                   name="bio"
-                  label="Bio (optional)"
                   multiline
                   rows={3}
                   placeholder="Tell us about yourself..."
