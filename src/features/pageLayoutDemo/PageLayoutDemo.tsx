@@ -41,7 +41,6 @@ import SettingsIcon from '@mui/icons-material/Settings'
 
 import { PageLayout } from '../../components/pageLayout'
 import type { PageMaxWidth } from '../../components/pageLayout'
-import { ExpandableSearch } from '../../components/search'
 
 // ─── Prop Reference Table ───────────────────────────────────────────────────
 const propRows = [

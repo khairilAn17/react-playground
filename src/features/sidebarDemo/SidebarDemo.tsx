@@ -26,7 +26,6 @@ import ViewSidebarIcon from '@mui/icons-material/ViewSidebar'
 import { Sidebar } from '../../components/sidebar'
 import type { SidebarItemConfig } from '../../components/sidebar'
 import { PageLayout } from '../../components/pageLayout'
-import { ExpandableSearch } from '../../components/search'
 
 export function SidebarDemo() {
   const [activeKey, setActiveKey] = useState('dashboard')

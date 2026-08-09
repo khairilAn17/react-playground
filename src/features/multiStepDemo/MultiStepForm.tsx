@@ -13,7 +13,6 @@ import {
 import { createTypedForm } from '../../components/form'
 import type { SelectOption, RadioOption, AutocompleteOption } from '../../components/form'
 import { PageLayout } from '../../components/pageLayout'
-import { ExpandableSearch } from '../../components/search'
 import { multiStepSchema } from './multiStepSchema'
 import type { MultiStepFormValues } from './multiStepSchema'
 

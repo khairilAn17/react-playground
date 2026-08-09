@@ -20,7 +20,6 @@ import {
 } from '@mui/material'
 import Grid from '@mui/material/Grid'
 
-import SearchIcon from '@mui/icons-material/Search'
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
