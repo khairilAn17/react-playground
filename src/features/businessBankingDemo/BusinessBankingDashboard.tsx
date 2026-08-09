@@ -12,7 +12,6 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Avatar,
   Select,
   MenuItem,
   FormControl,
@@ -20,18 +19,16 @@ import {
 } from '@mui/material'
 import Grid from '@mui/material/Grid'
 
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
-import MenuIcon from '@mui/icons-material/Menu'
 
 import { PageLayout } from '../../components/pageLayout'
-import { ExpandableSearch } from '../../components/search'
 import { Breadcrumbs } from '../../components/breadcrumbs'
+import { UserHeader } from '../../widgets/userHeader'
 
 // ─── Theme Colors ─────────────────────────────────────────────────────────────
 const TEAL_PRIMARY = '#00A39D'
@@ -131,74 +128,14 @@ export function BusinessBankingDashboard() {
           }
 
           actions={
-            <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-              <ExpandableSearch
-                placeholder="Cari transaksi, rekening, atau fitur"
-                iconButtonSx={{
-                  bgcolor: 'white',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                  border: '1px solid #E2E8F0',
-                  '&:hover': { bgcolor: '#F8FAFC' },
-                  p: 1,
-                }}
-              />
-
-              {/* Notification circular button with badge dot */}
-              <Box sx={{ position: 'relative' }}>
-                <IconButton
-                  sx={{
-                    bgcolor: 'white',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                    border: '1px solid #E2E8F0',
-                    '&:hover': { bgcolor: '#F8FAFC' },
-                  }}
-                >
-                  <NotificationsNoneIcon sx={{ color: TEXT_MAIN, fontSize: 20 }} />
-                </IconButton>
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: 4,
-                    right: 4,
-                    width: 10,
-                    height: 10,
-                    bgcolor: ORANGE_ACCENT,
-                    borderRadius: '50%',
-                    border: '2px solid white',
-                  }}
-                />
-              </Box>
-
-              {/* User Profile Pill */}
-              <Paper
-                elevation={0}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.5,
-                  px: 1.5,
-                  py: 0.75,
-                  borderRadius: 50,
-                  border: '1px solid #E2E8F0',
-                  bgcolor: 'white',
-                  cursor: 'pointer',
-                }}
-              >
-                <Avatar
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
-                  sx={{ width: 32, height: 32 }}
-                />
-                <Box sx={{ pr: 1 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 700, fontSize: '0.85rem', lineHeight: 1.2 }}>
-                    Shafa Riani
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: TEXT_MUTED, fontSize: '0.72rem', display: 'block' }}>
-                    Maker
-                  </Typography>
-                </Box>
-                <MenuIcon sx={{ color: TEXT_MAIN, fontSize: 20, ml: 1 }} />
-              </Paper>
-            </Stack>
+            <UserHeader
+              user={{
+                name: 'Shafa Riani',
+                role: 'Maker',
+                avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
+              }}
+              unreadCount={2}
+            />
           }
         />
 

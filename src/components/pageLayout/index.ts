@@ -1,8 +1,6 @@
 export { PageLayout } from './PageLayout'
 export type { PageLayoutProps } from './types'
 
-export { usePageLayout } from './PageLayoutContext'
-
 export { PageHeader } from './PageHeader'
 export type { PageHeaderProps } from './PageHeader'
 
@@ -26,5 +24,4 @@ export { PageSkeleton } from './PageSkeleton'
 export type {
   PageMaxWidth,
   PageStepItem,
-  PageLayoutContextValue,
 } from './types'

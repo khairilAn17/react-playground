@@ -1,7 +1,5 @@
-import { useMemo } from 'react'
 import { Container, Box } from '@mui/material'
 
-import { PageLayoutContext } from './PageLayoutContext'
 import { PageHeader } from './PageHeader'
 import { Breadcrumbs } from '../breadcrumbs'
 import { PageContent } from './PageContent'
@@ -10,7 +8,7 @@ import { PageSteps } from './PageSteps'
 import { PageStickyFooter } from './PageStickyFooter'
 import { PageSkeleton } from './PageSkeleton'
 
-import type { PageLayoutProps, PageLayoutContextValue } from './types'
+import type { PageLayoutProps } from './types'
 
 export function PageLayout({
   maxWidth = 'lg',
@@ -29,15 +27,6 @@ export function PageLayout({
   currentStep,
   children,
 }: PageLayoutProps) {
-  const contextValue: PageLayoutContextValue = useMemo(
-    () => ({
-      maxWidth,
-      compact,
-      loading,
-    }),
-    [maxWidth, compact, loading]
-  )
-
   const getContainerMaxWidth = (): 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false => {
     if (maxWidth === 'full') return false
     return maxWidth as 'xs' | 'sm' | 'md' | 'lg' | 'xl'
@@ -58,40 +47,38 @@ export function PageLayout({
   const hasShorthandHeader = title || subtitle || actions || extra || breadcrumbs || steps || onBack || status
 
   return (
-    <PageLayoutContext.Provider value={contextValue}>
-      <Box
-        sx={{
-          bgcolor: getBgColor(),
-          minHeight: '100%',
-          py: compact ? 2 : { xs: 2.5, sm: 3.5 },
-          px: compact ? 1 : 0,
-        }}
-      >
-        <Container maxWidth={getContainerMaxWidth()} sx={{ px: { xs: 2, sm: 3 } }}>
-          {loading ? (
-            <PageSkeleton />
-          ) : (
-            <>
-              {hasShorthandHeader && (
-                <PageHeader
-                  title={title}
-                  subtitle={subtitle}
-                  subtitleDescription={subtitleDescription}
-                  actions={actions}
-                  extra={extra}
-                  breadcrumbs={breadcrumbs}
-                  status={status}
-                  onBack={onBack}
-                  steps={steps}
-                  currentStep={currentStep}
-                />
-              )}
-              {children}
-            </>
-          )}
-        </Container>
-      </Box>
-    </PageLayoutContext.Provider>
+    <Box
+      sx={{
+        bgcolor: getBgColor(),
+        minHeight: '100%',
+        py: compact ? 2 : { xs: 2.5, sm: 3.5 },
+        px: compact ? 1 : 0,
+      }}
+    >
+      <Container maxWidth={getContainerMaxWidth()} sx={{ px: { xs: 2, sm: 3 } }}>
+        {loading ? (
+          <PageSkeleton />
+        ) : (
+          <>
+            {hasShorthandHeader && (
+              <PageHeader
+                title={title}
+                subtitle={subtitle}
+                subtitleDescription={subtitleDescription}
+                actions={actions}
+                extra={extra}
+                breadcrumbs={breadcrumbs}
+                status={status}
+                onBack={onBack}
+                steps={steps}
+                currentStep={currentStep}
+              />
+            )}
+            {children}
+          </>
+        )}
+      </Container>
+    </Box>
   )
 }
 

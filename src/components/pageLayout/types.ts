@@ -10,12 +10,6 @@ export interface PageStepItem {
   completed?: boolean
 }
 
-export interface PageLayoutContextValue {
-  maxWidth: PageMaxWidth
-  compact?: boolean
-  loading?: boolean
-}
-
 export interface PageLayoutProps {
   /** Responsive container width preset: 'xs' (440), 'sm' (640), 'md' (900), 'lg' (1200), 'xl' (1536), 'full' (100%) */
   maxWidth?: PageMaxWidth
