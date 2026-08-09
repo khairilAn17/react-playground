@@ -1,4 +1,7 @@
 export { UserHeader } from './UserHeader'
+export { ConnectedUserHeader } from './ConnectedUserHeader'
+export { useCurrentUser } from './useCurrentUser'
 export { UserProfilePill } from './UserProfilePill'
 export { NotificationMenu } from './NotificationMenu'
 export type { UserHeaderProps, UserProfileData, NotificationItem } from './types'
+export type { ConnectedUserHeaderProps } from './ConnectedUserHeader'
