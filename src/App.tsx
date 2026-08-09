@@ -58,19 +58,6 @@ function App() {
           onToggleCollapsed={setCollapsed}
           activeKey={activeKey}
           onSelect={setActiveKey}
-          toolbarActions={
-            <Tooltip title="View Source Workspace">
-              <IconButton
-                color="default"
-                component="a"
-                href="https://github.com"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <GitHubIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          }
           sidebarChildren={
             <>
               <Sidebar.Header
