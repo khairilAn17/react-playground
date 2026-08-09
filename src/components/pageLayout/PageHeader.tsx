@@ -10,6 +10,8 @@ export interface PageHeaderProps {
   breadcrumbs?: BreadcrumbItem[]
   status?: ReactNode
   actions?: ReactNode
+  /** Additional widget or side card rendered alongside or in header right slot */
+  extra?: ReactNode
   onBack?: () => void
   backTooltip?: string
 }
@@ -20,6 +22,7 @@ export function PageHeader({
   breadcrumbs,
   status,
   actions,
+  extra,
   onBack,
   backTooltip = 'Go back',
 }: PageHeaderProps) {
@@ -30,13 +33,13 @@ export function PageHeader({
       <Box
         sx={{
           display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
+          flexDirection: { xs: 'column', md: 'row' },
           justifyContent: 'space-between',
-          alignItems: { xs: 'flex-start', sm: 'center' },
+          alignItems: { xs: 'flex-start', md: 'center' },
           gap: 2,
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, flex: 1, minWidth: 0 }}>
           {onBack && (
             <Tooltip title={backTooltip}>
               <IconButton onClick={onBack} size="small" sx={{ mt: 0.5 }}>
@@ -45,7 +48,7 @@ export function PageHeader({
             </Tooltip>
           )}
 
-          <Box>
+          <Box sx={{ minWidth: 0 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
               {typeof title === 'string' ? (
                 <Typography variant="h5" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
@@ -65,9 +68,14 @@ export function PageHeader({
           </Box>
         </Box>
 
-        {actions && (
-          <Stack direction="row" spacing={1.5} sx={{ flexShrink: 0, alignItems: 'center' }}>
+        {(actions || extra) && (
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={1.5}
+            sx={{ flexShrink: 0, alignItems: { xs: 'stretch', sm: 'center' } }}
+          >
             {actions}
+            {extra}
           </Stack>
         )}
       </Box>

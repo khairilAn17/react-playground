@@ -53,8 +53,8 @@ const StyledSidebarContainer = styled(Box, {
     height: '100vh',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: theme.palette.background.paper,
-    borderRight: `1px solid ${theme.palette.divider}`,
+    backgroundColor: '#F4F5F7',
+    borderRight: '1px solid #E2E8F0',
     transition: theme.transitions.create(['width'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,

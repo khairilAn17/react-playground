@@ -27,29 +27,25 @@ export interface SidebarItemProps {
 
 const StyledListItemButton = styled(ListItemButton, {
   shouldForwardProp: (prop) => prop !== 'active' && prop !== 'collapsed' && prop !== 'level',
-})<{ active?: boolean; collapsed?: boolean; level?: number; component?: any; href?: string }>(({ theme, active, collapsed, level = 0 }) => ({
+})<{ active?: boolean; collapsed?: boolean; level?: number; component?: any; href?: string }>(({ active, collapsed, level = 0 }) => ({
   minHeight: 44,
-  borderRadius: theme.shape.borderRadius,
-  marginBottom: theme.spacing(0.5),
-  paddingLeft: collapsed ? theme.spacing(1.5) : theme.spacing(1.5 + level * 1.5),
-  paddingRight: theme.spacing(1.5),
+  borderRadius: active ? 50 : 8,
+  marginBottom: 4,
+  paddingLeft: collapsed ? 12 : 14 + level * 12,
+  paddingRight: 14,
   justifyContent: collapsed ? 'center' : 'initial',
-  color: active ? theme.palette.primary.main : theme.palette.text.primary,
-  backgroundColor: active ? theme.palette.action.selected : 'transparent',
-  fontWeight: active ? 600 : 400,
-  transition: theme.transitions.create(['background-color', 'color', 'padding'], {
-    duration: theme.transitions.duration.shorter,
-  }),
+  color: active ? '#FFFFFF' : '#1E293B',
+  backgroundColor: active ? '#00A39D' : 'transparent',
+  fontWeight: active ? 700 : 500,
+  transition: 'all 0.15s ease-in-out',
   '&:hover': {
-    backgroundColor: active
-      ? theme.palette.action.selected
-      : theme.palette.action.hover,
+    backgroundColor: active ? '#00A39D' : 'rgba(0, 163, 157, 0.08)',
   },
   '& .MuiListItemIcon-root': {
-    minWidth: collapsed ? 0 : 36,
-    marginRight: collapsed ? 0 : theme.spacing(1),
+    minWidth: collapsed ? 0 : 32,
+    marginRight: collapsed ? 0 : 8,
     justifyContent: 'center',
-    color: active ? theme.palette.primary.main : theme.palette.action.active,
+    color: active ? '#FFFFFF' : '#64748B',
   },
 }))
 
@@ -85,8 +81,15 @@ export function SidebarItem({
         <Chip
           label={badge.content}
           size="small"
-          color={badge.color ?? 'primary'}
-          sx={{ height: 20, fontSize: '0.75rem', fontWeight: 600 }}
+          sx={{
+            bgcolor: '#F59E0B',
+            color: 'white',
+            height: 20,
+            fontSize: '0.72rem',
+            fontWeight: 800,
+            borderRadius: 50,
+            px: 0.5,
+          }}
         />
       )
     }
@@ -94,8 +97,15 @@ export function SidebarItem({
       <Chip
         label={badge}
         size="small"
-        color="primary"
-        sx={{ height: 20, fontSize: '0.75rem', fontWeight: 600 }}
+        sx={{
+          bgcolor: '#F59E0B',
+          color: 'white',
+          height: 20,
+          fontSize: '0.72rem',
+          fontWeight: 800,
+          borderRadius: 50,
+          px: 0.5,
+        }}
       />
     ) : (
       badge

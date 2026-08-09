@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Card, CardContent, CardHeader, Divider, Typography, Box, Stack } from '@mui/material'
+import type { SxProps, Theme } from '@mui/material'
 
 export interface PageSectionProps {
   title?: ReactNode
@@ -8,6 +9,8 @@ export interface PageSectionProps {
   children: ReactNode
   variant?: 'card' | 'plain'
   divider?: boolean
+  sx?: SxProps<Theme>
+  contentSx?: SxProps<Theme>
 }
 
 export function PageSection({
@@ -17,10 +20,12 @@ export function PageSection({
   children,
   variant = 'card',
   divider = true,
+  sx,
+  contentSx,
 }: PageSectionProps) {
   if (variant === 'plain') {
     return (
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ mb: 3, ...sx }}>
         {(title || actions) && (
           <Box
             sx={{
@@ -54,7 +59,7 @@ export function PageSection({
   }
 
   return (
-    <Card variant="outlined" sx={{ mb: 2 }}>
+    <Card variant="outlined" sx={{ mb: 2, ...sx }}>
       {(title || actions || description) && (
         <>
           <CardHeader
@@ -67,7 +72,7 @@ export function PageSection({
           {divider && <Divider />}
         </>
       )}
-      <CardContent>{children}</CardContent>
+      <CardContent sx={contentSx}>{children}</CardContent>
     </Card>
   )
 }

@@ -52,11 +52,12 @@ const propRows = [
 
 const subComponents = [
   { name: 'PageLayout.TopBar', desc: 'Injects arbitrary children into the AppShell AppBar slot via context — renders nothing in-place' },
-  { name: 'PageLayout.Header', desc: 'Page title, breadcrumbs, subtitle, status chip, actions, back button' },
+  { name: 'PageLayout.Header', desc: 'Page title, breadcrumbs, subtitle, status chip, actions, back button, extra widget slot' },
   { name: 'PageLayout.Breadcrumbs', desc: 'Standalone breadcrumb navigation hierarchy' },
   { name: 'PageLayout.Content', desc: 'Vertical flex container for spacing children' },
   { name: 'PageLayout.Section', desc: "Card/plain block with header, description, divider, action slot. variant='card' | 'plain'" },
   { name: 'PageLayout.Grid', desc: 'Responsive MUI Grid with per-breakpoint column count' },
+  { name: 'PageLayout.Grid.Item', desc: 'Compound item for asymmetric column spans across breakpoints (e.g. 8-col / 4-col layout)' },
   { name: 'PageLayout.StickyFooter', desc: "Sticky bottom action bar. align='left' | 'center' | 'right' | 'between'" },
   { name: 'PageLayout.Skeleton', desc: 'Loading placeholder skeleton (auto-rendered when loading=true)' },
 ]

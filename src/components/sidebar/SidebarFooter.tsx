@@ -12,29 +12,32 @@ export interface UserInfo {
 export interface SidebarFooterProps {
   user?: UserInfo
   children?: ReactNode
+  widget?: ReactNode
   onLogout?: () => void
 }
 
-export function SidebarFooter({ user, children, onLogout }: SidebarFooterProps) {
+export function SidebarFooter({ user, children, widget, onLogout }: SidebarFooterProps) {
   const { collapsed } = useSidebar()
 
   if (children) {
     return (
       <Box
         sx={{
-          borderTop: '1px solid',
-          borderColor: 'divider',
+          borderTop: '1px solid #E2E8F0',
           p: collapsed ? 1.5 : 2,
           display: 'flex',
+          flexDirection: 'column',
+          gap: 1.5,
           justifyContent: collapsed ? 'center' : 'initial',
         }}
       >
+        {widget}
         {children}
       </Box>
     )
   }
 
-  if (!user) return null
+  if (!user && !widget) return null
 
   const getInitials = (name: string) => {
     return name
@@ -48,15 +51,24 @@ export function SidebarFooter({ user, children, onLogout }: SidebarFooterProps) 
   return (
     <Box
       sx={{
-        borderTop: '1px solid',
-        borderColor: 'divider',
+        borderTop: '1px solid #E2E8F0',
         p: collapsed ? 1.5 : 2,
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: collapsed ? 'center' : 'space-between',
-        minHeight: 64,
+        flexDirection: 'column',
+        gap: 1.5,
       }}
     >
+      {!collapsed && widget}
+
+      {user && (
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: collapsed ? 'center' : 'space-between',
+            minHeight: 44,
+          }}
+        >
       <Box
         sx={{
           display: 'flex',
@@ -107,6 +119,8 @@ export function SidebarFooter({ user, children, onLogout }: SidebarFooterProps) 
             <LogoutIcon fontSize="small" />
           </IconButton>
         </Tooltip>
+      )}
+        </Box>
       )}
     </Box>
   )
