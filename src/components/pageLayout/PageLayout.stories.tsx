@@ -1,82 +1,89 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { Button, Chip, Typography, Card, CardContent } from '@mui/material'
+import { Button, Chip, Typography, Card, CardContent, Box } from '@mui/material'
 import Grid from '@mui/material/Grid'
 import AddIcon from '@mui/icons-material/Add'
-import DownloadIcon from '@mui/icons-material/Download'
 
 import { PageLayout } from './PageLayout'
+import { ConnectedUserHeader } from '../../widgets/userHeader'
 
 const meta: Meta<typeof PageLayout> = {
   title: 'Components/Layout/PageLayout',
   component: PageLayout,
   tags: ['autodocs'],
+  decorators: [
+    (Story) => (
+      <Box sx={{ bgcolor: '#F4F5F7', minHeight: '100vh', p: 1 }}>
+        <Story />
+      </Box>
+    ),
+  ],
 }
 
 export default meta
 type Story = StoryObj<typeof PageLayout>
 
-export const StandardPage: Story = {
-  render: () => (
-    <PageLayout maxWidth="lg">
-      <PageLayout.Header
-        title="Team Directory"
-        subtitle="Manage workspace members and permission roles"
-        breadcrumbs={[{ label: 'Workspace', href: '/' }, { label: 'Team' }]}
-        status={<Chip label="42 Active Members" size="small" color="primary" />}
-        actions={
-          <>
-            <Button variant="outlined" startIcon={<DownloadIcon />}>
-              Export
-            </Button>
-            <Button variant="contained" startIcon={<AddIcon />}>
-              Invite Member
-            </Button>
-          </>
-        }
-      />
+/**
+ * Zero-Boilerplate Shorthand Mode
+ * Pass title, subtitle, breadcrumbs, status, actions directly as props on <PageLayout>.
+ */
+export const ShorthandApi: Story = {
+  args: {
+    maxWidth: 'lg',
+    title: 'Manajemen Akun',
+    subtitle: 'Daftar Akun Maker',
+    subtitleDescription: 'Kelola akun maker dan hak akses transaksi.',
+    breadcrumbs: [{ label: 'Beranda', href: '/' }, { label: 'Manajemen Akun' }],
+    status: <Chip label="3 Akun Aktif" size="small" sx={{ bgcolor: '#E0F2F1', color: '#00A39D', fontWeight: 700 }} />,
+    headerRight: <ConnectedUserHeader />,
+    actions: (
+      <Button variant="contained" startIcon={<AddIcon />} sx={{ bgcolor: '#00A39D', borderRadius: 50 }}>
+        Tambah Maker
+      </Button>
+    ),
+    children: (
       <PageLayout.Content>
         <Grid container spacing={2.5}>
           <Grid size={{ xs: 12, md: 4 }}>
             <Card variant="outlined">
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                  Engineers
+                  Active Makers
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  24 Active Members
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                  Designers
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  10 Active Members
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                  Product Managers
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  8 Active Members
+                  3 of 10 slots used
                 </Typography>
               </CardContent>
             </Card>
           </Grid>
         </Grid>
+      </PageLayout.Content>
+    ),
+  },
+}
 
-        <PageLayout.Section title="Role Permissions Policy" description="Configure default access for new invites">
+/**
+ * Split Slots: `headerRight` vs `actions`
+ * Shows headerRight (global UserHeader in title row) alongside actions (page CTA button in subtitle row).
+ */
+export const DualHeaderSlots: Story = {
+  render: () => (
+    <PageLayout
+      maxWidth="lg"
+      title="Bank Transfer"
+      subtitle="Pengiriman Dana Realtime"
+      subtitleDescription="Transfer ke rekening bank mitra bisnis."
+      breadcrumbs={[{ label: 'Home' }, { label: 'Transfer' }]}
+      headerRight={<ConnectedUserHeader />}
+      actions={
+        <Button variant="contained" startIcon={<AddIcon />} sx={{ bgcolor: '#00A39D', borderRadius: 50 }}>
+          Transfer Baru
+        </Button>
+      }
+    >
+      <PageLayout.Content>
+        <PageLayout.Section title="Riwayat Transfer Terakhir" divider>
           <Typography variant="body2" color="text.secondary">
-            New members join with standard developer access by default.
+            Daftar transaksi transfer bulan ini.
           </Typography>
         </PageLayout.Section>
       </PageLayout.Content>
@@ -84,30 +91,66 @@ export const StandardPage: Story = {
   ),
 }
 
-export const FormViewWithStickyFooter: Story = {
+/**
+ * Multi-Step Flow with Steps
+ * Shows horizontal wizard progress steps indicator inside PageHeader.
+ */
+export const MultiStepWizard: Story = {
   render: () => (
-    <PageLayout maxWidth="sm">
-      <PageLayout.Header
-        title="Account Preferences"
-        subtitle="Update your username, email, and security rules"
-        onBack={() => alert('Going back')}
-      />
+    <PageLayout
+      maxWidth="lg"
+      title="Pengajuan Rekening Baru"
+      subtitle="Langkah 2: Detail Perusahaan"
+      steps={['Informasi Dasar', 'Detail Perusahaan', 'Dokumen Legal', 'Konfirmasi']}
+      currentStep={1}
+      headerRight={<ConnectedUserHeader />}
+    >
       <PageLayout.Content>
-        <PageLayout.Section title="General Profile">
+        <PageLayout.Section title="Data Legalitas">
           <Typography variant="body2" color="text.secondary">
-            Profile details form content goes here.
+            Formulir kelengkapan dokumen legal perusahaan.
           </Typography>
         </PageLayout.Section>
 
-        <PageLayout.StickyFooter>
-          <Button variant="outlined">Reset</Button>
-          <Button variant="contained">Save Preferences</Button>
+        <PageLayout.StickyFooter align="between">
+          <Button variant="outlined">Kembali</Button>
+          <Button variant="contained" sx={{ bgcolor: '#00A39D' }}>
+            Lanjutkan
+          </Button>
         </PageLayout.StickyFooter>
       </PageLayout.Content>
     </PageLayout>
   ),
 }
 
+/**
+ * Granular Slot Customization via `headerSlotSx`
+ * Customize spacing, typography, and colors per slot without losing default behavior.
+ */
+export const CustomSlotStyling: Story = {
+  render: () => (
+    <PageLayout
+      maxWidth="lg"
+      title="Custom Typography & Spacing"
+      subtitle="Header with custom slotSx rules"
+      headerSlotSx={{
+        root: { mb: 4 },
+        title: { fontSize: '2rem', color: '#00A39D' },
+        subtitle: { color: '#F59E0B' },
+        subtitleRow: { mt: 1 },
+      }}
+      headerRight={<ConnectedUserHeader />}
+    >
+      <PageLayout.Content>
+        <Typography variant="body1">Content with custom header spacing styling.</Typography>
+      </PageLayout.Content>
+    </PageLayout>
+  ),
+}
+
+/**
+ * Full Page Loading Skeleton State
+ */
 export const LoadingState: Story = {
   render: () => <PageLayout loading maxWidth="lg">{null}</PageLayout>,
 }
