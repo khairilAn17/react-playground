@@ -70,9 +70,9 @@ const makerList = [
 ]
 
 const statusConfig: Record<string, { label: string; bg: string; color: string }> = {
-  active:   { label: 'Aktif',    bg: '#E0F2F1', color: TEAL_PRIMARY },
+  active: { label: 'Aktif', bg: '#E0F2F1', color: TEAL_PRIMARY },
   inactive: { label: 'Nonaktif', bg: '#F1F5F9', color: TEXT_MUTED },
-  pending:  { label: 'Pending',  bg: '#FEF9C3', color: '#92400E' },
+  pending: { label: 'Pending', bg: '#FEF9C3', color: '#92400E' },
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -90,7 +90,7 @@ export function ManajemenAkunPage({ onBack }: ManajemenAkunPageProps) {
         title="Manajemen Akun"
         subtitle="Daftar Akun Maker"
         subtitleDescription="Tambah Maker dan kelola hingga 10 akun di halaman ini"
-        onBack={onBack}
+        // onBack={onBack}
         actions={
           <Button
             variant="contained"

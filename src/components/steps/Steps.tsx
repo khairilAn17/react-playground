@@ -1,4 +1,10 @@
-import { Box, Typography, Stack } from '@mui/material'
+import {
+  Stepper,
+  Step,
+  StepLabel,
+  StepButton,
+} from '@mui/material'
+import type { StepperProps } from '@mui/material'
 
 export interface StepItem {
   key?: string
@@ -6,101 +12,104 @@ export interface StepItem {
   completed?: boolean
 }
 
-export interface StepsProps {
+export interface StepsProps extends Omit<StepperProps, 'children' | 'activeStep'> {
   /** Array of step labels or step objects */
   steps: (string | StepItem)[]
   /** Active zero-indexed step number */
   currentStep?: number
-  /** Callback when a step item is clicked */
+  /** Callback when a step item is clicked (enables StepButton navigation) */
   onStepClick?: (index: number) => void
 }
-
-const TEAL_PRIMARY = '#00A99D'
-const TEXT_MAIN = '#1E293B'
-const TEXT_MUTED = '#64748B'
 
 /**
  * Steps
  *
- * A horizontal multi-step progress indicator. Reusable in page headers,
- * drawers, dialogs, and standalone forms.
+ * A horizontal multi-step progress indicator built on MUI Stepper.
+ * Extends MuiStepperProps for complete theming flexibility.
+ * Reusable in page headers, drawers, dialogs, and standalone forms.
  *
  * @example
  * <Steps steps={['Detail', 'Review', 'Confirm']} currentStep={1} />
+ * <Steps steps={['Detail', 'Review', 'Confirm']} currentStep={1} onStepClick={setStep} />
  */
-export function Steps({ steps, currentStep = 0, onStepClick }: StepsProps) {
+export function Steps({
+  steps,
+  currentStep = 0,
+  onStepClick,
+  sx,
+  ...stepperProps
+}: StepsProps) {
   if (!steps || steps.length === 0) return null
 
   return (
-    <Box sx={{ mb: 3, overflowX: 'auto', py: 1 }}>
-      <Stack direction="row" spacing={{ xs: 1.5, sm: 2.5 }} sx={{ alignItems: 'center' }}>
-        {steps.map((step, index) => {
-          const label = typeof step === 'string' ? step : step.label
-          const isActive = index === currentStep
-          const isCompleted = index < currentStep || (typeof step === 'object' && step.completed)
+    <Stepper
+      activeStep={currentStep}
+      sx={{
+        mb: 3,
+        py: 1,
+        px: 0,
+        overflowX: 'auto',
+        '& .MuiStepConnector-line': {
+          borderColor: '#E2E8F0',
+          transition: 'border-color 0.2s ease',
+        },
+        '& .MuiStepConnector-root.Mui-completed .MuiStepConnector-line': {
+          borderColor: '#00A99D',
+        },
+        '& .MuiStepConnector-root.Mui-active .MuiStepConnector-line': {
+          borderColor: '#00A99D',
+        },
+        '& .MuiStepLabel-iconContainer .MuiStepIcon-root': {
+          color: '#E2E8F0',
+          width: 26,
+          height: 26,
+          transition: 'color 0.2s ease',
+        },
+        '& .MuiStepLabel-iconContainer .MuiStepIcon-root.Mui-active': {
+          color: '#00A99D',
+        },
+        '& .MuiStepLabel-iconContainer .MuiStepIcon-root.Mui-completed': {
+          color: '#00A99D',
+        },
+        '& .MuiStepIcon-text': {
+          fontSize: '0.72rem',
+          fontWeight: 800,
+        },
+        '& .MuiStepLabel-label': {
+          fontSize: '0.875rem',
+          fontWeight: 500,
+          color: '#64748B',
+          whiteSpace: 'nowrap',
+        },
+        '& .MuiStepLabel-label.Mui-active': {
+          fontWeight: 800,
+          color: '#1E293B',
+        },
+        '& .MuiStepLabel-label.Mui-completed': {
+          fontWeight: 600,
+          color: '#64748B',
+        },
+        ...sx,
+      }}
+      {...stepperProps}
+    >
+      {steps.map((step, index) => {
+        const label = typeof step === 'string' ? step : step.label
+        const completed = typeof step === 'object' ? step.completed : index < currentStep
+        const stepKey = typeof step === 'object' && step.key ? step.key : `step-${index}`
 
-          return (
-            <Stack key={index} direction="row" spacing={{ xs: 1.5, sm: 2.5 }} sx={{ alignItems: 'center' }}>
-              <Box
-                onClick={() => onStepClick?.(index)}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  cursor: onStepClick ? 'pointer' : 'default',
-                  userSelect: 'none',
-                }}
-              >
-                {/* Step Circle Badge */}
-                <Box
-                  sx={{
-                    width: 26,
-                    height: 26,
-                    borderRadius: '50%',
-                    bgcolor: isActive || isCompleted ? TEAL_PRIMARY : '#E2E8F0',
-                    color: isActive || isCompleted ? 'white' : TEXT_MUTED,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.78rem',
-                    fontWeight: 800,
-                    flexShrink: 0,
-                    transition: 'all 0.2s ease',
-                  }}
-                >
-                  {index + 1}
-                </Box>
-
-                {/* Step Label */}
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontWeight: isActive ? 800 : 500,
-                    color: isActive ? TEXT_MAIN : TEXT_MUTED,
-                    fontSize: '0.875rem',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {label}
-                </Typography>
-              </Box>
-
-              {/* Connecting Line between steps */}
-              {index < steps.length - 1 && (
-                <Box
-                  sx={{
-                    width: { xs: 24, sm: 40 },
-                    height: 2,
-                    bgcolor: index < currentStep ? TEAL_PRIMARY : '#E2E8F0',
-                    borderRadius: 1,
-                    transition: 'all 0.2s ease',
-                  }}
-                />
-              )}
-            </Stack>
-          )
-        })}
-      </Stack>
-    </Box>
+        return (
+          <Step key={stepKey} completed={completed}>
+            {onStepClick ? (
+              <StepButton onClick={() => onStepClick(index)}>
+                {label}
+              </StepButton>
+            ) : (
+              <StepLabel>{label}</StepLabel>
+            )}
+          </Step>
+        )
+      })}
+    </Stepper>
   )
 }
