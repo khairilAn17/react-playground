@@ -26,6 +26,8 @@ import { SidebarDemo } from './features/sidebarDemo/SidebarDemo'
 import { PageLayoutDemo } from './features/pageLayoutDemo/PageLayoutDemo'
 import { BusinessBankingDashboard } from './features/businessBankingDemo/BusinessBankingDashboard'
 import { ByondSidebar } from './features/businessBankingDemo/ByondSidebar'
+import { PayrollPage } from './features/businessBankingDemo/PayrollPage'
+import { ManajemenAkunPage } from './features/businessBankingDemo/ManajemenAkunPage'
 
 const theme = createTheme({
   palette: {
@@ -45,6 +47,11 @@ const theme = createTheme({
 function App() {
   const [activeKey, setActiveKey] = useState<string>('business-banking')
   const [collapsed, setCollapsed] = useState(false)
+  const [byondPage, setByondPage] = useState<string>('beranda')
+
+  const handleByondSelect = (key: string) => {
+    setByondPage(key)
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -71,7 +78,8 @@ function App() {
           sidebarChildren={
             activeKey === 'business-banking' ? (
               <ByondSidebar
-                activeKey="beranda"
+                activeKey={byondPage}
+                onSelect={handleByondSelect}
                 onSwitchWorkspace={() => setActiveKey('single-form')}
               />
             ) : (
@@ -149,7 +157,10 @@ function App() {
             )
           }
         >
-          {activeKey === 'business-banking' && <BusinessBankingDashboard />}
+          {activeKey === 'business-banking' && byondPage === 'beranda' && <BusinessBankingDashboard />}
+          {activeKey === 'business-banking' && byondPage === 'transaksi' && <PayrollPage onBack={() => setByondPage('beranda')} />}
+          {activeKey === 'business-banking' && byondPage === 'manajemen-akun' && <ManajemenAkunPage onBack={() => setByondPage('beranda')} />}
+          {activeKey === 'business-banking' && !['beranda', 'transaksi', 'manajemen-akun'].includes(byondPage) && <BusinessBankingDashboard />}
           {activeKey === 'single-form' && <DemoForm />}
           {activeKey === 'wizard-form' && <MultiStepForm />}
           {activeKey === 'page-layout-architecture' && <PageLayoutDemo />}

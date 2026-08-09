@@ -36,6 +36,12 @@ export function PageHeader({
 }: PageHeaderProps) {
   if (!title && !subtitle && !actions && !breadcrumbs && !steps) return null
 
+  // When a subtitle is present, actions belong in the subtitle row (section-header pattern).
+  // When there is no subtitle, actions stay in the title row (page-header-only pattern).
+  const hasSubtitle = Boolean(subtitle)
+  const titleRowActions = !hasSubtitle && (actions || extra)
+  const subtitleRowActions = hasSubtitle && (actions || extra)
+
   return (
     <Box sx={{ mb: 3 }}>
       {breadcrumbs && <PageBreadcrumbs items={breadcrumbs} />}
@@ -76,7 +82,8 @@ export function PageHeader({
           )}
         </Box>
 
-        {(actions || extra) && (
+        {/* Actions in title row only when no subtitle */}
+        {titleRowActions && (
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
             spacing={1.5}
@@ -91,7 +98,7 @@ export function PageHeader({
       {/* Multi-step progress wizard (if provided) */}
       {steps && <PageSteps steps={steps} currentStep={currentStep} onStepClick={onStepClick} />}
 
-      {/* Subheader / Subtitle row with Description & Actions (e.g. "Daftar Akun Maker") */}
+      {/* Subtitle row — section label + description + actions (e.g. "Daftar Akun Maker") */}
       {subtitle && (
         <Box
           sx={{
@@ -117,8 +124,21 @@ export function PageHeader({
               </Typography>
             )}
           </Box>
+
+          {/* Actions in subtitle row when subtitle is present */}
+          {subtitleRowActions && (
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={1.5}
+              sx={{ flexShrink: 0, alignItems: { xs: 'stretch', sm: 'center' } }}
+            >
+              {actions}
+              {extra}
+            </Stack>
+          )}
         </Box>
       )}
     </Box>
   )
 }
+
