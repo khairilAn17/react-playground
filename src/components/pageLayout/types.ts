@@ -35,8 +35,6 @@ export interface PageLayoutProps {
   breadcrumbs?: BreadcrumbItem[]
   /** Status chip/badge displayed beside the title (e.g. <Chip label="Active" />) */
   status?: ReactNode
-  /** Optional back button callback */
-  onBack?: () => void
   /** Multi-step flow items array */
   steps?: (string | StepItem)[]
   /** Active zero-indexed step in multi-step wizard */

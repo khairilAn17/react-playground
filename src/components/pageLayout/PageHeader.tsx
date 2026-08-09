@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
-import { Box, Typography, IconButton, Tooltip, Stack } from '@mui/material'
+import { Box, Typography, Stack } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { Breadcrumbs } from '../breadcrumbs'
 import { Steps } from '../steps'
 import type { StepItem } from '../steps'
@@ -66,8 +65,6 @@ export function PageHeader({
   actions,
   headerRight,
   extra,
-  onBack,
-  backTooltip = 'Go back',
   steps,
   currentStep,
   onStepClick,
@@ -96,14 +93,6 @@ export function PageHeader({
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, flex: 1, minWidth: 0 }}>
-          {onBack && (
-            <Tooltip title={backTooltip}>
-              <IconButton onClick={onBack} size="small" sx={{ mt: 0.5 }}>
-                <ArrowBackIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          )}
-
           {title && (
             <Box sx={{ minWidth: 0 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>

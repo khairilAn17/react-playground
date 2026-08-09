@@ -34,7 +34,6 @@ export function UserHeader({
 }: UserHeaderProps) {
   return (
     <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-      {/* Expandable Search Input */}
       <ExpandableSearch
         placeholder={searchPlaceholder}
         onSearch={onSearch}
@@ -47,10 +46,8 @@ export function UserHeader({
         }}
       />
 
-      {/* Notification Bell Menu Popover */}
       <NotificationMenu unreadCount={unreadCount} notifications={notifications} />
 
-      {/* User Profile Pill Menu Dropdown */}
       <UserProfilePill
         user={user}
         loading={loading}
@@ -59,7 +56,6 @@ export function UserHeader({
         onSettingsClick={onSettingsClick}
       />
 
-      {/* Extra Action Slot */}
       {extraActions}
     </Stack>
   )

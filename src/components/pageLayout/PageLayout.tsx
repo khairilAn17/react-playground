@@ -23,7 +23,6 @@ export function PageLayout({
   extra,
   breadcrumbs,
   status,
-  onBack,
   steps,
   currentStep,
   headerSlotSx,
@@ -46,7 +45,7 @@ export function PageLayout({
     }
   }
 
-  const hasShorthandHeader = title || subtitle || actions || headerRight || extra || breadcrumbs || steps || onBack || status || headerSlotSx
+  const hasShorthandHeader = title || subtitle || actions || headerRight || extra || breadcrumbs || steps || status || headerSlotSx
 
   return (
     <Box
@@ -72,7 +71,6 @@ export function PageLayout({
                 extra={extra}
                 breadcrumbs={breadcrumbs}
                 status={status}
-                onBack={onBack}
                 steps={steps}
                 currentStep={currentStep}
                 slotSx={headerSlotSx}
