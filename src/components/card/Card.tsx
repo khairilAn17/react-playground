@@ -1,23 +1,36 @@
 import type { ReactNode } from 'react'
 import { Card as MuiCard, CardContent, Box, Typography, Stack, Divider } from '@mui/material'
-import type { SxProps, Theme } from '@mui/material'
+import type { CardProps as MuiCardProps, SxProps, Theme } from '@mui/material'
 
-export interface CardProps {
+export interface CardProps extends Omit<MuiCardProps, 'title'> {
+  /** Optional title rendered in the card header */
   title?: ReactNode
+  /** Optional subtitle text or element */
   subtitle?: ReactNode
+  /** Optional actions slot on the right side of the card header */
   actions?: ReactNode
+  /** Main card content */
   children: ReactNode
+  /** Render a subtle divider line below the header */
   divider?: boolean
+  /** Remove padding from the CardContent area */
   noPadding?: boolean
-  sx?: SxProps<Theme>
+  /** Custom Sx styling for the CardContent area */
   contentSx?: SxProps<Theme>
+  /** Custom Sx styling for the card header container */
+  headerSx?: SxProps<Theme>
+  /** Custom Sx styling for the title typography */
+  titleSx?: SxProps<Theme>
+  /** Custom Sx styling for the subtitle typography */
+  subtitleSx?: SxProps<Theme>
 }
 
 /**
  * Card
  *
- * A self-contained outlined card component with an optional header (title + subtitle + actions),
- * optional divider line, and padding-controlled content area.
+ * An enhanced, customizable Material UI Card component with built-in header,
+ * subtitle, action slots, divider line, and flexible padding options.
+ * Extends standard MUI `CardProps` for complete prop customization.
  *
  * @example
  * <Card title="Limit Harian" subtitle="Rekening Utama" actions={<Button>Edit</Button>}>
@@ -31,12 +44,17 @@ export function Card({
   children,
   divider = false,
   noPadding = false,
+  variant = 'outlined',
   sx,
   contentSx,
+  headerSx,
+  titleSx,
+  subtitleSx,
+  ...otherProps
 }: CardProps) {
   return (
     <MuiCard
-      variant="outlined"
+      variant={variant}
       sx={{
         borderRadius: 4,
         borderColor: '#E8ECEF',
@@ -46,22 +64,27 @@ export function Card({
         overflow: 'hidden',
         ...sx,
       }}
+      {...otherProps}
     >
       {(title || actions || subtitle) && (
-        <Box sx={{ p: 3, pb: divider ? 2 : 1 }}>
+        <Box sx={{ p: 3, pb: divider ? 2 : 1, ...headerSx }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1.5 }}>
             <Box>
               {typeof title === 'string' ? (
-                <Typography variant="h6" sx={{ fontWeight: 800, color: '#1E293B' }}>
+                <Typography variant="h6" sx={{ fontWeight: 800, color: '#1E293B', ...titleSx }}>
                   {title}
                 </Typography>
               ) : (
                 title
               )}
               {subtitle && (
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                  {subtitle}
-                </Typography>
+                typeof subtitle === 'string' ? (
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, ...subtitleSx }}>
+                    {subtitle}
+                  </Typography>
+                ) : (
+                  subtitle
+                )
               )}
             </Box>
             {actions && <Stack direction="row" spacing={1}>{actions}</Stack>}

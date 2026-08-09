@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Breadcrumbs as MuiBreadcrumbs, Link, Typography, Box } from '@mui/material'
-import type { SxProps, Theme } from '@mui/material'
+import type { BreadcrumbsProps as MuiBreadcrumbsProps, SxProps, Theme } from '@mui/material'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 
 export interface BreadcrumbItem {
@@ -9,7 +9,7 @@ export interface BreadcrumbItem {
   icon?: ReactNode
 }
 
-export interface BreadcrumbsProps {
+export interface BreadcrumbsProps extends Omit<MuiBreadcrumbsProps, 'children'> {
   items?: BreadcrumbItem[]
   children?: ReactNode
   separator?: ReactNode
@@ -20,7 +20,7 @@ export interface BreadcrumbsProps {
  * Breadcrumbs
  *
  * Standalone, type-safe breadcrumb navigation component using MUI Breadcrumbs and Link.
- * Supports icon items, custom separators, and responsive styling.
+ * Supports icon items, custom separators, responsive styling, and extends standard MUI `BreadcrumbsProps`.
  *
  * @example
  * <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Dashboard' }]} />
@@ -30,6 +30,7 @@ export function Breadcrumbs({
   children,
   separator = <NavigateNextIcon fontSize="small" />,
   sx,
+  ...otherProps
 }: BreadcrumbsProps) {
   if (children) {
     return <Box sx={{ mb: 1, ...sx }}>{children}</Box>
@@ -42,6 +43,7 @@ export function Breadcrumbs({
       separator={separator}
       aria-label="breadcrumb navigation"
       sx={{ mb: 1.5, ...sx }}
+      {...otherProps}
     >
       {items.map((item, index) => {
         const isLast = index === items.length - 1
