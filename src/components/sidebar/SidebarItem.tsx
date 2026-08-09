@@ -1,16 +1,16 @@
 import type { ReactNode } from 'react'
 import {
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Tooltip,
-  Chip,
   Box,
-  styled,
+  Typography,
+  Tooltip,
 } from '@mui/material'
 import { useSidebar } from './SidebarContext'
 import type { SidebarBadge } from './types'
+
+const TEAL_PRIMARY = '#00A39D'
+const TEXT_MAIN = '#1E293B'
+const TEXT_MUTED = '#64748B'
+const ORANGE_ACCENT = '#F59E0B'
 
 export interface SidebarItemProps {
   itemKey?: string
@@ -24,30 +24,6 @@ export interface SidebarItemProps {
   inset?: boolean
   level?: number
 }
-
-const StyledListItemButton = styled(ListItemButton, {
-  shouldForwardProp: (prop) => prop !== 'active' && prop !== 'collapsed' && prop !== 'level',
-})<{ active?: boolean; collapsed?: boolean; level?: number; component?: any; href?: string }>(({ active, collapsed, level = 0 }) => ({
-  minHeight: 44,
-  borderRadius: active ? 50 : 8,
-  marginBottom: 4,
-  paddingLeft: collapsed ? 12 : 14 + level * 12,
-  paddingRight: 14,
-  justifyContent: collapsed ? 'center' : 'initial',
-  color: active ? '#FFFFFF' : '#1E293B',
-  backgroundColor: active ? '#00A39D' : 'transparent',
-  fontWeight: active ? 700 : 500,
-  transition: 'all 0.15s ease-in-out',
-  '&:hover': {
-    backgroundColor: active ? '#00A39D' : 'rgba(0, 163, 157, 0.08)',
-  },
-  '& .MuiListItemIcon-root': {
-    minWidth: collapsed ? 0 : 32,
-    marginRight: collapsed ? 0 : 8,
-    justifyContent: 'center',
-    color: active ? '#FFFFFF' : '#64748B',
-  },
-}))
 
 export function SidebarItem({
   itemKey,
@@ -76,76 +52,116 @@ export function SidebarItem({
 
   const renderBadge = () => {
     if (!badge || collapsed) return null
+
+    // { content: '10' } shape from data-driven config
     if (typeof badge === 'object' && badge !== null && 'content' in badge) {
       return (
-        <Chip
-          label={badge.content}
-          size="small"
+        <Box
           sx={{
-            bgcolor: '#F59E0B',
+            bgcolor: ORANGE_ACCENT,
             color: 'white',
-            height: 20,
             fontSize: '0.72rem',
             fontWeight: 800,
+            px: 1,
+            py: 0.25,
             borderRadius: 50,
-            px: 0.5,
+            lineHeight: 1.2,
           }}
-        />
+        >
+          {(badge as SidebarBadge).content}
+        </Box>
       )
     }
-    return typeof badge === 'string' || typeof badge === 'number' ? (
-      <Chip
-        label={badge}
-        size="small"
-        sx={{
-          bgcolor: '#F59E0B',
-          color: 'white',
-          height: 20,
-          fontSize: '0.72rem',
-          fontWeight: 800,
-          borderRadius: 50,
-          px: 0.5,
-        }}
-      />
-    ) : (
-      badge
-    )
+
+    // String / number badge → orange pill
+    if (typeof badge === 'string' || typeof badge === 'number') {
+      return (
+        <Box
+          sx={{
+            bgcolor: ORANGE_ACCENT,
+            color: 'white',
+            fontSize: '0.72rem',
+            fontWeight: 800,
+            px: 1,
+            py: 0.25,
+            borderRadius: 50,
+            lineHeight: 1.2,
+          }}
+        >
+          {badge}
+        </Box>
+      )
+    }
+
+    // ReactNode badge (e.g. Chip)
+    return badge as ReactNode
   }
 
   const content = (
-    <ListItem disablePadding sx={{ display: 'block' }}>
-      <StyledListItemButton
-        active={isSelected}
-        collapsed={collapsed}
-        level={level}
-        disabled={disabled}
-        onClick={handleClick}
-        component={href ? 'a' : 'div'}
-        href={href}
-      >
-        {icon && <ListItemIcon>{icon}</ListItemIcon>}
-        {!collapsed && (
-          <>
-            <ListItemText
-              primary={label}
-              slotProps={{
-                primary: {
-                  variant: 'body2',
-                  noWrap: true,
-                  sx: { fontWeight: isSelected ? 600 : 500 },
-                },
-              }}
-            />
-            {renderBadge()}
-          </>
+    <Box
+      component={href ? 'a' : 'div'}
+      href={href}
+      onClick={handleClick}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        px: collapsed ? 1.5 : 2,
+        py: 1.25,
+        mx: 0.5,
+        mb: 0.5,
+        borderRadius: isSelected ? 50 : 2,
+        bgcolor: isSelected ? TEAL_PRIMARY : 'transparent',
+        color: isSelected ? 'white' : TEXT_MAIN,
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? 0.45 : 1,
+        transition: 'all 0.2s ease',
+        textDecoration: 'none',
+        '&:hover': {
+          bgcolor: isSelected ? TEAL_PRIMARY : 'rgba(0,163,157,0.08)',
+        },
+        pl: collapsed ? 1.5 : 2 + level * 1.5,
+      }}
+    >
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: collapsed ? 0 : 1.5, minWidth: 0 }}>
+        {icon && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              color: isSelected ? 'white' : TEXT_MUTED,
+              '& svg': { fontSize: '1.1rem' },
+            }}
+          >
+            {icon}
+          </Box>
         )}
-      </StyledListItemButton>
-    </ListItem>
+
+        {!collapsed && (
+          <Typography
+            variant="body2"
+            noWrap
+            sx={{
+              fontWeight: isSelected ? 700 : 500,
+              fontSize: '0.875rem',
+              color: isSelected ? 'white' : TEXT_MAIN,
+              lineHeight: 1,
+            }}
+          >
+            {label}
+          </Typography>
+        )}
+      </Box>
+
+      {!collapsed && renderBadge()}
+    </Box>
   )
 
   if (collapsed) {
     return (
-      <Tooltip title={label} placement="right" arrow disableHoverListener={!collapsed}>
+      <Tooltip title={label} placement="right" arrow>
         <Box>{content}</Box>
       </Tooltip>
     )

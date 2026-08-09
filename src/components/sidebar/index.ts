@@ -20,7 +20,7 @@ export type { SidebarItemProps } from './SidebarItem'
 export { SidebarCollapse } from './SidebarCollapse'
 export type { SidebarCollapseProps } from './SidebarCollapse'
 
-export { SidebarFooter } from './SidebarFooter'
+export { SidebarFooter, SidebarLimitWidget } from './SidebarFooter'
 export type { SidebarFooterProps, UserInfo } from './SidebarFooter'
 
 export { SidebarToggle } from './SidebarToggle'

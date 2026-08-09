@@ -16,6 +16,8 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import ViewSidebarIcon from '@mui/icons-material/ViewSidebar'
 import ViewQuiltIcon from '@mui/icons-material/ViewQuilt'
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
+import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined'
+import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined'
 import GitHubIcon from '@mui/icons-material/GitHub'
 
 import { AppShell } from './components/appShell'
@@ -25,7 +27,6 @@ import { MultiStepForm } from './features/multiStepDemo/MultiStepForm'
 import { SidebarDemo } from './features/sidebarDemo/SidebarDemo'
 import { PageLayoutDemo } from './features/pageLayoutDemo/PageLayoutDemo'
 import { BusinessBankingDashboard } from './features/businessBankingDemo/BusinessBankingDashboard'
-import { ByondSidebar } from './features/businessBankingDemo/ByondSidebar'
 import { PayrollPage } from './features/businessBankingDemo/PayrollPage'
 import { ManajemenAkunPage } from './features/businessBankingDemo/ManajemenAkunPage'
 
@@ -47,11 +48,6 @@ const theme = createTheme({
 function App() {
   const [activeKey, setActiveKey] = useState<string>('business-banking')
   const [collapsed, setCollapsed] = useState(false)
-  const [byondPage, setByondPage] = useState<string>('beranda')
-
-  const handleByondSelect = (key: string) => {
-    setByondPage(key)
-  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -76,91 +72,92 @@ function App() {
             </Tooltip>
           }
           sidebarChildren={
-            activeKey === 'business-banking' ? (
-              <ByondSidebar
-                activeKey={byondPage}
-                onSelect={handleByondSelect}
-                onSwitchWorkspace={() => setActiveKey('single-form')}
+            <>
+              <Sidebar.Header
+                logo={
+                  <Box
+                    sx={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 2,
+                      bgcolor: '#00A99D',
+                      color: 'white',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 900,
+                      fontSize: '1.1rem',
+                      boxShadow: '0 2px 8px rgba(0,169,157,0.3)',
+                    }}
+                  >
+                    R
+                  </Box>
+                }
+                title="React Playground"
+                subtitle="BYOND Design System"
               />
-            ) : (
-              <>
-                <Sidebar.Header
-                  logo={
-                    <Box
-                      sx={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: 2,
-                        bgcolor: '#00A99D',
-                        color: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: 900,
-                        fontSize: '1.1rem',
-                        boxShadow: '0 2px 8px rgba(0,169,157,0.3)',
-                      }}
-                    >
-                      R
-                    </Box>
-                  }
-                  title="React Playground"
-                  subtitle="BYOND Design System"
-                />
 
-                <Sidebar.Nav>
-                  <Sidebar.Section title="Business Layouts">
-                    <Sidebar.Item
-                      itemKey="business-banking"
-                      icon={<AccountBalanceIcon />}
-                      label="BYOND Banking Dashboard"
-                      badge={<Chip label="Design" size="small" sx={{ height: 18, fontSize: '0.7rem', bgcolor: '#EAA827', color: 'white', fontWeight: 700 }} />}
-                    />
-                  </Sidebar.Section>
+              <Sidebar.Nav>
+                <Sidebar.Section title="Business Banking">
+                  <Sidebar.Item
+                    itemKey="business-banking"
+                    icon={<AccountBalanceIcon />}
+                    label="Dashboard"
+                    badge={<Chip label="Design" size="small" sx={{ height: 18, fontSize: '0.7rem', bgcolor: '#EAA827', color: 'white', fontWeight: 700 }} />}
+                  />
+                  <Sidebar.Item
+                    itemKey="payroll"
+                    icon={<PaymentsOutlinedIcon />}
+                    label="Payroll"
+                  />
+                  <Sidebar.Item
+                    itemKey="manajemen-akun"
+                    icon={<ManageAccountsOutlinedIcon />}
+                    label="Manajemen Akun"
+                  />
+                </Sidebar.Section>
 
-                  <Sidebar.Section title="Form Workspaces" divider>
-                    <Sidebar.Item
-                      itemKey="single-form"
-                      icon={<AssignmentIcon />}
-                      label="Single Page Form"
-                      badge="Kit"
-                    />
-                    <Sidebar.Item
-                      itemKey="wizard-form"
-                      icon={<AutoAwesomeIcon />}
-                      label="Multi-Step Wizard"
-                      badge={<Chip label="New" size="small" sx={{ height: 18, fontSize: '0.7rem', bgcolor: '#00A99D', color: 'white', fontWeight: 700 }} />}
-                    />
-                  </Sidebar.Section>
+                <Sidebar.Section title="Form Workspaces" divider>
+                  <Sidebar.Item
+                    itemKey="single-form"
+                    icon={<AssignmentIcon />}
+                    label="Single Page Form"
+                    badge="Kit"
+                  />
+                  <Sidebar.Item
+                    itemKey="wizard-form"
+                    icon={<AutoAwesomeIcon />}
+                    label="Multi-Step Wizard"
+                    badge={<Chip label="New" size="small" sx={{ height: 18, fontSize: '0.7rem', bgcolor: '#00A99D', color: 'white', fontWeight: 700 }} />}
+                  />
+                </Sidebar.Section>
 
-                  <Sidebar.Section title="Navigation & Layout" divider>
-                    <Sidebar.Item
-                      itemKey="page-layout-architecture"
-                      icon={<ViewQuiltIcon />}
-                      label="PageLayout Specification"
-                    />
-                    <Sidebar.Item
-                      itemKey="sidebar-architecture"
-                      icon={<ViewSidebarIcon />}
-                      label="Sidebar Architecture"
-                    />
-                  </Sidebar.Section>
-                </Sidebar.Nav>
+                <Sidebar.Section title="Component Docs" divider>
+                  <Sidebar.Item
+                    itemKey="page-layout-architecture"
+                    icon={<ViewQuiltIcon />}
+                    label="PageLayout Spec"
+                  />
+                  <Sidebar.Item
+                    itemKey="sidebar-architecture"
+                    icon={<ViewSidebarIcon />}
+                    label="Sidebar Architecture"
+                  />
+                </Sidebar.Section>
+              </Sidebar.Nav>
 
-                <Sidebar.Footer
-                  user={{
-                    name: 'Khairil Anwar',
-                    email: 'khairil@dev.lab',
-                  }}
-                />
-              </>
-            )
+              <Sidebar.Footer
+                user={{
+                  name: 'Khairil Anwar',
+                  email: 'khairil@dev.lab',
+                }}
+              />
+            </>
           }
         >
-          {activeKey === 'business-banking' && byondPage === 'beranda' && <BusinessBankingDashboard />}
-          {activeKey === 'business-banking' && byondPage === 'transaksi' && <PayrollPage onBack={() => setByondPage('beranda')} />}
-          {activeKey === 'business-banking' && byondPage === 'manajemen-akun' && <ManajemenAkunPage onBack={() => setByondPage('beranda')} />}
-          {activeKey === 'business-banking' && !['beranda', 'transaksi', 'manajemen-akun'].includes(byondPage) && <BusinessBankingDashboard />}
+          {activeKey === 'business-banking' && <BusinessBankingDashboard />}
+          {activeKey === 'payroll' && <PayrollPage onBack={() => setActiveKey('business-banking')} />}
+          {activeKey === 'manajemen-akun' && <ManajemenAkunPage onBack={() => setActiveKey('business-banking')} />}
           {activeKey === 'single-form' && <DemoForm />}
           {activeKey === 'wizard-form' && <MultiStepForm />}
           {activeKey === 'page-layout-architecture' && <PageLayoutDemo />}
@@ -172,3 +169,4 @@ function App() {
 }
 
 export default App
+

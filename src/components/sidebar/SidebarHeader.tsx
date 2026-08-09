@@ -31,30 +31,16 @@ export function SidebarHeader({
         display: 'flex',
         alignItems: 'center',
         justifyContent: collapsed ? 'center' : 'space-between',
-        px: collapsed ? 1.5 : 2,
+        px: collapsed ? 1.5 : 2.5,
         py: 2,
+        mb: 1.5,
         minHeight: 64,
-        borderBottom: '1px solid',
-        borderColor: 'divider',
       }}
     >
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1.5,
-          overflow: 'hidden',
-        }}
-      >
+      {/* Logo + Brand */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, overflow: 'hidden' }}>
         {logo && (
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
-          >
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             {logo}
           </Box>
         )}
@@ -66,9 +52,11 @@ export function SidebarHeader({
                 variant="subtitle1"
                 noWrap
                 sx={{
-                  fontWeight: 700,
+                  fontWeight: 800,
                   lineHeight: 1.2,
-                  textOverflow: 'ellipsis',
+                  color: '#1E293B',
+                  fontSize: '0.95rem',
+                  letterSpacing: '-0.01em',
                 }}
               >
                 {title}
@@ -77,9 +65,15 @@ export function SidebarHeader({
             {subtitle && (
               <Typography
                 variant="caption"
-                color="text.secondary"
                 noWrap
-                sx={{ display: 'block' }}
+                sx={{
+                  display: 'block',
+                  color: '#64748B',
+                  fontWeight: 500,
+                  fontSize: '0.72rem',
+                  letterSpacing: '0.01em',
+                  mt: 0.15,
+                }}
               >
                 {subtitle}
               </Typography>
@@ -90,18 +84,19 @@ export function SidebarHeader({
 
       {!collapsed && action && <Box sx={{ flexShrink: 0, ml: 1 }}>{action}</Box>}
 
-      {showToggle && !collapsed && (
-        <Tooltip title="Collapse sidebar" placement="right">
-          <IconButton onClick={handleToggle} size="small" sx={{ ml: 0.5 }}>
-            <MenuOpenIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      )}
-
-      {showToggle && collapsed && (
-        <Tooltip title="Expand sidebar" placement="right">
-          <IconButton onClick={handleToggle} size="small">
-            <MenuIcon fontSize="small" />
+      {showToggle && (
+        <Tooltip title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} placement="right">
+          <IconButton
+            onClick={handleToggle}
+            size="small"
+            sx={{
+              ml: collapsed ? 0 : 0.5,
+              color: '#64748B',
+              borderRadius: 1.5,
+              '&:hover': { bgcolor: 'rgba(0,0,0,0.05)' },
+            }}
+          >
+            {collapsed ? <MenuIcon fontSize="small" /> : <MenuOpenIcon fontSize="small" />}
           </IconButton>
         </Tooltip>
       )}

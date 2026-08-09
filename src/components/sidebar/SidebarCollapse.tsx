@@ -1,20 +1,19 @@
 import { useState, type ReactNode } from 'react'
 import {
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Collapse,
-  List,
   Tooltip,
-  Chip,
   Box,
-  styled,
+  Typography,
 } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { useSidebar } from './SidebarContext'
 import type { SidebarBadge } from './types'
+
+const TEAL_PRIMARY = '#00A39D'
+const TEXT_MAIN = '#1E293B'
+const TEXT_MUTED = '#64748B'
+const ORANGE_ACCENT = '#F59E0B'
 
 export interface SidebarCollapseProps {
   itemKey?: string
@@ -26,27 +25,6 @@ export interface SidebarCollapseProps {
   children: ReactNode
   level?: number
 }
-
-const StyledCollapseButton = styled(ListItemButton, {
-  shouldForwardProp: (prop) => prop !== 'collapsed' && prop !== 'level',
-})<{ collapsed?: boolean; level?: number }>(({ theme, collapsed, level = 0 }) => ({
-  minHeight: 44,
-  borderRadius: theme.shape.borderRadius,
-  marginBottom: theme.spacing(0.5),
-  paddingLeft: collapsed ? theme.spacing(1.5) : theme.spacing(1.5 + level * 1.5),
-  paddingRight: theme.spacing(1.5),
-  justifyContent: collapsed ? 'center' : 'initial',
-  color: theme.palette.text.primary,
-  '&:hover': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  '& .MuiListItemIcon-root': {
-    minWidth: collapsed ? 0 : 36,
-    marginRight: collapsed ? 0 : theme.spacing(1),
-    justifyContent: 'center',
-    color: theme.palette.action.active,
-  },
-}))
 
 export function SidebarCollapse({
   itemKey,
@@ -68,65 +46,121 @@ export function SidebarCollapse({
 
   const renderBadge = () => {
     if (!badge || collapsed) return null
+
     if (typeof badge === 'object' && badge !== null && 'content' in badge) {
       return (
-        <Chip
-          label={badge.content}
-          size="small"
-          color={badge.color ?? 'primary'}
-          sx={{ height: 20, fontSize: '0.75rem', fontWeight: 600, mr: 0.5 }}
-        />
+        <Box
+          sx={{
+            bgcolor: ORANGE_ACCENT,
+            color: 'white',
+            fontSize: '0.72rem',
+            fontWeight: 800,
+            px: 1,
+            py: 0.25,
+            borderRadius: 50,
+            lineHeight: 1.2,
+          }}
+        >
+          {(badge as SidebarBadge).content}
+        </Box>
       )
     }
-    return typeof badge === 'string' || typeof badge === 'number' ? (
-      <Chip
-        label={badge}
-        size="small"
-        color="primary"
-        sx={{ height: 20, fontSize: '0.75rem', fontWeight: 600, mr: 0.5 }}
-      />
-    ) : (
-      badge
-    )
+
+    if (typeof badge === 'string' || typeof badge === 'number') {
+      return (
+        <Box
+          sx={{
+            bgcolor: ORANGE_ACCENT,
+            color: 'white',
+            fontSize: '0.72rem',
+            fontWeight: 800,
+            px: 1,
+            py: 0.25,
+            borderRadius: 50,
+            lineHeight: 1.2,
+          }}
+        >
+          {badge}
+        </Box>
+      )
+    }
+
+    return badge as ReactNode
   }
 
   const contentId = itemKey ? `sidebar-collapse-${itemKey}` : undefined
 
   const buttonContent = (
-    <ListItem disablePadding sx={{ display: 'block' }}>
-      <StyledCollapseButton
-        collapsed={collapsed}
-        level={level}
-        disabled={disabled}
-        onClick={handleToggle}
-        aria-expanded={!collapsed ? open : undefined}
-        aria-controls={contentId}
-      >
-        {icon && <ListItemIcon>{icon}</ListItemIcon>}
-        {!collapsed && (
-          <>
-            <ListItemText
-              primary={label}
-              slotProps={{
-                primary: {
-                  variant: 'body2',
-                  noWrap: true,
-                  sx: { fontWeight: 500 },
-                },
-              }}
-            />
-            {renderBadge()}
-            {open ? <ExpandMoreIcon fontSize="small" color="action" /> : <ChevronRightIcon fontSize="small" color="action" />}
-          </>
+    <Box
+      onClick={handleToggle}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        px: collapsed ? 1.5 : 2,
+        py: 1.25,
+        mx: 0.5,
+        mb: 0.5,
+        borderRadius: 2,
+        bgcolor: 'transparent',
+        color: TEXT_MAIN,
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? 0.45 : 1,
+        transition: 'all 0.15s ease',
+        '&:hover': {
+          bgcolor: 'rgba(0,163,157,0.08)',
+        },
+        pl: collapsed ? 1.5 : 2 + level * 1.5,
+      }}
+    >
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: collapsed ? 0 : 1.5, minWidth: 0 }}>
+        {icon && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              color: TEXT_MUTED,
+              '& svg': { fontSize: '1.1rem' },
+            }}
+          >
+            {icon}
+          </Box>
         )}
-      </StyledCollapseButton>
-    </ListItem>
+
+        {!collapsed && (
+          <Typography
+            variant="body2"
+            noWrap
+            sx={{
+              fontWeight: 500,
+              fontSize: '0.875rem',
+              color: TEXT_MAIN,
+              lineHeight: 1,
+            }}
+          >
+            {label}
+          </Typography>
+        )}
+      </Box>
+
+      {!collapsed && (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          {renderBadge()}
+          {open
+            ? <ExpandMoreIcon sx={{ fontSize: 16, color: TEXT_MUTED }} />
+            : <ChevronRightIcon sx={{ fontSize: 16, color: TEXT_MUTED }} />
+          }
+        </Box>
+      )}
+    </Box>
   )
 
   return (
     <Box>
       {collapsed ? (
-        <Tooltip title={label} placement="right" arrow disableHoverListener={!collapsed}>
+        <Tooltip title={label} placement="right" arrow>
           <Box>{buttonContent}</Box>
         </Tooltip>
       ) : (
@@ -134,9 +168,9 @@ export function SidebarCollapse({
       )}
 
       <Collapse id={contentId} in={open && !collapsed} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
+        <Box sx={{ pl: 1 }}>
           {children}
-        </List>
+        </Box>
       </Collapse>
     </Box>
   )

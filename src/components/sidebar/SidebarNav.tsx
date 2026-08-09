@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { List, Box } from '@mui/material'
+import { Box } from '@mui/material'
 import { useSidebar } from './SidebarContext'
 
 export interface SidebarNavProps {
@@ -15,20 +15,21 @@ export function SidebarNav({ children }: SidebarNavProps) {
         flexGrow: 1,
         overflowY: 'auto',
         overflowX: 'hidden',
-        py: 1.5,
-        px: collapsed ? 1 : 1.5,
+        py: 1,
+        px: collapsed ? 0.5 : 0,
         '&::-webkit-scrollbar': {
-          width: '6px',
+          width: '4px',
         },
         '&::-webkit-scrollbar-thumb': {
-          backgroundColor: 'rgba(0, 0, 0, 0.1)',
-          borderRadius: '3px',
+          backgroundColor: 'rgba(0, 0, 0, 0.08)',
+          borderRadius: '4px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: 'transparent',
         },
       }}
     >
-      <List component="nav" disablePadding>
-        {children}
-      </List>
+      {children}
     </Box>
   )
 }

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Typography, Divider, Box } from '@mui/material'
+import { Box, Typography, Divider } from '@mui/material'
 import { useSidebar } from './SidebarContext'
 
 export interface SidebarSectionProps {
@@ -12,28 +12,28 @@ export function SidebarSection({ title, children, divider = false }: SidebarSect
   const { collapsed } = useSidebar()
 
   return (
-    <Box sx={{ mb: 1.5 }}>
-      {divider && <Divider sx={{ my: 1.5 }} />}
-      {title && (
-        <Box sx={{ px: 2, py: 0.75, minHeight: collapsed ? 12 : 'auto' }}>
-          {!collapsed ? (
-            <Typography
-              variant="caption"
-              sx={{
-                fontWeight: 700,
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                color: 'text.secondary',
-                fontSize: '0.6875rem',
-              }}
-            >
-              {title}
-            </Typography>
-          ) : (
-            <Divider sx={{ my: 0.5 }} />
-          )}
+    <Box sx={{ mb: 0.5 }}>
+      {divider && <Divider sx={{ my: 1.5, mx: 2, borderColor: '#E2E8F0' }} />}
+
+      {title && !collapsed && (
+        <Box sx={{ px: 2.5, pt: 1, pb: 0.5 }}>
+          <Typography
+            variant="caption"
+            sx={{
+              fontWeight: 700,
+              letterSpacing: '0.07em',
+              textTransform: 'uppercase',
+              color: '#94A3B8',
+              fontSize: '0.65rem',
+            }}
+          >
+            {title}
+          </Typography>
         </Box>
       )}
+
+      {title && collapsed && <Box sx={{ my: 1 }}><Divider sx={{ mx: 1.5, borderColor: '#E2E8F0' }} /></Box>}
+
       {children}
     </Box>
   )
