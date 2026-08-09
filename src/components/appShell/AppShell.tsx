@@ -1,10 +1,8 @@
-import { useMemo } from 'react'
 import type { ReactNode } from 'react'
 import { Box } from '@mui/material'
 
 import { Sidebar, SidebarProvider } from '../sidebar'
 import type { SidebarItemConfig } from '../sidebar'
-import { AppBarContext } from './AppBarContext'
 
 export interface AppShellProps {
   /** Logo slot inside sidebar header */
@@ -19,11 +17,6 @@ export interface AppShellProps {
   sidebarChildren?: ReactNode
   /** User profile info for sidebar footer */
   user?: { name: string; email?: string; avatarUrl?: string }
-  /**
-   * Right-hand global shell actions (always visible in the AppBar, e.g. theme toggle, GitHub link).
-   * Passed into AppBarContext so PageLayout can render them in its own AppBar.
-   */
-  toolbarActions?: ReactNode
   /** Controlled collapsed state */
   collapsed?: boolean
   /** Callback on collapsed change */
@@ -43,20 +36,12 @@ export function AppShell({
   sidebarItems,
   sidebarChildren,
   user,
-  toolbarActions,
   collapsed,
   onToggleCollapsed,
   activeKey,
   onSelect,
   children,
 }: AppShellProps) {
-  const appBarContextValue = useMemo(
-    () => ({
-      headerRight: toolbarActions,
-    }),
-    [toolbarActions]
-  )
-
   return (
     <SidebarProvider
       collapsed={collapsed}
@@ -64,41 +49,39 @@ export function AppShell({
       activeKey={activeKey}
       onSelect={onSelect}
     >
-      <AppBarContext.Provider value={appBarContextValue}>
-        <Box sx={{ display: 'flex', height: '100vh', width: '100%', overflow: 'hidden' }}>
-          {/* Sidebar */}
-          <Sidebar items={sidebarChildren ? undefined : sidebarItems}>
-            {sidebarChildren ?? (
-              <>
-                {(brandTitle || logo) && (
-                  <Sidebar.Header
-                    logo={logo}
-                    title={brandTitle}
-                    subtitle={brandSubtitle}
-                  />
-                )}
-                {user && <Sidebar.Footer user={user} />}
-              </>
-            )}
-          </Sidebar>
+      <Box sx={{ display: 'flex', height: '100vh', width: '100%', overflow: 'hidden' }}>
+        {/* Sidebar */}
+        <Sidebar items={sidebarChildren ? undefined : sidebarItems}>
+          {sidebarChildren ?? (
+            <>
+              {(brandTitle || logo) && (
+                <Sidebar.Header
+                  logo={logo}
+                  title={brandTitle}
+                  subtitle={brandSubtitle}
+                />
+              )}
+              {user && <Sidebar.Footer user={user} />}
+            </>
+          )}
+        </Sidebar>
 
-          {/* Main scrollable content — AppBar is rendered inside PageLayout */}
-          <Box
-            component="main"
-            sx={{
-              flexGrow: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              minWidth: 0,
-              height: '100vh',
-              overflowY: 'auto',
-              bgcolor: 'background.default',
-            }}
-          >
-            {children}
-          </Box>
+        {/* Main scrollable content area */}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            minWidth: 0,
+            height: '100vh',
+            overflowY: 'auto',
+            bgcolor: 'background.default',
+          }}
+        >
+          {children}
         </Box>
-      </AppBarContext.Provider>
+      </Box>
     </SidebarProvider>
   )
 }
