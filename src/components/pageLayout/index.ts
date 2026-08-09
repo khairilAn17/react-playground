@@ -6,8 +6,15 @@ export { PageTopBar } from './PageTopBar'
 export type { PageTopBarProps } from './PageTopBar'
 export { PageTopBarSearch } from './PageTopBarSearch'
 export type { PageTopBarSearchProps } from './PageTopBarSearch'
+
 export { PageHeader } from './PageHeader'
 export type { PageHeaderProps } from './PageHeader'
+
+export { PageSteps } from './PageSteps'
+export type { PageStepsProps } from './PageSteps'
+
+export { PageCard } from './PageCard'
+export type { PageCardProps } from './PageCard'
 
 export { PageBreadcrumbs } from './PageBreadcrumbs'
 export type { PageBreadcrumbsProps } from './PageBreadcrumbs'
@@ -29,5 +36,6 @@ export { PageSkeleton } from './PageSkeleton'
 export type {
   PageMaxWidth,
   BreadcrumbItem,
+  PageStepItem,
   PageLayoutContextValue,
 } from './types'

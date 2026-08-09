@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
-import { Card, CardContent, CardHeader, Divider, Typography, Box, Stack } from '@mui/material'
+import { Box, Typography, Stack, Divider } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material'
+import { PageCard } from './PageCard'
 
 export interface PageSectionProps {
   title?: ReactNode
@@ -19,7 +20,7 @@ export function PageSection({
   actions,
   children,
   variant = 'card',
-  divider = true,
+  divider = false,
   sx,
   contentSx,
 }: PageSectionProps) {
@@ -37,7 +38,7 @@ export function PageSection({
           >
             <Box>
               {typeof title === 'string' ? (
-                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                <Typography variant="h6" sx={{ fontWeight: 800, color: '#1E293B' }}>
                   {title}
                 </Typography>
               ) : (
@@ -59,20 +60,15 @@ export function PageSection({
   }
 
   return (
-    <Card variant="outlined" sx={{ mb: 2, ...sx }}>
-      {(title || actions || description) && (
-        <>
-          <CardHeader
-            title={title}
-            subheader={description}
-            action={actions}
-            titleTypographyProps={{ variant: 'h6', fontWeight: 700 }}
-            subheaderTypographyProps={{ variant: 'body2', color: 'text.secondary' }}
-          />
-          {divider && <Divider />}
-        </>
-      )}
-      <CardContent sx={contentSx}>{children}</CardContent>
-    </Card>
+    <PageCard
+      title={title}
+      subtitle={description}
+      actions={actions}
+      divider={divider}
+      sx={sx}
+      contentSx={contentSx}
+    >
+      {children}
+    </PageCard>
   )
 }

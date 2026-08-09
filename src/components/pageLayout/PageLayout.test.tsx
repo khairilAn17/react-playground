@@ -30,6 +30,43 @@ describe('PageLayout', () => {
     expect(screen.getByText('Page Body Content')).toBeInTheDocument()
   })
 
+  it('supports shorthand props mode (zero boilerplate)', () => {
+    render(
+      <PageLayout
+        title="Manajemen Akun"
+        subtitle="Daftar Akun Maker"
+        subtitleDescription="Tambah Maker dan kelola hingga 10 akun di halaman ini"
+        actions={<Button variant="contained">Tambah Maker</Button>}
+      >
+        <div>Shorthand Body Content</div>
+      </PageLayout>
+    )
+
+    expect(screen.getByText('Manajemen Akun')).toBeInTheDocument()
+    expect(screen.getByText('Daftar Akun Maker')).toBeInTheDocument()
+    expect(screen.getByText('Tambah Maker dan kelola hingga 10 akun di halaman ini')).toBeInTheDocument()
+    expect(screen.getByText('Tambah Maker')).toBeInTheDocument()
+    expect(screen.getByText('Shorthand Body Content')).toBeInTheDocument()
+  })
+
+  it('renders horizontal step wizard indicator', () => {
+    render(
+      <PageLayout
+        title="Payroll"
+        steps={['Detail Payroll', 'Tujuan Payroll', 'Validasi Tujuan', 'Periksa Detail']}
+        currentStep={1}
+      >
+        <div>Payroll Step 2 Content</div>
+      </PageLayout>
+    )
+
+    expect(screen.getByText('Payroll')).toBeInTheDocument()
+    expect(screen.getByText('Detail Payroll')).toBeInTheDocument()
+    expect(screen.getByText('Tujuan Payroll')).toBeInTheDocument()
+    expect(screen.getByText('Validasi Tujuan')).toBeInTheDocument()
+    expect(screen.getByText('Periksa Detail')).toBeInTheDocument()
+  })
+
   it('renders action buttons and fires click handler', () => {
     const handleSave = vi.fn()
 
