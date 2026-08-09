@@ -9,9 +9,6 @@ export type { PageHeaderProps } from './PageHeader'
 export { PageSteps } from './PageSteps'
 export type { PageStepsProps } from './PageSteps'
 
-export { PageCard } from './PageCard'
-export type { PageCardProps } from './PageCard'
-
 export { PageBreadcrumbs } from './PageBreadcrumbs'
 export type { PageBreadcrumbsProps } from './PageBreadcrumbs'
 

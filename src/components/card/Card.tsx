@@ -1,32 +1,8 @@
 import type { ReactNode } from 'react'
-import { Card, CardContent, Box, Typography, Stack, Divider } from '@mui/material'
+import { Card as MuiCard, CardContent, Box, Typography, Stack, Divider } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material'
 
-/**
- * PageCard
- *
- * A self-contained outlined card with an optional header (title + subtitle + actions),
- * optional divider, and a content area.
- *
- * **When to use `PageCard` vs `PageLayout.Section`:**
- * - Use `PageCard` when you need a standalone, reusable card outside a PageLayout flow,
- *   or when building ad-hoc cards inside grids / custom layouts.
- * - Use `PageLayout.Section` (variant="card") when composing cards inside a
- *   `<PageLayout.Content>` flow — it handles spacing, padding, and consistent
- *   vertical rhythm automatically.
- *
- * @example
- * // Standalone card (e.g. inside a Grid):
- * <PageLayout.Card title="Limit Harian" subtitle="Rekening Utama">
- *   <LinearProgress value={75} />
- * </PageLayout.Card>
- *
- * // Section card inside content flow — prefer PageLayout.Section:
- * <PageLayout.Section variant="card" title="..." description="...">
- *   <Table>...</Table>
- * </PageLayout.Section>
- */
-export interface PageCardProps {
+export interface CardProps {
   title?: ReactNode
   subtitle?: ReactNode
   actions?: ReactNode
@@ -37,7 +13,18 @@ export interface PageCardProps {
   contentSx?: SxProps<Theme>
 }
 
-export function PageCard({
+/**
+ * Card
+ *
+ * A self-contained outlined card component with an optional header (title + subtitle + actions),
+ * optional divider line, and padding-controlled content area.
+ *
+ * @example
+ * <Card title="Limit Harian" subtitle="Rekening Utama" actions={<Button>Edit</Button>}>
+ *   <LinearProgress value={75} />
+ * </Card>
+ */
+export function Card({
   title,
   subtitle,
   actions,
@@ -46,9 +33,9 @@ export function PageCard({
   noPadding = false,
   sx,
   contentSx,
-}: PageCardProps) {
+}: CardProps) {
   return (
-    <Card
+    <MuiCard
       variant="outlined"
       sx={{
         borderRadius: 4,
@@ -87,6 +74,6 @@ export function PageCard({
       <CardContent sx={{ p: noPadding ? 0 : 3, '&:last-child': { pb: noPadding ? 0 : 3 }, ...contentSx }}>
         {children}
       </CardContent>
-    </Card>
+    </MuiCard>
   )
 }

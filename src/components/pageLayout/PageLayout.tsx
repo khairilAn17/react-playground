@@ -6,7 +6,6 @@ import { PageHeader } from './PageHeader'
 import { PageBreadcrumbs } from './PageBreadcrumbs'
 import { PageContent } from './PageContent'
 import { PageSection } from './PageSection'
-import { PageCard } from './PageCard'
 import { PageSteps } from './PageSteps'
 import { PageStickyFooter } from './PageStickyFooter'
 import { PageSkeleton } from './PageSkeleton'
@@ -99,7 +98,6 @@ export function PageLayout({
 // Compound sub-component attachments
 PageLayout.Header = PageHeader
 PageLayout.Steps = PageSteps
-PageLayout.Card = PageCard
 PageLayout.Section = PageSection
 PageLayout.Breadcrumbs = PageBreadcrumbs
 PageLayout.Content = PageContent

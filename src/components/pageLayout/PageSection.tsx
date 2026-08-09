@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { Box, Typography, Stack, Divider } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material'
-import { PageCard } from './PageCard'
+import { Card } from '../card'
 
 export interface PageSectionProps {
   title?: ReactNode
@@ -60,7 +60,7 @@ export function PageSection({
   }
 
   return (
-    <PageCard
+    <Card
       title={title}
       subtitle={description}
       actions={actions}
@@ -69,6 +69,6 @@ export function PageSection({
       contentSx={contentSx}
     >
       {children}
-    </PageCard>
+    </Card>
   )
 }
