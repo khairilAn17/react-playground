@@ -82,7 +82,7 @@ function SectionLabel({ label }: { label: string }) {
 }
 
 // ─── Main Demo Component ──────────────────────────────────────────────────────
-export function PageShellDemo() {
+export function PageLayoutDemo() {
   const [maxWidth, setMaxWidth] = useState<PageMaxWidth>('lg')
   const [loading, setLoading] = useState(false)
   const [compact, setCompact] = useState(false)
