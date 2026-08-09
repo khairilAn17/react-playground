@@ -17,6 +17,8 @@ export interface PageHeaderSlotSx {
   titleRow?: SxProps<Theme>
   /** Title Typography (default: `{ fontWeight: 800, color: '#1E293B', letterSpacing: '-0.02em' }`) */
   title?: SxProps<Theme>
+  /** Muted text directly under the main title (e.g. "Terakhir masuk: 30 Desember 2024 11:35") */
+  titleDescription?: SxProps<Theme>
   /** Subtitle row flex container Box (default: `{ mt: 0.5 | 0, gap: 1.5, ... }`) */
   subtitleRow?: SxProps<Theme>
   /** Subtitle Typography (default: `{ fontWeight: 800, color: '#1E293B' }`) */
@@ -27,6 +29,8 @@ export interface PageHeaderSlotSx {
 
 export interface PageHeaderProps {
   title?: ReactNode
+  /** Muted text or element directly under the main title (e.g. "Terakhir masuk: 30 Desember 2024 11:35") */
+  titleDescription?: ReactNode
   subtitle?: ReactNode
   subtitleDescription?: ReactNode
   breadcrumbs?: BreadcrumbItem[]
@@ -42,22 +46,20 @@ export interface PageHeaderProps {
   headerRight?: ReactNode
   /** Contextual side widget rendered alongside the subtitle (e.g. Prayer time card). */
   extra?: ReactNode
-  onBack?: () => void
-  backTooltip?: string
   steps?: (string | StepItem)[]
   currentStep?: number
   onStepClick?: (index: number) => void
   /**
    * Granular sx overrides for every slot inside PageHeader.
-   * Use this to customize spacing, colors, and typography without losing defaults.
    * @example
-   * slotSx={{ root: { mb: 2 }, title: { fontSize: '1.5rem' }, subtitleRow: { mt: 1 } }}
+   * slotSx={{ root: { mb: 2 }, title: { fontSize: '1.5rem' }, titleDescription: { color: '#64748B' } }}
    */
   slotSx?: PageHeaderSlotSx
 }
 
 export function PageHeader({
   title,
+  titleDescription,
   subtitle,
   subtitleDescription,
   breadcrumbs,
@@ -78,9 +80,7 @@ export function PageHeader({
 
   return (
     <Box sx={{ mb: 3, ...slotSx.root }}>
-      {breadcrumbs && <Breadcrumbs items={breadcrumbs} />}
-
-      {/* ── Title Row: [Back] [Title + Status] ......... [titleRowActions] [headerRight] ── */}
+      {/* ── Title Row: [Title Block (Title + titleDescription + Breadcrumbs)] ......... [titleRowActions] [headerRight] ── */}
       <Box
         sx={{
           display: 'flex',
@@ -92,27 +92,48 @@ export function PageHeader({
           ...slotSx.titleRow,
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, flex: 1, minWidth: 0 }}>
+        {/* Title Block: Title + Status, then titleDescription / Breadcrumbs underneath */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
           {title && (
-            <Box sx={{ minWidth: 0 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-                {typeof title === 'string' ? (
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      fontWeight: 800,
-                      color: '#1E293B',
-                      letterSpacing: '-0.02em',
-                      ...slotSx.title,
-                    }}
-                  >
-                    {title}
-                  </Typography>
-                ) : (
-                  title
-                )}
-                {status}
-              </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+              {typeof title === 'string' ? (
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontWeight: 800,
+                    color: '#1E293B',
+                    letterSpacing: '-0.02em',
+                    ...slotSx.title,
+                  }}
+                >
+                  {title}
+                </Typography>
+              ) : (
+                title
+              )}
+              {status}
+            </Box>
+          )}
+
+          {/* Text directly under title (e.g. "Terakhir masuk: 30 Desember 2024 11:35") */}
+          {titleDescription && (
+            <Typography
+              variant="body2"
+              sx={{
+                color: '#64748B',
+                mt: 0.25,
+                fontSize: '0.875rem',
+                ...slotSx.titleDescription,
+              }}
+            >
+              {titleDescription}
+            </Typography>
+          )}
+
+          {/* Breadcrumbs under title */}
+          {breadcrumbs && (
+            <Box sx={{ mt: 0.25 }}>
+              <Breadcrumbs items={breadcrumbs} />
             </Box>
           )}
         </Box>

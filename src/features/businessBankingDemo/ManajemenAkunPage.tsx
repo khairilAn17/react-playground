@@ -64,12 +64,7 @@ const statusConfig: Record<string, { label: string; bg: string; color: string }>
   pending: { label: 'Pending', bg: '#FEF9C3', color: '#92400E' },
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
-export interface ManajemenAkunPageProps {
-  onBack?: () => void
-}
-
-export function ManajemenAkunPage({ onBack }: ManajemenAkunPageProps) {
+export function ManajemenAkunPage() {
   return (
     <PageView
       maxWidth="full"
@@ -77,7 +72,6 @@ export function ManajemenAkunPage({ onBack }: ManajemenAkunPageProps) {
       title="Manajemen Akun"
       subtitle="Daftar Akun Maker"
       subtitleDescription="Tambah Maker dan kelola hingga 10 akun di halaman ini"
-      onBack={onBack}
       footerAlign="between"
       footerActions={
         <>

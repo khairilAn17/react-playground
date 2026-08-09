@@ -35,13 +35,25 @@ describe('PageView Widget', () => {
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
   })
 
-  it('renders custom actions instead of ConnectedUserHeader when actions is passed', () => {
+  it('renders custom headerRight instead of ConnectedUserHeader when headerRight is passed', () => {
     render(
-      <PageView title="Custom Header" actions={<Button>Custom Action</Button>}>
+      <PageView title="Custom Header" headerRight={<Button>Custom Header Widget</Button>}>
         <div>Body Content</div>
       </PageView>
     )
 
-    expect(screen.getByRole('button', { name: 'Custom Action' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Custom Header Widget' })).toBeInTheDocument()
+  })
+
+  it('disables headerRight when null is passed', () => {
+    const { container } = render(
+      <PageView title="No Header Right" headerRight={null}>
+        <div>Body Content</div>
+      </PageView>
+    )
+
+    expect(screen.getByText('No Header Right')).toBeInTheDocument()
+    // No expandable search or user avatar button in container
+    expect(container.querySelector('[aria-label="search"]')).toBeNull()
   })
 })

@@ -7,13 +7,11 @@ import { ConnectedUserHeader } from '../userHeader'
 
 export interface PageViewProps extends PageLayoutProps {
   /**
-   * Override the auto-injected `ConnectedUserHeader` with a custom right-side header widget.
-   * By default, `<ConnectedUserHeader />` is automatically rendered in the `headerRight` slot.
+   * Header right action slot.
+   * Defaults to `<ConnectedUserHeader />` if omitted. Pass `null` to explicitly disable.
+   * @default <ConnectedUserHeader />
    */
   headerRight?: ReactNode
-  /** Set to true to disable automatic `<ConnectedUserHeader />` rendering */
-  disableUserHeader?: boolean
-
   /** Vertical spacing gap between children in PageLayout.Content. Default: 3 */
   contentGap?: number
 
@@ -32,7 +30,7 @@ export interface PageViewProps extends PageLayoutProps {
  * auto-wrapped `PageLayout.Content`, and optional `StickyFooter`.
  *
  * Layout:
- *   Title Row:    [Back] [Title + Status] ..... [headerRight = ConnectedUserHeader]
+ *   Title Row:    [Title + Status] ..... [headerRight = ConnectedUserHeader]
  *   Subtitle Row: [Subtitle + Description] ..... [actions = page CTA buttons]
  *
  * @example
@@ -46,8 +44,7 @@ export interface PageViewProps extends PageLayoutProps {
  * </PageView>
  */
 export function PageView({
-  headerRight,
-  disableUserHeader = false,
+  headerRight = <ConnectedUserHeader />,
   contentGap = 3,
   footerActions,
   footerAlign = 'right',
@@ -55,10 +52,8 @@ export function PageView({
   children,
   ...pageLayoutProps
 }: PageViewProps) {
-  const resolvedHeaderRight = headerRight ?? (disableUserHeader ? undefined : <ConnectedUserHeader />)
-
   return (
-    <PageLayout headerRight={resolvedHeaderRight} {...pageLayoutProps}>
+    <PageLayout headerRight={headerRight ?? undefined} {...pageLayoutProps}>
       <PageLayout.Content gap={contentGap}>
         {children}
       </PageLayout.Content>

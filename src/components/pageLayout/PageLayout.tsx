@@ -16,6 +16,7 @@ export function PageLayout({
   loading = false,
   bgVariant = 'default',
   title,
+  titleDescription,
   subtitle,
   subtitleDescription,
   actions,
@@ -45,7 +46,7 @@ export function PageLayout({
     }
   }
 
-  const hasShorthandHeader = title || subtitle || actions || headerRight || extra || breadcrumbs || steps || status || headerSlotSx
+  const hasShorthandHeader = title || titleDescription || subtitle || actions || headerRight || extra || breadcrumbs || steps || status || headerSlotSx
 
   return (
     <Box
@@ -64,6 +65,7 @@ export function PageLayout({
             {hasShorthandHeader && (
               <PageHeader
                 title={title}
+                titleDescription={titleDescription}
                 subtitle={subtitle}
                 subtitleDescription={subtitleDescription}
                 actions={actions}

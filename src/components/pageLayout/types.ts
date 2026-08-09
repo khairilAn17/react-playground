@@ -21,6 +21,8 @@ export interface PageLayoutProps {
   /* ── Shorthand Props (Zero Boilerplate Mode) ── */
   /** Main page title (e.g. "Manajemen Akun", "Payroll", "Assalamualaikum, Shafa") */
   title?: ReactNode
+  /** Muted text or element directly under the main title (e.g. "Terakhir masuk: 30 Desember 2024 11:35") */
+  titleDescription?: ReactNode
   /** Page subtitle or subheader title (e.g. "Daftar Akun Maker") */
   subtitle?: ReactNode
   /** Detailed subheader description text */
