@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Button, Chip, Typography, Card, CardContent } from '@mui/material'
+import Grid from '@mui/material/Grid'
 import AddIcon from '@mui/icons-material/Add'
 import DownloadIcon from '@mui/icons-material/Download'
 
@@ -34,38 +35,44 @@ export const StandardPage: Story = {
         }
       />
       <PageLayout.Content>
-        <PageLayout.Grid cols={3}>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                Engineers
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                24 Active Members
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                Designers
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                10 Active Members
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                Product Managers
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                8 Active Members
-              </Typography>
-            </CardContent>
-          </Card>
-        </PageLayout.Grid>
+        <Grid container spacing={2.5}>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Card variant="outlined">
+              <CardContent>
+                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                  Engineers
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  24 Active Members
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Card variant="outlined">
+              <CardContent>
+                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                  Designers
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  10 Active Members
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Card variant="outlined">
+              <CardContent>
+                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                  Product Managers
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  8 Active Members
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
 
         <PageLayout.Section title="Role Permissions Policy" description="Configure default access for new invites">
           <Typography variant="body2" color="text.secondary">

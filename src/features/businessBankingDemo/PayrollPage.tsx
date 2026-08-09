@@ -15,6 +15,7 @@ import {
   Stack,
   IconButton,
 } from '@mui/material'
+import Grid from '@mui/material/Grid'
 
 import AddIcon from '@mui/icons-material/Add'
 import DownloadIcon from '@mui/icons-material/Download'
@@ -131,33 +132,34 @@ export function PayrollPage({ onBack }: PayrollPageProps) {
 
         <PageLayout.Content>
           {/* ── Summary Cards ── */}
-          <PageLayout.Grid cols={3}>
+          <Grid container spacing={2.5}>
             {summaryCards.map((card) => (
-              <Card
-                key={card.label}
-                variant="outlined"
-                sx={{ p: 2.5, borderRadius: 4, borderColor: '#E2E8F0', bgcolor: 'white' }}
-              >
-                <Typography variant="caption" sx={{ color: TEXT_MUTED, fontWeight: 600 }}>
-                  {card.label}
-                </Typography>
-                <Typography
-                  variant="h5"
-                  sx={{ fontWeight: 800, color: TEXT_MAIN, mt: 0.5, mb: 0.5, letterSpacing: '-0.02em' }}
+              <Grid key={card.label} size={{ xs: 12, sm: 4 }}>
+                <Card
+                  variant="outlined"
+                  sx={{ p: 2.5, borderRadius: 4, borderColor: '#E2E8F0', bgcolor: 'white' }}
                 >
-                  {card.value}
-                </Typography>
-                <Typography variant="caption" sx={{ color: card.color, fontWeight: 700 }}>
-                  {card.note}
-                </Typography>
-              </Card>
+                  <Typography variant="caption" sx={{ color: TEXT_MUTED, fontWeight: 600 }}>
+                    {card.label}
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    sx={{ fontWeight: 800, color: TEXT_MAIN, mt: 0.5, mb: 0.5, letterSpacing: '-0.03em' }}
+                  >
+                    {card.value}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: card.color, fontWeight: 700 }}>
+                    {card.note}
+                  </Typography>
+                </Card>
+              </Grid>
             ))}
-          </PageLayout.Grid>
+          </Grid>
 
           {/* ── Tabs + Table Section ── */}
           <Card
             variant="outlined"
-            sx={{ borderRadius: 4, borderColor: '#E2E8F0', p: 3, bgcolor: 'white' }}
+            sx={{ borderRadius: 4, borderColor: '#E2E8F0', p: 3, bgcolor: 'white', mt: 3 }}
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', mb: 2 }}>
               <Stack direction="row" spacing={3}>

@@ -26,6 +26,7 @@ import {
   Tab,
   Tabs,
 } from '@mui/material'
+import Grid from '@mui/material/Grid'
 
 import AddIcon from '@mui/icons-material/Add'
 import DownloadIcon from '@mui/icons-material/Download'
@@ -56,8 +57,6 @@ const subComponents = [
   { name: 'PageLayout.Breadcrumbs', desc: 'Standalone breadcrumb navigation hierarchy' },
   { name: 'PageLayout.Content', desc: 'Vertical flex container for spacing children' },
   { name: 'PageLayout.Section', desc: "Card/plain block with header, description, divider, action slot. variant='card' | 'plain'" },
-  { name: 'PageLayout.Grid', desc: 'Responsive MUI Grid with per-breakpoint column count' },
-  { name: 'PageLayout.Grid.Item', desc: 'Compound item for asymmetric column spans across breakpoints (e.g. 8-col / 4-col layout)' },
   { name: 'PageLayout.StickyFooter', desc: "Sticky bottom action bar. align='left' | 'center' | 'right' | 'between'" },
   { name: 'PageLayout.Skeleton', desc: 'Loading placeholder skeleton (auto-rendered when loading=true)' },
 ]
@@ -275,30 +274,32 @@ export function PageLayoutDemo() {
               />
 
               <PageLayout.Content>
-                <PageLayout.Grid cols={3}>
+                <Grid container spacing={2.5}>
                   {[
                     { label: 'Engineering', count: 24, note: '+3 this month', color: 'success.main' },
                     { label: 'Design', count: 10, note: 'Full capacity', color: 'text.secondary' },
                     { label: 'Product', count: 8, note: '2 pending invites', color: 'warning.main' },
                   ].map(({ label, count, note, color }) => (
-                    <Card variant="outlined" key={label}>
-                      <CardContent>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                          <Typography variant="body2" color="text.secondary">
-                            {label}
+                    <Grid key={label} size={{ xs: 12, sm: 6, md: 4 }}>
+                      <Card variant="outlined">
+                        <CardContent>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                            <Typography variant="body2" color="text.secondary">
+                              {label}
+                            </Typography>
+                            <PeopleIcon fontSize="small" color="action" />
+                          </Box>
+                          <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                            {count}
                           </Typography>
-                          <PeopleIcon fontSize="small" color="action" />
-                        </Box>
-                        <Typography variant="h4" sx={{ fontWeight: 800 }}>
-                          {count}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color, fontWeight: 600 }}>
-                          {note}
-                        </Typography>
-                      </CardContent>
-                    </Card>
+                          <Typography variant="caption" sx={{ color, fontWeight: 600 }}>
+                            {note}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Grid>
                   ))}
-                </PageLayout.Grid>
+                </Grid>
 
                 <PageLayout.Section
                   variant={sectionVariant}
@@ -440,33 +441,35 @@ export function PageLayoutDemo() {
             </Stack>
           </Box>
 
-          {/* ── PageLayout.Grid ── */}
+          {/* ── Standard MUI Grid Composition ── */}
           <Box>
-            <SectionLabel label="PageLayout.Grid — responsive columns" />
+            <SectionLabel label="Responsive Multi-Column Cards (MUI Grid)" />
             <PageLayout maxWidth="lg" bgVariant="paper">
               <PageLayout.Content>
-                <PageLayout.Grid cols={4}>
+                <Grid container spacing={2.5}>
                   {[1, 2, 3, 4].map((n) => (
-                    <Card variant="outlined" key={n}>
-                      <CardContent>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                          <Typography variant="caption" color="text.secondary">
-                            Metric {n}
+                    <Grid key={n} size={{ xs: 12, sm: 6, md: 3 }}>
+                      <Card variant="outlined">
+                        <CardContent>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                            <Typography variant="caption" color="text.secondary">
+                              Metric {n}
+                            </Typography>
+                            <TrendingUpIcon fontSize="small" color="primary" />
+                          </Box>
+                          <Typography variant="h5" sx={{ fontWeight: 800 }}>
+                            {n * 1234}
                           </Typography>
-                          <TrendingUpIcon fontSize="small" color="primary" />
-                        </Box>
-                        <Typography variant="h5" sx={{ fontWeight: 800 }}>
-                          {n * 1234}
-                        </Typography>
-                        <LinearProgress
-                          variant="determinate"
-                          value={n * 20}
-                          sx={{ mt: 1.5, borderRadius: 1 }}
-                        />
-                      </CardContent>
-                    </Card>
+                          <LinearProgress
+                            variant="determinate"
+                            value={n * 20}
+                            sx={{ mt: 1.5, borderRadius: 1 }}
+                          />
+                        </CardContent>
+                      </Card>
+                    </Grid>
                   ))}
-                </PageLayout.Grid>
+                </Grid>
               </PageLayout.Content>
             </PageLayout>
           </Box>
@@ -625,10 +628,10 @@ export function PageLayoutDemo() {
   />
 
   <PageLayout.Content>
-    <PageLayout.Grid cols={2}>
-      <Card>...</Card>
-      <Card>...</Card>
-    </PageLayout.Grid>
+    <Grid container spacing={2}>
+      <Grid size={6}><Card>...</Card></Grid>
+      <Grid size={6}><Card>...</Card></Grid>
+    </Grid>
 
     <PageLayout.Section
       title="Section Title"

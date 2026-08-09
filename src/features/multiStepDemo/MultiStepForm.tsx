@@ -6,9 +6,6 @@ import {
   CardContent,
   Divider,
   Stack,
-  Stepper,
-  Step,
-  StepLabel,
   Typography,
   Alert,
   Chip,
@@ -134,13 +131,7 @@ function MultiStepWizardContent() {
 
   return (
     <>
-      <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
-        {STEPS.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
+      <PageLayout.Steps steps={STEPS} currentStep={activeStep} />
 
       {/* STEP 1: Personal Details */}
       {activeStep === 0 && (
@@ -259,7 +250,7 @@ export function MultiStepForm() {
 
       <PageLayout.Header
         title="Multi-Step Wizard Form"
-        subtitle="Step-by-step wizard flow with MUI Stepper & per-step schema validation using dot-paths."
+        subtitle="Step-by-step wizard flow with PageLayout.Steps & per-step schema validation using dot-paths."
         breadcrumbs={[{ label: 'Form Workspaces', href: '#' }, { label: 'Multi-Step Wizard' }]}
         status={<Chip label="Wizard Flow" color="secondary" size="small" />}
       />

@@ -8,7 +8,6 @@ import { PageContent } from './PageContent'
 import { PageSection } from './PageSection'
 import { PageCard } from './PageCard'
 import { PageSteps } from './PageSteps'
-import { PageGrid } from './PageGrid'
 import { PageStickyFooter } from './PageStickyFooter'
 import { PageSkeleton } from './PageSkeleton'
 import { PageTopBar } from './PageTopBar'
@@ -108,6 +107,5 @@ PageLayout.Card = PageCard
 PageLayout.Section = PageSection
 PageLayout.Breadcrumbs = PageBreadcrumbs
 PageLayout.Content = PageContent
-PageLayout.Grid = PageGrid
 PageLayout.StickyFooter = PageStickyFooter
 PageLayout.Skeleton = PageSkeleton

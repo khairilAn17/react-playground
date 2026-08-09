@@ -25,9 +25,6 @@ export type { PageContentProps } from './PageContent'
 export { PageSection } from './PageSection'
 export type { PageSectionProps } from './PageSection'
 
-export { PageGrid } from './PageGrid'
-export type { PageGridProps } from './PageGrid'
-
 export { PageStickyFooter } from './PageStickyFooter'
 export type { PageStickyFooterProps } from './PageStickyFooter'
 

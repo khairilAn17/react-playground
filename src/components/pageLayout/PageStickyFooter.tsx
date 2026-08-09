@@ -45,9 +45,13 @@ export function PageStickyFooter({ children, align = 'right' }: PageStickyFooter
           gap: 1.5,
         }}
       >
-        <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-          {children}
-        </Stack>
+        {align === 'between' ? (
+          children
+        ) : (
+          <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+            {children}
+          </Stack>
+        )}
       </Box>
     </Paper>
   )

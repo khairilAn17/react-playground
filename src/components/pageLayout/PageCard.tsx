@@ -16,7 +16,7 @@ import type { SxProps, Theme } from '@mui/material'
  *   vertical rhythm automatically.
  *
  * @example
- * // Standalone card (e.g. inside a PageLayout.Grid):
+ * // Standalone card (e.g. inside a Grid):
  * <PageLayout.Card title="Limit Harian" subtitle="Rekening Utama">
  *   <LinearProgress value={75} />
  * </PageLayout.Card>

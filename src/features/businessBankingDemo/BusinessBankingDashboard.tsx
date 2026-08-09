@@ -218,8 +218,8 @@ export function BusinessBankingDashboard() {
               Tabungan
             </Typography>
 
-            <PageLayout.Grid cols={1}>
-              <PageLayout.Grid.Item size={{ xs: 12, md: 4 }}>
+            <Grid container spacing={2.5}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Box sx={{ pr: { md: 2 } }}>
                   <Typography variant="caption" sx={{ color: TEXT_MUTED, fontWeight: 600 }}>
                     Total Saldo 5 Rekening
@@ -248,9 +248,9 @@ export function BusinessBankingDashboard() {
                     Lihat Semua
                   </Button>
                 </Box>
-              </PageLayout.Grid.Item>
+              </Grid>
 
-              <PageLayout.Grid.Item size={{ xs: 12, md: 8 }}>
+              <Grid size={{ xs: 12, md: 8 }}>
                 <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                   {/* Account Card 1: Harian Bisnis */}
                   <Paper
@@ -390,8 +390,8 @@ export function BusinessBankingDashboard() {
                     </Box>
                   </Paper>
                 </Stack>
-              </PageLayout.Grid.Item>
-            </PageLayout.Grid>
+              </Grid>
+            </Grid>
           </Card>
 
           {/* ── SECTION 2: My Task (Interactive Task List) ── */}
