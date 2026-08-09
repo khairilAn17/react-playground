@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { BreadcrumbItem } from '../breadcrumbs'
 import type { StepItem } from '../steps'
+import type { PageHeaderSlotSx } from './PageHeader'
 
 export type { BreadcrumbItem }
 /** @deprecated Use StepItem from '../steps' directly */
@@ -40,6 +41,11 @@ export interface PageLayoutProps {
   steps?: (string | StepItem)[]
   /** Active zero-indexed step in multi-step wizard */
   currentStep?: number
+  /**
+   * Granular sx overrides for every slot inside the shorthand PageHeader.
+   * @example headerSlotSx={{ root: { mb: 1 }, title: { fontSize: '2rem' }, subtitleRow: { mt: 2 } }}
+   */
+  headerSlotSx?: PageHeaderSlotSx
 
   /** Children elements */
   children?: ReactNode

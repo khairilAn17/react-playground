@@ -5,8 +5,6 @@ import {
   createTheme,
   Box,
   Chip,
-  IconButton,
-  Tooltip,
 } from '@mui/material'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -18,7 +16,6 @@ import ViewQuiltIcon from '@mui/icons-material/ViewQuilt'
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
 import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined'
 import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined'
-import GitHubIcon from '@mui/icons-material/GitHub'
 
 import { AppShell } from './components/appShell'
 import { Sidebar } from './components/sidebar'

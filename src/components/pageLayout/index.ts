@@ -2,7 +2,7 @@ export { PageLayout } from './PageLayout'
 export type { PageLayoutProps } from './types'
 
 export { PageHeader } from './PageHeader'
-export type { PageHeaderProps } from './PageHeader'
+export type { PageHeaderProps, PageHeaderSlotSx } from './PageHeader'
 
 // Steps — standalone component re-exported through pageLayout for compound access
 export { PageSteps } from './PageSteps'

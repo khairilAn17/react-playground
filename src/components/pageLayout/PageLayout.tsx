@@ -26,6 +26,7 @@ export function PageLayout({
   onBack,
   steps,
   currentStep,
+  headerSlotSx,
   children,
 }: PageLayoutProps) {
   const getContainerMaxWidth = (): 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false => {
@@ -45,7 +46,7 @@ export function PageLayout({
     }
   }
 
-  const hasShorthandHeader = title || subtitle || actions || headerRight || extra || breadcrumbs || steps || onBack || status
+  const hasShorthandHeader = title || subtitle || actions || headerRight || extra || breadcrumbs || steps || onBack || status || headerSlotSx
 
   return (
     <Box
@@ -74,6 +75,7 @@ export function PageLayout({
                 onBack={onBack}
                 steps={steps}
                 currentStep={currentStep}
+                slotSx={headerSlotSx}
               />
             )}
             {children}
