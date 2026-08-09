@@ -27,10 +27,16 @@ export interface PageHeaderSlotSx {
   subtitleDescription?: SxProps<Theme>
 }
 
-export interface BasePageHeaderProps {
+export interface PageHeaderProps {
   title?: ReactNode
+  /**
+   * Muted text or element directly under the main title (e.g. "Terakhir masuk: 30 Desember 2024 11:35").
+   * Takes precedence over breadcrumbs if both are passed.
+   */
+  titleDescription?: ReactNode
   subtitle?: ReactNode
   subtitleDescription?: ReactNode
+  breadcrumbs?: BreadcrumbItem[]
   status?: ReactNode
   /**
    * Page-level CTA buttons (e.g. "+ Tambah Maker").
@@ -51,16 +57,6 @@ export interface BasePageHeaderProps {
    */
   slotSx?: PageHeaderSlotSx
 }
-
-/**
- * Mutually exclusive sub-content under the main title:
- * Either `titleDescription` OR `breadcrumbs`, never both.
- */
-export type PageHeaderSubContentProps =
-  | { titleDescription?: ReactNode; breadcrumbs?: never }
-  | { breadcrumbs?: BreadcrumbItem[]; titleDescription?: never }
-
-export type PageHeaderProps = BasePageHeaderProps & PageHeaderSubContentProps
 
 export function PageHeader({
   title,
@@ -120,7 +116,7 @@ export function PageHeader({
             </Box>
           )}
 
-          {/* Mutually exclusive: titleDescription OR breadcrumbs */}
+          {/* Render titleDescription if present; otherwise render breadcrumbs */}
           {titleDescription ? (
             <Typography
               variant="body2"
@@ -133,7 +129,7 @@ export function PageHeader({
             >
               {titleDescription}
             </Typography>
-          ) : breadcrumbs ? (
+          ) : breadcrumbs && breadcrumbs.length > 0 ? (
             <Box sx={{ mt: 0.25 }}>
               <Breadcrumbs items={breadcrumbs} />
             </Box>

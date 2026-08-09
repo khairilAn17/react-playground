@@ -5,7 +5,7 @@ import type { PageLayoutProps } from '../../components/pageLayout'
 import { StickyFooter } from '../../components/stickyFooter'
 import { ConnectedUserHeader } from '../userHeader'
 
-export type PageViewProps = PageLayoutProps & {
+export interface PageViewProps extends PageLayoutProps {
   /**
    * Header right action slot.
    * Defaults to `<ConnectedUserHeader />` if omitted. Pass `null` to explicitly disable.
