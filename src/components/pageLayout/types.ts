@@ -8,7 +8,7 @@ export type { BreadcrumbItem }
 export type PageStepItem = StepItem
 export type PageMaxWidth = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'full'
 
-export interface PageLayoutProps {
+export interface BasePageLayoutProps {
   /** Responsive container width preset: 'xs' (440), 'sm' (640), 'md' (900), 'lg' (1200), 'xl' (1536), 'full' (100%) */
   maxWidth?: PageMaxWidth
   /** Padding density override */
@@ -21,8 +21,6 @@ export interface PageLayoutProps {
   /* ── Shorthand Props (Zero Boilerplate Mode) ── */
   /** Main page title (e.g. "Manajemen Akun", "Payroll", "Assalamualaikum, Shafa") */
   title?: ReactNode
-  /** Muted text or element directly under the main title (e.g. "Terakhir masuk: 30 Desember 2024 11:35") */
-  titleDescription?: ReactNode
   /** Page subtitle or subheader title (e.g. "Daftar Akun Maker") */
   subtitle?: ReactNode
   /** Detailed subheader description text */
@@ -33,8 +31,6 @@ export interface PageLayoutProps {
   headerRight?: ReactNode
   /** Additional widget or side card (e.g. Prayer widget card) */
   extra?: ReactNode
-  /** Optional breadcrumbs array */
-  breadcrumbs?: BreadcrumbItem[]
   /** Status chip/badge displayed beside the title (e.g. <Chip label="Active" />) */
   status?: ReactNode
   /** Multi-step flow items array */
@@ -43,10 +39,27 @@ export interface PageLayoutProps {
   currentStep?: number
   /**
    * Granular sx overrides for every slot inside the shorthand PageHeader.
-   * @example headerSlotSx={{ root: { mb: 1 }, title: { fontSize: '2rem' }, subtitleRow: { mt: 2 } }}
    */
   headerSlotSx?: PageHeaderSlotSx
 
   /** Children elements */
   children?: ReactNode
 }
+
+/**
+ * Mutually exclusive sub-content under the main title:
+ * Either `titleDescription` OR `breadcrumbs`, never both.
+ */
+export type PageLayoutSubContentProps =
+  | {
+      /** Muted text directly under the main title (e.g. "Terakhir masuk: 30 Desember 2024 11:35") */
+      titleDescription?: ReactNode
+      breadcrumbs?: never
+    }
+  | {
+      titleDescription?: never
+      /** Optional breadcrumbs array under the main title */
+      breadcrumbs?: BreadcrumbItem[]
+    }
+
+export type PageLayoutProps = BasePageLayoutProps & PageLayoutSubContentProps

@@ -27,13 +27,10 @@ export interface PageHeaderSlotSx {
   subtitleDescription?: SxProps<Theme>
 }
 
-export interface PageHeaderProps {
+export interface BasePageHeaderProps {
   title?: ReactNode
-  /** Muted text or element directly under the main title (e.g. "Terakhir masuk: 30 Desember 2024 11:35") */
-  titleDescription?: ReactNode
   subtitle?: ReactNode
   subtitleDescription?: ReactNode
-  breadcrumbs?: BreadcrumbItem[]
   status?: ReactNode
   /**
    * Page-level CTA buttons (e.g. "+ Tambah Maker").
@@ -51,11 +48,19 @@ export interface PageHeaderProps {
   onStepClick?: (index: number) => void
   /**
    * Granular sx overrides for every slot inside PageHeader.
-   * @example
-   * slotSx={{ root: { mb: 2 }, title: { fontSize: '1.5rem' }, titleDescription: { color: '#64748B' } }}
    */
   slotSx?: PageHeaderSlotSx
 }
+
+/**
+ * Mutually exclusive sub-content under the main title:
+ * Either `titleDescription` OR `breadcrumbs`, never both.
+ */
+export type PageHeaderSubContentProps =
+  | { titleDescription?: ReactNode; breadcrumbs?: never }
+  | { breadcrumbs?: BreadcrumbItem[]; titleDescription?: never }
+
+export type PageHeaderProps = BasePageHeaderProps & PageHeaderSubContentProps
 
 export function PageHeader({
   title,
@@ -72,7 +77,7 @@ export function PageHeader({
   onStepClick,
   slotSx = {},
 }: PageHeaderProps) {
-  if (!title && !subtitle && !actions && !headerRight && !breadcrumbs && !steps) return null
+  if (!title && !subtitle && !actions && !headerRight && !breadcrumbs && !steps && !titleDescription) return null
 
   const hasSubtitle = Boolean(subtitle)
   const titleRowActions = !hasSubtitle && actions
@@ -80,7 +85,7 @@ export function PageHeader({
 
   return (
     <Box sx={{ mb: 3, ...slotSx.root }}>
-      {/* ── Title Row: [Title Block (Title + titleDescription + Breadcrumbs)] ......... [titleRowActions] [headerRight] ── */}
+      {/* ── Title Row: [Title Block (Title + titleDescription OR Breadcrumbs)] ......... [titleRowActions] [headerRight] ── */}
       <Box
         sx={{
           display: 'flex',
@@ -92,7 +97,7 @@ export function PageHeader({
           ...slotSx.titleRow,
         }}
       >
-        {/* Title Block: Title + Status, then titleDescription / Breadcrumbs underneath */}
+        {/* Title Block: Title + Status, then titleDescription OR Breadcrumbs underneath */}
         <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
           {title && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
@@ -115,8 +120,8 @@ export function PageHeader({
             </Box>
           )}
 
-          {/* Text directly under title (e.g. "Terakhir masuk: 30 Desember 2024 11:35") */}
-          {titleDescription && (
+          {/* Mutually exclusive: titleDescription OR breadcrumbs */}
+          {titleDescription ? (
             <Typography
               variant="body2"
               sx={{
@@ -128,14 +133,11 @@ export function PageHeader({
             >
               {titleDescription}
             </Typography>
-          )}
-
-          {/* Breadcrumbs under title */}
-          {breadcrumbs && (
+          ) : breadcrumbs ? (
             <Box sx={{ mt: 0.25 }}>
               <Breadcrumbs items={breadcrumbs} />
             </Box>
-          )}
+          ) : null}
         </Box>
 
         {/* headerRight (UserHeader) + title-row actions when no subtitle */}

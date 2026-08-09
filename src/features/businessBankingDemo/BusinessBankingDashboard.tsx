@@ -106,11 +106,6 @@ export function BusinessBankingDashboard() {
       bgVariant="transparent"
       title="Assalamualaikum, Shafa"
       titleDescription="Terakhir masuk: 30 Desember 2024 11:35"
-
-      breadcrumbs={[
-        { label: 'Home', href: '/' },
-        { label: 'Business Banking', href: '/business-banking' },
-      ]}
     >
       {/* ── SECTION 1: Tabungan (Savings Overview + Account Cards) ── */}
       <Card
