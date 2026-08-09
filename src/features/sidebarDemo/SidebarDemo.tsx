@@ -25,7 +25,7 @@ import ViewSidebarIcon from '@mui/icons-material/ViewSidebar'
 
 import { Sidebar } from '../../components/sidebar'
 import type { SidebarItemConfig } from '../../components/sidebar'
-import { PageLayout } from '../../components/pageLayout'
+import { PageShell } from '../../components/pageShell'
 
 export function SidebarDemo() {
   const [activeKey, setActiveKey] = useState('dashboard')
@@ -58,9 +58,9 @@ export function SidebarDemo() {
   ]
 
   return (
-    <PageLayout maxWidth="xl">
+    <PageShell maxWidth="xl">
 
-      <PageLayout.Header
+      <PageShell.Header
         title="Sidebar Navigation Kit"
         subtitle="Reusable · Customizable · Scalable · Readable · Maintainable — built with compound components and a data-driven config API."
         breadcrumbs={[
@@ -79,9 +79,9 @@ export function SidebarDemo() {
         }
       />
 
-      <PageLayout.Content>
+      <PageShell.Content>
         {/* API Mode Controls */}
-        <PageLayout.Section
+        <PageShell.Section
           title="API Architecture Mode"
           description="Switch between the Compound Component API and the Data-Driven JSON config API."
           variant="plain"
@@ -113,10 +113,10 @@ export function SidebarDemo() {
               }
             />
           </RadioGroup>
-        </PageLayout.Section>
+        </PageShell.Section>
 
         {/* Live Preview Frame */}
-        <PageLayout.Section
+        <PageShell.Section
           title="Live Sidebar Preview"
           description="Interact with the sidebar: click items, toggle collapse, and switch API modes to see real-time changes."
           variant="card"
@@ -277,8 +277,8 @@ export function SidebarDemo() {
               </Card>
             </Box>
           </Paper>
-        </PageLayout.Section>
-      </PageLayout.Content>
-    </PageLayout>
+        </PageShell.Section>
+      </PageShell.Content>
+    </PageShell>
   )
 }

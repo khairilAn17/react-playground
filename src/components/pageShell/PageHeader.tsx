@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import { Box, Typography, Stack } from '@mui/material'
+import { Box, Typography, Stack, IconButton } from '@mui/material'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import type { SxProps, Theme } from '@mui/material'
 import { Breadcrumbs } from '../breadcrumbs'
 import { Steps } from '../steps'
@@ -58,6 +59,8 @@ export interface PageHeaderProps {
   steps?: (string | StepItem)[]
   currentStep?: number
   onStepClick?: (index: number) => void
+  /** Optional back button callback for nested page navigation */
+  onBack?: () => void
   /**
    * Granular sx overrides for every slot inside PageHeader.
    */
@@ -77,6 +80,7 @@ export function PageHeader({
   steps,
   currentStep,
   onStepClick,
+  onBack,
   slotSx = {},
 }: PageHeaderProps) {
   if (!title && !subtitle && !actions && !headerRight && !breadcrumbs && !steps && !titleDescription) return null
@@ -103,6 +107,11 @@ export function PageHeader({
         <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
           {title && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+              {onBack && (
+                <IconButton onClick={onBack} size="small" sx={{ mr: 0.5, color: '#1E293B' }}>
+                  <ArrowBackIcon fontSize="small" />
+                </IconButton>
+              )}
               {typeof title === 'string' ? (
                 <Typography
                   variant="h5"

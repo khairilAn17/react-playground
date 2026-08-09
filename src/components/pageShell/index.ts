@@ -1,14 +1,14 @@
-export { PageLayout } from './PageLayout'
-export type { PageLayoutProps } from './types'
+export { PageShell } from './PageShell'
+export type { PageShellProps, PageLayoutProps } from './types'
 
 export { PageHeader } from './PageHeader'
 export type { PageHeaderProps, PageHeaderSlotSx } from './PageHeader'
 
-// Steps — standalone component re-exported through pageLayout for compound access
+// Steps — standalone component re-exported through pageShell for compound access
 export { PageSteps } from './PageSteps'
 export type { PageStepsProps, PageStepItem } from './PageSteps'
 
-// StickyFooter — standalone component re-exported through pageLayout for compound access
+// StickyFooter — standalone component re-exported through pageShell for compound access
 export { PageStickyFooter } from './PageStickyFooter'
 export type { PageStickyFooterProps } from './PageStickyFooter'
 

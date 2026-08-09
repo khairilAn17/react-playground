@@ -8,9 +8,9 @@ import { PageSteps } from './PageSteps'
 import { PageStickyFooter } from './PageStickyFooter'
 import { PageSkeleton } from './PageSkeleton'
 
-import type { PageLayoutProps } from './types'
+import type { PageShellProps } from './types'
 
-export function PageLayout({
+export function PageShell({
   maxWidth = 'lg',
   compact = false,
   loading = false,
@@ -29,7 +29,7 @@ export function PageLayout({
   onStepClick,
   headerSlotSx,
   children,
-}: PageLayoutProps) {
+}: PageShellProps) {
   const getContainerMaxWidth = (): 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false => {
     if (maxWidth === 'full') return false
     return maxWidth as 'xs' | 'sm' | 'md' | 'lg' | 'xl'
@@ -89,10 +89,10 @@ export function PageLayout({
 }
 
 // Compound sub-component attachments
-PageLayout.Header = PageHeader
-PageLayout.Steps = PageSteps
-PageLayout.Section = PageSection
-PageLayout.Breadcrumbs = Breadcrumbs
-PageLayout.Content = PageContent
-PageLayout.StickyFooter = PageStickyFooter
-PageLayout.Skeleton = PageSkeleton
+PageShell.Header = PageHeader
+PageShell.Steps = PageSteps
+PageShell.Section = PageSection
+PageShell.Breadcrumbs = Breadcrumbs
+PageShell.Content = PageContent
+PageShell.StickyFooter = PageStickyFooter
+PageShell.Skeleton = PageSkeleton

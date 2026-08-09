@@ -74,6 +74,7 @@ export function Steps({
         '& .MuiStepIcon-text': {
           fontSize: '0.72rem',
           fontWeight: 800,
+          fill: '#FFFFFF',
         },
         '& .MuiStepLabel-label': {
           fontSize: '0.875rem',

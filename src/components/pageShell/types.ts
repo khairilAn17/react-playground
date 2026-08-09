@@ -8,7 +8,10 @@ export type { BreadcrumbItem }
 export type PageStepItem = StepItem
 export type PageMaxWidth = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'full'
 
-export interface PageLayoutProps {
+/** @deprecated Renamed to PageShellProps */
+export type PageLayoutProps = PageShellProps
+
+export interface PageShellProps {
   /** Responsive container width preset: 'xs' (440), 'sm' (640), 'md' (900), 'lg' (1200), 'xl' (1536), 'full' (100%) */
   maxWidth?: PageMaxWidth
   /** Padding density override */

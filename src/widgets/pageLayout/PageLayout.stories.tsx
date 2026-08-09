@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { Button, Typography, Paper, Box } from '@mui/material'
-import { PageView } from './PageView'
+import { PageLayout } from './PageLayout'
 
-const meta: Meta<typeof PageView> = {
-  title: 'Widgets/PageView',
-  component: PageView,
+const meta: Meta<typeof PageLayout> = {
+  title: 'Widgets/PageLayout',
+  component: PageLayout,
   tags: ['autodocs'],
   decorators: [
     (Story) => (
@@ -16,7 +16,7 @@ const meta: Meta<typeof PageView> = {
 }
 
 export default meta
-type Story = StoryObj<typeof PageView>
+type Story = StoryObj<typeof PageLayout>
 
 export const Default: Story = {
   args: {
@@ -30,7 +30,7 @@ export const Default: Story = {
     children: (
       <Paper sx={{ p: 3, borderRadius: 3 }}>
         <Typography variant="body1">
-          Ini adalah konten utama halaman yang otomatis terbungkus PageLayout.Content.
+          Ini adalah konten utama halaman yang otomatis terbungkus PageShell.Content.
         </Typography>
       </Paper>
     ),

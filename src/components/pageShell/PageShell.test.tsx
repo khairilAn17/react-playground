@@ -1,13 +1,13 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { Button, Chip } from '@mui/material'
-import { PageLayout } from './PageLayout'
+import { PageShell } from './PageShell'
 
-describe('PageLayout', () => {
+describe('PageShell', () => {
   it('renders header title, subtitle, and breadcrumbs', () => {
     render(
-      <PageLayout maxWidth="lg">
-        <PageLayout.Header
+      <PageShell maxWidth="lg">
+        <PageShell.Header
           title="User Profile Settings"
           subtitle="Manage your personal preferences and notification rules"
           breadcrumbs={[
@@ -16,10 +16,10 @@ describe('PageLayout', () => {
           ]}
           status={<Chip label="Active" size="small" color="success" />}
         />
-        <PageLayout.Content>
+        <PageShell.Content>
           <div>Page Body Content</div>
-        </PageLayout.Content>
-      </PageLayout>
+        </PageShell.Content>
+      </PageShell>
     )
 
     expect(screen.getByText('User Profile Settings')).toBeInTheDocument()
@@ -32,14 +32,14 @@ describe('PageLayout', () => {
 
   it('supports shorthand props mode (zero boilerplate)', () => {
     render(
-      <PageLayout
+      <PageShell
         title="Manajemen Akun"
         subtitle="Daftar Akun Maker"
         subtitleDescription="Tambah Maker dan kelola hingga 10 akun di halaman ini"
         actions={<Button variant="contained">Tambah Maker</Button>}
       >
         <div>Shorthand Body Content</div>
-      </PageLayout>
+      </PageShell>
     )
 
     expect(screen.getByText('Manajemen Akun')).toBeInTheDocument()
@@ -51,13 +51,13 @@ describe('PageLayout', () => {
 
   it('renders horizontal step wizard indicator', () => {
     render(
-      <PageLayout
+      <PageShell
         title="Payroll"
         steps={['Detail Payroll', 'Tujuan Payroll', 'Validasi Tujuan', 'Periksa Detail']}
         currentStep={1}
       >
         <div>Payroll Step 2 Content</div>
-      </PageLayout>
+      </PageShell>
     )
 
     expect(screen.getByText('Payroll')).toBeInTheDocument()
@@ -71,8 +71,8 @@ describe('PageLayout', () => {
     const handleSave = vi.fn()
 
     render(
-      <PageLayout>
-        <PageLayout.Header
+      <PageShell>
+        <PageShell.Header
           title="Security"
           actions={
             <Button variant="contained" onClick={handleSave}>
@@ -80,7 +80,7 @@ describe('PageLayout', () => {
             </Button>
           }
         />
-      </PageLayout>
+      </PageShell>
     )
 
     const btn = screen.getByText('Save Security Rules')
@@ -91,15 +91,15 @@ describe('PageLayout', () => {
 
   it('renders sticky footer with custom buttons', () => {
     render(
-      <PageLayout maxWidth="sm">
-        <PageLayout.Content>
+      <PageShell maxWidth="sm">
+        <PageShell.Content>
           <div>Form Content</div>
-        </PageLayout.Content>
-        <PageLayout.StickyFooter>
+        </PageShell.Content>
+        <PageShell.StickyFooter>
           <Button variant="outlined">Cancel</Button>
           <Button variant="contained">Submit Form</Button>
-        </PageLayout.StickyFooter>
-      </PageLayout>
+        </PageShell.StickyFooter>
+      </PageShell>
     )
 
     expect(screen.getByText('Cancel')).toBeInTheDocument()

@@ -3,12 +3,12 @@ import { Button, Chip, Typography, Card, CardContent, Box } from '@mui/material'
 import Grid from '@mui/material/Grid'
 import AddIcon from '@mui/icons-material/Add'
 
-import { PageLayout } from './PageLayout'
+import { PageShell } from './PageShell'
 import { ConnectedUserHeader } from '../../widgets/userHeader'
 
-const meta: Meta<typeof PageLayout> = {
-  title: 'Components/Layout/PageLayout',
-  component: PageLayout,
+const meta: Meta<typeof PageShell> = {
+  title: 'Components/Layout/PageShell',
+  component: PageShell,
   tags: ['autodocs'],
   decorators: [
     (Story) => (
@@ -20,11 +20,11 @@ const meta: Meta<typeof PageLayout> = {
 }
 
 export default meta
-type Story = StoryObj<typeof PageLayout>
+type Story = StoryObj<typeof PageShell>
 
 /**
  * Zero-Boilerplate Shorthand Mode
- * Pass title, subtitle, breadcrumbs, status, actions directly as props on <PageLayout>.
+ * Pass title, subtitle, breadcrumbs, status, actions directly as props on <PageShell>.
  */
 export const ShorthandApi: Story = {
   args: {
@@ -41,7 +41,7 @@ export const ShorthandApi: Story = {
       </Button>
     ),
     children: (
-      <PageLayout.Content>
+      <PageShell.Content>
         <Grid container spacing={2.5}>
           <Grid size={{ xs: 12, md: 4 }}>
             <Card variant="outlined">
@@ -56,7 +56,7 @@ export const ShorthandApi: Story = {
             </Card>
           </Grid>
         </Grid>
-      </PageLayout.Content>
+      </PageShell.Content>
     ),
   },
 }
@@ -67,7 +67,7 @@ export const ShorthandApi: Story = {
  */
 export const DualHeaderSlots: Story = {
   render: () => (
-    <PageLayout
+    <PageShell
       maxWidth="lg"
       title="Bank Transfer"
       subtitle="Pengiriman Dana Realtime"
@@ -80,14 +80,14 @@ export const DualHeaderSlots: Story = {
         </Button>
       }
     >
-      <PageLayout.Content>
-        <PageLayout.Section title="Riwayat Transfer Terakhir" divider>
+      <PageShell.Content>
+        <PageShell.Section title="Riwayat Transfer Terakhir" divider>
           <Typography variant="body2" color="text.secondary">
             Daftar transaksi transfer bulan ini.
           </Typography>
-        </PageLayout.Section>
-      </PageLayout.Content>
-    </PageLayout>
+        </PageShell.Section>
+      </PageShell.Content>
+    </PageShell>
   ),
 }
 
@@ -97,7 +97,7 @@ export const DualHeaderSlots: Story = {
  */
 export const MultiStepWizard: Story = {
   render: () => (
-    <PageLayout
+    <PageShell
       maxWidth="lg"
       title="Pengajuan Rekening Baru"
       subtitle="Langkah 2: Detail Perusahaan"
@@ -105,21 +105,21 @@ export const MultiStepWizard: Story = {
       currentStep={1}
       headerRight={<ConnectedUserHeader />}
     >
-      <PageLayout.Content>
-        <PageLayout.Section title="Data Legalitas">
+      <PageShell.Content>
+        <PageShell.Section title="Data Legalitas">
           <Typography variant="body2" color="text.secondary">
             Formulir kelengkapan dokumen legal perusahaan.
           </Typography>
-        </PageLayout.Section>
+        </PageShell.Section>
 
-        <PageLayout.StickyFooter align="between">
+        <PageShell.StickyFooter align="between">
           <Button variant="outlined">Kembali</Button>
           <Button variant="contained" sx={{ bgcolor: '#00A39D' }}>
             Lanjutkan
           </Button>
-        </PageLayout.StickyFooter>
-      </PageLayout.Content>
-    </PageLayout>
+        </PageShell.StickyFooter>
+      </PageShell.Content>
+    </PageShell>
   ),
 }
 
@@ -129,7 +129,7 @@ export const MultiStepWizard: Story = {
  */
 export const CustomSlotStyling: Story = {
   render: () => (
-    <PageLayout
+    <PageShell
       maxWidth="lg"
       title="Custom Typography & Spacing"
       subtitle="Header with custom slotSx rules"
@@ -141,10 +141,10 @@ export const CustomSlotStyling: Story = {
       }}
       headerRight={<ConnectedUserHeader />}
     >
-      <PageLayout.Content>
+      <PageShell.Content>
         <Typography variant="body1">Content with custom header spacing styling.</Typography>
-      </PageLayout.Content>
-    </PageLayout>
+      </PageShell.Content>
+    </PageShell>
   ),
 }
 
@@ -152,5 +152,5 @@ export const CustomSlotStyling: Story = {
  * Full Page Loading Skeleton State
  */
 export const LoadingState: Story = {
-  render: () => <PageLayout loading maxWidth="lg">{null}</PageLayout>,
+  render: () => <PageShell loading maxWidth="lg">{null}</PageShell>,
 }

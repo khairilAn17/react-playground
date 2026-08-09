@@ -12,7 +12,7 @@ import {
 import { useState } from 'react'
 import { createTypedForm } from '../../components/form'
 import type { SelectOption, RadioOption, AutocompleteOption } from '../../components/form'
-import { PageLayout } from '../../components/pageLayout'
+import { PageLayout } from '../../widgets/pageLayout'
 import { demoSchema } from './demoSchema'
 import type { DemoFormValues } from './demoSchema'
 

@@ -26,7 +26,7 @@ import RefreshIcon from '@mui/icons-material/Refresh'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 
-import { PageView } from '../../widgets/pageView'
+import { PageLayout } from '../../widgets/pageLayout'
 
 // ─── Theme Colors ─────────────────────────────────────────────────────────────
 const TEAL_PRIMARY = '#00A39D'
@@ -101,7 +101,7 @@ export function BusinessBankingDashboard() {
   const toggleBalance = () => setShowBalance((prev) => !prev)
 
   return (
-    <PageView
+    <PageLayout
       maxWidth="full"
       bgVariant="transparent"
       title="Assalamualaikum, Shafa"
@@ -620,6 +620,6 @@ export function BusinessBankingDashboard() {
           </Grid>
         </Grid>
       </Card>
-    </PageView>
+    </PageLayout>
   )
 }

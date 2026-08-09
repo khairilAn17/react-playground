@@ -20,11 +20,11 @@
   - `src/components/stickyFooter/`: Standalone `StickyFooter` action bar.
   - `src/components/search/`: Standalone `ExpandableSearch` component.
   - `src/components/form/`: RHF + Zod type-safe form field primitives.
-  - `src/components/pageLayout/`: `PageLayout` compound layout system.
+  - `src/components/pageLayout/`: `PageShell` compound layout system (bare structural wrapper).
   - `src/components/sidebar/`: Modern collapsible `Sidebar` component system.
 - **Layer 2 — Composite Domain Widgets (`src/widgets/`)**: Domain-aware composite UI blocks with API hooks, popovers, and loading states.
   - `src/widgets/userHeader/`: Header actions widget with `UserHeader`, `ConnectedUserHeader` (self-hydrating via `useCurrentUser`), `UserProfilePill` (MUI Menu), `NotificationMenu` (MUI Popover), and `Skeleton` loading states.
-  - `src/widgets/pageView/`: Zero-boilerplate page container widget (`PageView`) combining `PageLayout` + `ConnectedUserHeader` + `StickyFooter`.
+  - `src/widgets/pageLayout/`: Zero-boilerplate page container widget (`PageLayout`) combining `PageShell` + `ConnectedUserHeader` + `StickyFooter`.
 - **Layer 3 — Feature Workspaces (`src/features/`)**: High-level business feature workflows and page layouts.
 - **Barrel Exports**: Every component and widget folder MUST feature a clean `index.ts` file exporting the public functions and TypeScript prop interfaces.
 

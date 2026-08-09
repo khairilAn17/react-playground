@@ -12,7 +12,7 @@ import {
 } from '@mui/material'
 import { createTypedForm } from '../../components/form'
 import type { SelectOption, RadioOption, AutocompleteOption } from '../../components/form'
-import { PageLayout } from '../../components/pageLayout'
+import { PageShell } from '../../components/pageShell'
 import { multiStepSchema } from './multiStepSchema'
 import type { MultiStepFormValues } from './multiStepSchema'
 
@@ -131,7 +131,7 @@ function MultiStepWizardContent() {
 
   return (
     <>
-      <PageLayout.Steps steps={STEPS} currentStep={activeStep} />
+      <PageShell.Steps steps={STEPS} currentStep={activeStep} />
 
       {/* STEP 1: Personal Details */}
       {activeStep === 0 && (
@@ -230,16 +230,16 @@ export function MultiStepForm() {
   }
 
   return (
-    <PageLayout maxWidth="md">
+    <PageShell maxWidth="md">
 
-      <PageLayout.Header
+      <PageShell.Header
         title="Multi-Step Wizard Form"
-        subtitle="Step-by-step wizard flow with PageLayout.Steps & per-step schema validation using dot-paths."
+        subtitle="Step-by-step wizard flow with PageShell.Steps & per-step schema validation using dot-paths."
         breadcrumbs={[{ label: 'Form Workspaces', href: '#' }, { label: 'Multi-Step Wizard' }]}
         status={<Chip label="Wizard Flow" color="secondary" size="small" />}
       />
 
-      <PageLayout.Content>
+      <PageShell.Content>
         <Card variant="outlined">
           <CardContent>
             <Form
@@ -278,7 +278,7 @@ export function MultiStepForm() {
             </Card>
           </Box>
         )}
-      </PageLayout.Content>
-    </PageLayout>
+      </PageShell.Content>
+    </PageShell>
   )
 }

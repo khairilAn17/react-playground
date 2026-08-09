@@ -1,14 +1,14 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import { Button } from '@mui/material'
-import { PageView } from './PageView'
+import { PageLayout } from './PageLayout'
 
-describe('PageView Widget', () => {
+describe('PageLayout Widget', () => {
   it('renders title, subtitle, and children content', () => {
     render(
-      <PageView title="Manajemen Akun" subtitle="Daftar Akun Maker">
+      <PageLayout title="Manajemen Akun" subtitle="Daftar Akun Maker">
         <div>Account Table Content</div>
-      </PageView>
+      </PageLayout>
     )
 
     expect(screen.getByText('Manajemen Akun')).toBeInTheDocument()
@@ -18,7 +18,7 @@ describe('PageView Widget', () => {
 
   it('renders sticky footer when footerActions is passed', () => {
     render(
-      <PageView
+      <PageLayout
         title="Settings"
         footerActions={
           <>
@@ -28,7 +28,7 @@ describe('PageView Widget', () => {
         }
       >
         <div>Settings Content</div>
-      </PageView>
+      </PageLayout>
     )
 
     expect(screen.getByRole('button', { name: 'Save Changes' })).toBeInTheDocument()
@@ -37,9 +37,9 @@ describe('PageView Widget', () => {
 
   it('renders custom headerRight instead of ConnectedUserHeader when headerRight is passed', () => {
     render(
-      <PageView title="Custom Header" headerRight={<Button>Custom Header Widget</Button>}>
+      <PageLayout title="Custom Header" headerRight={<Button>Custom Header Widget</Button>}>
         <div>Body Content</div>
-      </PageView>
+      </PageLayout>
     )
 
     expect(screen.getByRole('button', { name: 'Custom Header Widget' })).toBeInTheDocument()
@@ -47,9 +47,9 @@ describe('PageView Widget', () => {
 
   it('disables headerRight when null is passed', () => {
     const { container } = render(
-      <PageView title="No Header Right" headerRight={null}>
+      <PageLayout title="No Header Right" headerRight={null}>
         <div>Body Content</div>
-      </PageView>
+      </PageLayout>
     )
 
     expect(screen.getByText('No Header Right')).toBeInTheDocument()

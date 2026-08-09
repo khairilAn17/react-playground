@@ -39,8 +39,8 @@ import ArticleIcon from '@mui/icons-material/Article'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import SettingsIcon from '@mui/icons-material/Settings'
 
-import { PageLayout } from '../../components/pageLayout'
-import type { PageMaxWidth } from '../../components/pageLayout'
+import { PageShell } from '../../components/pageShell'
+import type { PageMaxWidth } from '../../components/pageShell'
 
 // ─── Prop Reference Table ───────────────────────────────────────────────────
 const propRows = [
@@ -52,12 +52,12 @@ const propRows = [
 ]
 
 const subComponents = [
-  { name: 'PageLayout.Header', desc: 'Page title, breadcrumbs, subtitle, status chip, actions, back button, extra widget slot' },
-  { name: 'PageLayout.Breadcrumbs', desc: 'Standalone breadcrumb navigation hierarchy' },
-  { name: 'PageLayout.Content', desc: 'Vertical flex container for spacing children' },
-  { name: 'PageLayout.Section', desc: "Card/plain block with header, description, divider, action slot. variant='card' | 'plain'" },
-  { name: 'PageLayout.StickyFooter', desc: "Sticky bottom action bar. align='left' | 'center' | 'right' | 'between'" },
-  { name: 'PageLayout.Skeleton', desc: 'Loading placeholder skeleton (auto-rendered when loading=true)' },
+  { name: 'PageShell.Header', desc: 'Page title, breadcrumbs, subtitle, status chip, actions, back button, extra widget slot' },
+  { name: 'PageShell.Breadcrumbs', desc: 'Standalone breadcrumb navigation hierarchy' },
+  { name: 'PageShell.Content', desc: 'Vertical flex container for spacing children' },
+  { name: 'PageShell.Section', desc: "Card/plain block with header, description, divider, action slot. variant='card' | 'plain'" },
+  { name: 'PageShell.StickyFooter', desc: "Sticky bottom action bar. align='left' | 'center' | 'right' | 'between'" },
+  { name: 'PageShell.Skeleton', desc: 'Loading placeholder skeleton (auto-rendered when loading=true)' },
 ]
 
 // ─── Section label chip ──────────────────────────────────────────────────────
@@ -82,7 +82,7 @@ function SectionLabel({ label }: { label: string }) {
 }
 
 // ─── Main Demo Component ──────────────────────────────────────────────────────
-export function PageLayoutDemo() {
+export function PageShellDemo() {
   const [maxWidth, setMaxWidth] = useState<PageMaxWidth>('lg')
   const [loading, setLoading] = useState(false)
   const [compact, setCompact] = useState(false)
@@ -92,14 +92,14 @@ export function PageLayoutDemo() {
   const [activeTab, setActiveTab] = useState(0)
 
   return (
-    <PageLayout maxWidth="lg">
+    <PageShell maxWidth="lg">
 
-      <PageLayout.Header
-        title="PageLayout — Living Specification"
+      <PageShell.Header
+        title="PageShell — Living Specification"
         subtitle="A compound component system built on 5 principles: Reusable · Customizable · Scalable · Readable · Maintainable"
         breadcrumbs={[
           { label: 'Navigation & Layout', href: '#' },
-          { label: 'PageLayout Specification' },
+          { label: 'PageShell Specification' },
         ]}
         status={<Chip label="Component Architecture" color="primary" size="small" icon={<LayersIcon sx={{ fontSize: '0.9rem !important' }} />} />}
       />
@@ -216,7 +216,7 @@ export function PageLayoutDemo() {
             </Stack>
           </Paper>
 
-          {/* Live Rendered PageLayout */}
+          {/* Live Rendered PageShell */}
           <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden', bgcolor: 'grey.50' }}>
             <Box sx={{ p: 1.5, bgcolor: 'grey.100', borderBottom: '1px solid', borderColor: 'divider' }}>
               <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
@@ -224,18 +224,18 @@ export function PageLayoutDemo() {
                 <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#ffbd2e' }} />
                 <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#28c840' }} />
                 <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
-                  PageLayout Preview — maxWidth: {maxWidth} · bgVariant: {bgVariant} · compact: {String(compact)} · loading: {String(loading)}
+                  PageShell Preview — maxWidth: {maxWidth} · bgVariant: {bgVariant} · compact: {String(compact)} · loading: {String(loading)}
                 </Typography>
               </Stack>
             </Box>
 
-            <PageLayout
+            <PageShell
               maxWidth={maxWidth}
               loading={loading}
               compact={compact}
               bgVariant={bgVariant}
             >
-              <PageLayout.Header
+              <PageShell.Header
                 title="Team & Member Directory"
                 subtitle="Manage workspace users, access controls, and security policies."
                 breadcrumbs={[
@@ -256,7 +256,7 @@ export function PageLayoutDemo() {
                 }
               />
 
-              <PageLayout.Content>
+              <PageShell.Content>
                 <Grid container spacing={2.5}>
                   {[
                     { label: 'Engineering', count: 24, note: '+3 this month', color: 'success.main' },
@@ -284,7 +284,7 @@ export function PageLayoutDemo() {
                   ))}
                 </Grid>
 
-                <PageLayout.Section
+                <PageShell.Section
                   variant={sectionVariant}
                   title="Organization Access Policy"
                   description="Configure default role permissions assigned to newly invited members."
@@ -303,9 +303,9 @@ export function PageLayoutDemo() {
                     <Chip label="SSO: Enabled" variant="outlined" color="success" size="small" />
                     <Chip label="Session Timeout: 24h" variant="outlined" size="small" />
                   </Box>
-                </PageLayout.Section>
+                </PageShell.Section>
 
-                <PageLayout.Section
+                <PageShell.Section
                   variant={sectionVariant}
                   title="Recent Activity"
                   description="Last 5 member events across all teams."
@@ -350,16 +350,16 @@ export function PageLayoutDemo() {
                       ))}
                     </TableBody>
                   </Table>
-                </PageLayout.Section>
-              </PageLayout.Content>
+                </PageShell.Section>
+              </PageShell.Content>
 
-              <PageLayout.StickyFooter align={footerAlign}>
+              <PageShell.StickyFooter align={footerAlign}>
                 <Button variant="outlined">Discard Changes</Button>
                 <Button variant="contained" startIcon={<EditIcon />}>
                   Save Configuration
                 </Button>
-              </PageLayout.StickyFooter>
-            </PageLayout>
+              </PageShell.StickyFooter>
+            </PageShell>
           </Paper>
         </Box>
       )}
@@ -369,12 +369,12 @@ export function PageLayoutDemo() {
       ══════════════════════════════════════════════════════ */}
       {activeTab === 1 && (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {/* ── PageLayout.Header ── */}
+          {/* ── PageShell.Header ── */}
           <Box>
-            <SectionLabel label="PageLayout.Header" />
-            <PageLayout maxWidth="lg" bgVariant="paper">
-              <PageLayout.Header
-                title="PageLayout.Header"
+            <SectionLabel label="PageShell.Header" />
+            <PageShell maxWidth="lg" bgVariant="paper">
+              <PageShell.Header
+                title="PageShell.Header"
                 subtitle="Page title with breadcrumb trail, status chip, and action buttons. Supports an onBack handler for nested navigation."
                 breadcrumbs={[
                   { label: 'Root', href: '#' },
@@ -389,16 +389,16 @@ export function PageLayoutDemo() {
                   </>
                 }
               />
-            </PageLayout>
+            </PageShell>
           </Box>
 
-          {/* ── PageLayout.Section variants ── */}
+          {/* ── PageShell.Section variants ── */}
           <Box>
-            <SectionLabel label="PageLayout.Section — card vs plain" />
+            <SectionLabel label="PageShell.Section — card vs plain" />
             <Stack spacing={2}>
-              <PageLayout maxWidth="lg" bgVariant="paper">
-                <PageLayout.Content>
-                  <PageLayout.Section
+              <PageShell maxWidth="lg" bgVariant="paper">
+                <PageShell.Content>
+                  <PageShell.Section
                     variant="card"
                     title="variant='card' (default)"
                     description="Renders as an outlined MUI Card with CardHeader, Divider, and CardContent."
@@ -407,9 +407,9 @@ export function PageLayoutDemo() {
                     <Alert severity="info" variant="outlined">
                       Section content rendered inside CardContent. Ideal for grouping related fields or settings.
                     </Alert>
-                  </PageLayout.Section>
+                  </PageShell.Section>
 
-                  <PageLayout.Section
+                  <PageShell.Section
                     variant="plain"
                     title="variant='plain'"
                     description="Renders as a borderless Box with a bottom Divider — useful for in-page hierarchy."
@@ -418,17 +418,17 @@ export function PageLayoutDemo() {
                     <Alert severity="success" variant="outlined">
                       Flat section content with no card shadow. Great for form sections or data groupings.
                     </Alert>
-                  </PageLayout.Section>
-                </PageLayout.Content>
-              </PageLayout>
+                  </PageShell.Section>
+                </PageShell.Content>
+              </PageShell>
             </Stack>
           </Box>
 
           {/* ── Standard MUI Grid Composition ── */}
           <Box>
             <SectionLabel label="Responsive Multi-Column Cards (MUI Grid)" />
-            <PageLayout maxWidth="lg" bgVariant="paper">
-              <PageLayout.Content>
+            <PageShell maxWidth="lg" bgVariant="paper">
+              <PageShell.Content>
                 <Grid container spacing={2.5}>
                   {[1, 2, 3, 4].map((n) => (
                     <Grid key={n} size={{ xs: 12, sm: 6, md: 3 }}>
@@ -453,13 +453,13 @@ export function PageLayoutDemo() {
                     </Grid>
                   ))}
                 </Grid>
-              </PageLayout.Content>
-            </PageLayout>
+              </PageShell.Content>
+            </PageShell>
           </Box>
 
-          {/* ── PageLayout.StickyFooter alignment ── */}
+          {/* ── PageShell.StickyFooter alignment ── */}
           <Box>
-            <SectionLabel label="PageLayout.StickyFooter — align prop" />
+            <SectionLabel label="PageShell.StickyFooter — align prop" />
             <Stack spacing={2}>
               {(['left', 'center', 'right', 'between'] as const).map((align) => (
                 <Paper variant="outlined" key={align} sx={{ borderRadius: 2, overflow: 'hidden' }}>
@@ -469,25 +469,25 @@ export function PageLayoutDemo() {
                     </Typography>
                   </Box>
                   <Box sx={{ p: 1 }}>
-                    <PageLayout maxWidth="full" compact>
-                      <PageLayout.StickyFooter align={align}>
+                    <PageShell maxWidth="full" compact>
+                      <PageShell.StickyFooter align={align}>
                         <Button variant="outlined" size="small">Cancel</Button>
                         <Button variant="contained" size="small">Save</Button>
-                      </PageLayout.StickyFooter>
-                    </PageLayout>
+                      </PageShell.StickyFooter>
+                    </PageShell>
                   </Box>
                 </Paper>
               ))}
             </Stack>
           </Box>
 
-          {/* ── PageLayout.Skeleton ── */}
+          {/* ── PageShell.Skeleton ── */}
           <Box>
-            <SectionLabel label="PageLayout.Skeleton — loading state" />
+            <SectionLabel label="PageShell.Skeleton — loading state" />
             <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
-              <PageLayout maxWidth="lg" loading={true} bgVariant="paper">
+              <PageShell maxWidth="lg" loading={true} bgVariant="paper">
                 <></>
-              </PageLayout>
+              </PageShell>
             </Paper>
           </Box>
         </Box>
@@ -498,9 +498,9 @@ export function PageLayoutDemo() {
       ══════════════════════════════════════════════════════ */}
       {activeTab === 2 && (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {/* PageLayout root props */}
+          {/* PageShell root props */}
           <Box>
-            <SectionLabel label="PageLayout — Root Props" />
+            <SectionLabel label="PageShell — Root Props" />
             <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
               <Table size="small">
                 <TableHead>
@@ -601,8 +601,8 @@ export function PageLayoutDemo() {
               }}
             >
               <Box component="pre" sx={{ m: 0, whiteSpace: 'pre-wrap' }}>
-{`<PageLayout maxWidth="lg" bgVariant="default">
-  <PageLayout.Header
+{`<PageShell maxWidth="lg" bgVariant="default">
+  <PageShell.Header
     title="Page Title"
     subtitle="Optional subtitle line"
     breadcrumbs={[{ label: 'Root', href: '/' }, { label: 'Current' }]}
@@ -610,31 +610,31 @@ export function PageLayoutDemo() {
     actions={<Button variant="contained">Primary Action</Button>}
   />
 
-  <PageLayout.Content>
+  <PageShell.Content>
     <Grid container spacing={2}>
       <Grid size={6}><Card>...</Card></Grid>
       <Grid size={6}><Card>...</Card></Grid>
     </Grid>
 
-    <PageLayout.Section
+    <PageShell.Section
       title="Section Title"
       description="Section description"
       variant="card"
     >
       {/* Section body */}
-    </PageLayout.Section>
-  </PageLayout.Content>
+    </PageShell.Section>
+  </PageShell.Content>
 
-  <PageLayout.StickyFooter align="right">
+  <PageShell.StickyFooter align="right">
     <Button variant="outlined">Cancel</Button>
     <Button variant="contained">Save</Button>
-  </PageLayout.StickyFooter>
-</PageLayout>`}
+  </PageShell.StickyFooter>
+</PageShell>`}
               </Box>
             </Paper>
           </Box>
         </Box>
       )}
-    </PageLayout>
+    </PageShell>
   )
 }

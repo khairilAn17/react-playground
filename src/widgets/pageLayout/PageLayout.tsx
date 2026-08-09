@@ -1,18 +1,18 @@
 import type { ReactNode } from 'react'
 import type { SxProps, Theme } from '@mui/material'
-import { PageLayout } from '../../components/pageLayout'
-import type { PageLayoutProps } from '../../components/pageLayout'
+import { PageShell } from '../../components/pageShell'
+import type { PageShellProps } from '../../components/pageShell'
 import { StickyFooter } from '../../components/stickyFooter'
 import { ConnectedUserHeader } from '../userHeader'
 
-export interface PageViewProps extends PageLayoutProps {
+export interface PageLayoutProps extends PageShellProps {
   /**
    * Header right action slot.
    * Defaults to `<ConnectedUserHeader />` if omitted. Pass `null` to explicitly disable.
    * @default <ConnectedUserHeader />
    */
   headerRight?: ReactNode
-  /** Vertical spacing gap between children in PageLayout.Content. Default: 3 */
+  /** Vertical spacing gap between children in PageShell.Content. Default: 3 */
   contentGap?: number
 
   /** Sticky footer action buttons (e.g. Batal, Simpan) */
@@ -24,45 +24,55 @@ export interface PageViewProps extends PageLayoutProps {
 }
 
 /**
- * PageView Widget
+ * PageLayout Widget
  *
- * A composite Layer 2 widget combining `PageLayout`, `ConnectedUserHeader` (auto-injected into `headerRight`),
- * auto-wrapped `PageLayout.Content`, and optional `StickyFooter`.
+ * A composite Layer 2 widget combining `PageShell`, `ConnectedUserHeader` (auto-injected into `headerRight`),
+ * auto-wrapped `PageShell.Content`, and optional `StickyFooter`.
  *
  * Layout:
  *   Title Row:    [Title + Status] ..... [headerRight = ConnectedUserHeader]
  *   Subtitle Row: [Subtitle + Description] ..... [actions = page CTA buttons]
  *
  * @example
- * <PageView
+ * <PageLayout
  *   title="Manajemen Akun"
  *   subtitle="Daftar Akun Maker"
  *   actions={<Button variant="contained">+ Tambah Maker</Button>}
  *   footerActions={<Button variant="contained">Simpan</Button>}
  * >
  *   <Table />
- * </PageView>
+ * </PageLayout>
  */
-export function PageView({
+export function PageLayout({
   headerRight = <ConnectedUserHeader />,
   contentGap = 3,
   footerActions,
   footerAlign = 'right',
   footerSx,
   children,
-  ...pageLayoutProps
-}: PageViewProps) {
+  ...pageShellProps
+}: PageLayoutProps) {
   return (
-    <PageLayout headerRight={headerRight ?? undefined} {...pageLayoutProps}>
-      <PageLayout.Content gap={contentGap}>
+    <PageShell headerRight={headerRight ?? undefined} {...pageShellProps}>
+      <PageShell.Content gap={contentGap}>
         {children}
-      </PageLayout.Content>
+      </PageShell.Content>
 
       {footerActions && (
         <StickyFooter align={footerAlign} sx={footerSx}>
           {footerActions}
         </StickyFooter>
       )}
-    </PageLayout>
+    </PageShell>
   )
 }
+
+// Compound sub-component attachments (passthrough from PageShell)
+PageLayout.Header = PageShell.Header
+PageLayout.Steps = PageShell.Steps
+PageLayout.Section = PageShell.Section
+PageLayout.Breadcrumbs = PageShell.Breadcrumbs
+PageLayout.Content = PageShell.Content
+PageLayout.StickyFooter = PageShell.StickyFooter
+PageLayout.Skeleton = PageShell.Skeleton
+

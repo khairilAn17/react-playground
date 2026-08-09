@@ -23,7 +23,7 @@ import FilterListIcon from '@mui/icons-material/FilterList'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import PendingIcon from '@mui/icons-material/Pending'
 
-import { PageLayout } from '../../components/pageLayout'
+import { PageLayout } from '../../widgets/pageLayout'
 
 // ─── Theme Colors ─────────────────────────────────────────────────────────────
 const TEAL_PRIMARY = '#00A39D'

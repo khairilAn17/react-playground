@@ -18,8 +18,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined'
 
-import { PageLayout } from '../../components/pageLayout'
-import { PageView } from '../../widgets/pageView'
+import { PageLayout } from '../../widgets/pageLayout'
 
 // ─── Theme Colors ─────────────────────────────────────────────────────────────
 const TEAL_PRIMARY = '#00A39D'
@@ -66,15 +65,13 @@ const statusConfig: Record<string, { label: string; bg: string; color: string }>
 
 export function ManajemenAkunPage() {
   return (
-    <PageView
+    <PageLayout
       maxWidth="full"
       bgVariant="transparent"
       title="Manajemen Akun"
       subtitle="Daftar Akun Maker"
       subtitleDescription="Tambah Maker dan kelola hingga 10 akun di halaman ini"
       footerAlign="between"
-      steps={['test', 'dua', 'tiga']}
-      currentStep={0}
       breadcrumbs={[
         {
           label: 'Home',
@@ -210,6 +207,6 @@ export function ManajemenAkunPage() {
           </TableBody>
         </Table>
       </PageLayout.Section>
-    </PageView>
+    </PageLayout>
   )
 }
