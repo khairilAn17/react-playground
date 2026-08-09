@@ -73,17 +73,18 @@ export function ManajemenAkunPage() {
       subtitle="Daftar Akun Maker"
       subtitleDescription="Tambah Maker dan kelola hingga 10 akun di halaman ini"
       footerAlign="between"
-      breadcrumbs={
-        [
-          {
-            label: 'Home',
-            href: '/',
-          },
-          {
-            label: 'Business Banking',
-            href: '/business-banking',
-          },
-        ]
+      steps={['test', 'dua', 'tiga']}
+      currentStep={0}
+      breadcrumbs={[
+        {
+          label: 'Home',
+          href: '/',
+        },
+        {
+          label: 'Business Banking',
+          href: '/business-banking',
+        },
+      ]
       }
       footerActions={
         <>

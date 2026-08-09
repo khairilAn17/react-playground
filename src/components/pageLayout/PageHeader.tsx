@@ -25,6 +25,12 @@ export interface PageHeaderSlotSx {
   subtitle?: SxProps<Theme>
   /** Subtitle description Typography (default: `{ mt: 0.25 }`) */
   subtitleDescription?: SxProps<Theme>
+  /**
+   * sx override for the Steps (MUI Stepper) component.
+   * Default: `{ mb: 0 }` — content-sized, left-aligned, no bottom margin.
+   * Pass `{ width: '100%' }` to stretch steps full-width.
+   */
+  steps?: SxProps<Theme>
 }
 
 export interface PageHeaderProps {
@@ -150,7 +156,14 @@ export function PageHeader({
       </Box>
 
       {/* ── Step Wizard ── */}
-      {steps && <Steps steps={steps} currentStep={currentStep} onStepClick={onStepClick} />}
+      {steps && (
+        <Steps
+          steps={steps}
+          currentStep={currentStep}
+          onStepClick={onStepClick}
+          sx={{ mb: 0, ...slotSx.steps }}
+        />
+      )}
 
       {/* ── Subtitle Row: [Subtitle + Description] ......... [subtitleRowActions] [extra] ── */}
       {subtitle && (

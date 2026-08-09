@@ -26,6 +26,7 @@ export function PageLayout({
   status,
   steps,
   currentStep,
+  onStepClick,
   headerSlotSx,
   children,
 }: PageLayoutProps) {
@@ -75,6 +76,7 @@ export function PageLayout({
                 status={status}
                 steps={steps}
                 currentStep={currentStep}
+                onStepClick={onStepClick}
                 slotSx={headerSlotSx}
               />
             )}

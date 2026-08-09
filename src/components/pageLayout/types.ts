@@ -41,6 +41,8 @@ export interface PageLayoutProps {
   steps?: (string | StepItem)[]
   /** Active zero-indexed step in multi-step wizard */
   currentStep?: number
+  /** Callback when a step is clicked (enables clickable navigation between steps) */
+  onStepClick?: (index: number) => void
   /**
    * Granular sx overrides for every slot inside the shorthand PageHeader.
    */
