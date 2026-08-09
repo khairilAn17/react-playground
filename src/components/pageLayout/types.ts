@@ -24,8 +24,10 @@ export interface PageLayoutProps {
   subtitle?: ReactNode
   /** Detailed subheader description text */
   subtitleDescription?: ReactNode
-  /** Right-hand page header action buttons (e.g. "+ Tambah Maker") */
+  /** Page-level CTA buttons (e.g. "+ Tambah Maker"). In the subtitle row when subtitle exists, otherwise title row. */
   actions?: ReactNode
+  /** Global header controls always pinned to the title row (e.g. UserHeader — search, notifications, profile). */
+  headerRight?: ReactNode
   /** Additional widget or side card (e.g. Prayer widget card) */
   extra?: ReactNode
   /** Optional breadcrumbs array */

@@ -19,6 +19,7 @@ export function PageLayout({
   subtitle,
   subtitleDescription,
   actions,
+  headerRight,
   extra,
   breadcrumbs,
   status,
@@ -44,7 +45,7 @@ export function PageLayout({
     }
   }
 
-  const hasShorthandHeader = title || subtitle || actions || extra || breadcrumbs || steps || onBack || status
+  const hasShorthandHeader = title || subtitle || actions || headerRight || extra || breadcrumbs || steps || onBack || status
 
   return (
     <Box
@@ -66,6 +67,7 @@ export function PageLayout({
                 subtitle={subtitle}
                 subtitleDescription={subtitleDescription}
                 actions={actions}
+                headerRight={headerRight}
                 extra={extra}
                 breadcrumbs={breadcrumbs}
                 status={status}

@@ -12,7 +12,17 @@ export interface PageHeaderProps {
   subtitleDescription?: ReactNode
   breadcrumbs?: BreadcrumbItem[]
   status?: ReactNode
+  /**
+   * Page-level CTA buttons (e.g. "+ Tambah Maker").
+   * Rendered in the subtitle row when subtitle is present, or in the title row when there is no subtitle.
+   */
   actions?: ReactNode
+  /**
+   * Global header controls pinned to the title row (e.g. UserHeader — search, notifications, profile).
+   * Always rendered on the right of the title, regardless of subtitle presence.
+   */
+  headerRight?: ReactNode
+  /** Contextual side widget rendered alongside the subtitle (e.g. Prayer time card). */
   extra?: ReactNode
   onBack?: () => void
   backTooltip?: string
@@ -28,6 +38,7 @@ export function PageHeader({
   breadcrumbs,
   status,
   actions,
+  headerRight,
   extra,
   onBack,
   backTooltip = 'Go back',
@@ -35,19 +46,18 @@ export function PageHeader({
   currentStep,
   onStepClick,
 }: PageHeaderProps) {
-  if (!title && !subtitle && !actions && !breadcrumbs && !steps) return null
+  if (!title && !subtitle && !actions && !headerRight && !breadcrumbs && !steps) return null
 
-  // When a subtitle is present, actions belong in the subtitle row (section-header pattern).
-  // When there is no subtitle, actions stay in the title row (page-header-only pattern).
   const hasSubtitle = Boolean(subtitle)
-  const titleRowActions = !hasSubtitle && (actions || extra)
-  const subtitleRowActions = hasSubtitle && (actions || extra)
+  // actions go in subtitle row when subtitle exists, otherwise fall to title row
+  const titleRowActions = !hasSubtitle && actions
+  const subtitleRowActions = hasSubtitle && actions
 
   return (
     <Box sx={{ mb: 3 }}>
       {breadcrumbs && <Breadcrumbs items={breadcrumbs} />}
 
-      {/* Main Page Title Row */}
+      {/* ── Title Row: [Back] [Title + Status] ......... [headerRight] ── */}
       <Box
         sx={{
           display: 'flex',
@@ -55,9 +65,10 @@ export function PageHeader({
           justifyContent: 'space-between',
           alignItems: { xs: 'flex-start', md: 'center' },
           gap: 2,
-          mb: subtitle || steps ? 2 : 0,
+          mb: subtitle || steps ? 1.5 : 0,
         }}
       >
+        {/* Left: Back button + Title + Status + title-row actions (when no subtitle) */}
         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, flex: 1, minWidth: 0 }}>
           {onBack && (
             <Tooltip title={backTooltip}>
@@ -83,23 +94,23 @@ export function PageHeader({
           )}
         </Box>
 
-        {/* Actions in title row only when no subtitle */}
-        {titleRowActions && (
+        {/* Right: headerRight (UserHeader) + title-row actions (when no subtitle) */}
+        {(headerRight || titleRowActions) && (
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
             spacing={1.5}
             sx={{ flexShrink: 0, alignItems: { xs: 'stretch', sm: 'center' } }}
           >
-            {actions}
-            {extra}
+            {titleRowActions}
+            {headerRight}
           </Stack>
         )}
       </Box>
 
-      {/* Multi-step progress wizard (if provided) */}
+      {/* ── Step Wizard ── */}
       {steps && <Steps steps={steps} currentStep={currentStep} onStepClick={onStepClick} />}
 
-      {/* Subtitle row — section label + description + actions (e.g. "Daftar Akun Maker") */}
+      {/* ── Subtitle Row: [Subtitle + Description] ......... [actions] [extra] ── */}
       {subtitle && (
         <Box
           sx={{
@@ -108,7 +119,7 @@ export function PageHeader({
             justifyContent: 'space-between',
             alignItems: { xs: 'flex-start', sm: 'center' },
             gap: 1.5,
-            mt: title ? 1 : 0,
+            mt: title ? 0.5 : 0,
           }}
         >
           <Box>
@@ -126,14 +137,14 @@ export function PageHeader({
             )}
           </Box>
 
-          {/* Actions in subtitle row when subtitle is present */}
-          {subtitleRowActions && (
+          {/* Page CTA actions + contextual extra widget */}
+          {(subtitleRowActions || extra) && (
             <Stack
               direction={{ xs: 'column', sm: 'row' }}
               spacing={1.5}
               sx={{ flexShrink: 0, alignItems: { xs: 'stretch', sm: 'center' } }}
             >
-              {actions}
+              {subtitleRowActions}
               {extra}
             </Stack>
           )}
@@ -142,4 +153,3 @@ export function PageHeader({
     </Box>
   )
 }
-

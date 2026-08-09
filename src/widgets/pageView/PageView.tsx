@@ -5,9 +5,12 @@ import type { PageLayoutProps } from '../../components/pageLayout'
 import { StickyFooter } from '../../components/stickyFooter'
 import { ConnectedUserHeader } from '../userHeader'
 
-export interface PageViewProps extends Omit<PageLayoutProps, 'actions'> {
-  /** Right-hand page header action buttons. Defaults to `<ConnectedUserHeader />` if not passed */
-  actions?: ReactNode
+export interface PageViewProps extends PageLayoutProps {
+  /**
+   * Override the auto-injected `ConnectedUserHeader` with a custom right-side header widget.
+   * By default, `<ConnectedUserHeader />` is automatically rendered in the `headerRight` slot.
+   */
+  headerRight?: ReactNode
   /** Set to true to disable automatic `<ConnectedUserHeader />` rendering */
   disableUserHeader?: boolean
 
@@ -25,21 +28,25 @@ export interface PageViewProps extends Omit<PageLayoutProps, 'actions'> {
 /**
  * PageView Widget
  *
- * A composite Layer 2 widget that combines `PageLayout`, self-hydrating `ConnectedUserHeader`,
- * auto-wrapped `PageLayout.Content`, and `StickyFooter` into a single zero-boilerplate component.
+ * A composite Layer 2 widget combining `PageLayout`, `ConnectedUserHeader` (auto-injected into `headerRight`),
+ * auto-wrapped `PageLayout.Content`, and optional `StickyFooter`.
+ *
+ * Layout:
+ *   Title Row:    [Back] [Title + Status] ..... [headerRight = ConnectedUserHeader]
+ *   Subtitle Row: [Subtitle + Description] ..... [actions = page CTA buttons]
  *
  * @example
  * <PageView
  *   title="Manajemen Akun"
  *   subtitle="Daftar Akun Maker"
- *   breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Maker' }]}
+ *   actions={<Button variant="contained">+ Tambah Maker</Button>}
  *   footerActions={<Button variant="contained">Simpan</Button>}
  * >
  *   <Table />
  * </PageView>
  */
 export function PageView({
-  actions,
+  headerRight,
   disableUserHeader = false,
   contentGap = 3,
   footerActions,
@@ -48,10 +55,10 @@ export function PageView({
   children,
   ...pageLayoutProps
 }: PageViewProps) {
-  const resolvedActions = actions ?? (disableUserHeader ? undefined : <ConnectedUserHeader />)
+  const resolvedHeaderRight = headerRight ?? (disableUserHeader ? undefined : <ConnectedUserHeader />)
 
   return (
-    <PageLayout actions={resolvedActions} {...pageLayoutProps}>
+    <PageLayout headerRight={resolvedHeaderRight} {...pageLayoutProps}>
       <PageLayout.Content gap={contentGap}>
         {children}
       </PageLayout.Content>

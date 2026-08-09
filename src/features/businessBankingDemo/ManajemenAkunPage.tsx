@@ -77,7 +77,7 @@ export function ManajemenAkunPage({ onBack }: ManajemenAkunPageProps) {
       title="Manajemen Akun"
       subtitle="Daftar Akun Maker"
       subtitleDescription="Tambah Maker dan kelola hingga 10 akun di halaman ini"
-      onBack={onBack}
+      // onBack={onBack}
       footerAlign="between"
       footerActions={
         <>
