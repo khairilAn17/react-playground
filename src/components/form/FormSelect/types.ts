@@ -11,15 +11,31 @@ export interface SelectOptionSlotSx {
   rightSubtitle?: SxProps<Theme>
   checkmark?: SxProps<Theme>
   statusIcon?: SxProps<Theme>
+  bulletList?: SxProps<Theme>
+  bulletItem?: SxProps<Theme>
+  bulletText?: SxProps<Theme>
 }
 
 export interface SelectOption {
   value: string | number
   label?: string
+
+  /* ── 1. Header (Title & Subtitle) ── */
   leftTitle?: ReactNode
   leftSubtitle?: ReactNode
   rightTitle?: ReactNode
   rightSubtitle?: ReactNode
+
+  /* ── 2. Detailed Bullet List (for Transfer Methods, Features, Rules) ── */
+  bullets?: (string | ReactNode)[]
+  /**
+   * If true (default), the closed select trigger only shows the header (compact).
+   * In the dropdown menu, the full bullet list is always rendered.
+   * @default true
+   */
+  compactSelected?: boolean
+
+  /* ── 3. Avatar & Status Metadata ── */
   avatar?: ReactNode
   avatarBg?: string
   statusColor?: string
@@ -53,6 +69,8 @@ export interface FormSelectProps<T extends FieldValues>
   control?: Control<T>
   variant?: 'outlined' | 'filled' | 'standard'
   size?: 'small' | 'medium' | 'large'
+
+  /* ── Direct Element Style Props ── */
   leftTitleSx?: SxProps<Theme>
   leftSubtitleSx?: SxProps<Theme>
   rightTitleSx?: SxProps<Theme>
@@ -61,6 +79,9 @@ export interface FormSelectProps<T extends FieldValues>
   optionRowSx?: SxProps<Theme>
   checkmarkSx?: SxProps<Theme>
   statusIconSx?: SxProps<Theme>
+  bulletListSx?: SxProps<Theme>
+  bulletItemSx?: SxProps<Theme>
+  bulletTextSx?: SxProps<Theme>
   selectSx?: SxProps<Theme>
   menuPaperSx?: SxProps<Theme>
   menuItemSx?: SxProps<Theme>
@@ -69,6 +90,7 @@ export interface FormSelectProps<T extends FieldValues>
   formControlSx?: SxProps<Theme>
   inputLabelSx?: SxProps<Theme>
   helperTextSx?: SxProps<Theme>
+
   slotSx?: FormSelectSlotSx
   children?: ReactNode
 }

@@ -6,7 +6,7 @@ import { TestFormWrapper } from '../../../test/test-utils'
 interface StoryFormValues {
   role: string
   accountId: string
-  paymentMethod: string
+  transferMethod: string
 }
 
 const SAMPLE_OPTIONS: SelectOption[] = [
@@ -61,13 +61,48 @@ const ACCOUNT_OPTIONS: SelectOption[] = [
   },
 ]
 
+const TRANSFER_METHOD_OPTIONS: SelectOption[] = [
+  {
+    value: 'bifast',
+    leftTitle: 'BI Fast (+Rp2.500)',
+    bullets: [
+      'Nominal transfer: Rp10.000–Rp250.000.000',
+      'Langsung diproses dan diterima',
+    ],
+  },
+  {
+    value: 'online',
+    leftTitle: 'Online (+Rp6.500)',
+    bullets: [
+      'Nominal transfer: Rp10.000–Rp50.000.000',
+      'Langsung diproses dan diterima',
+    ],
+  },
+  {
+    value: 'rtgs',
+    leftTitle: 'RTGS (+Rp25.000)',
+    bullets: [
+      'Nominal transfer: Rp100.000.001–Rp500.000.000',
+      'Operasional: Senin–Jumat jam 06:00 – 14:30 WIB\nTransaksi di luar waktu tersebut akan diproses di hari kerja berikutnya',
+    ],
+  },
+  {
+    value: 'skn',
+    leftTitle: 'SKN (+Rp2.900)',
+    bullets: [
+      'Nominal transfer: Rp10.000–Rp500.000.000',
+      'Operasional: Senin–Jumat jam 06:00 – 14:30 WIB\nTransaksi di luar waktu tersebut akan diproses di hari kerja berikutnya',
+    ],
+  },
+]
+
 const meta: Meta<typeof FormSelect> = {
   title: 'Components/Form/FormSelect',
   component: FormSelect,
   tags: ['autodocs'],
   decorators: [
     (Story) => (
-      <TestFormWrapper<StoryFormValues> defaultValues={{ role: '', accountId: '7200000001', paymentMethod: '' }}>
+      <TestFormWrapper<StoryFormValues> defaultValues={{ role: '', accountId: '7200000001', transferMethod: 'bifast' }}>
         <Story />
       </TestFormWrapper>
     ),
@@ -92,17 +127,21 @@ export const AccountSelectorCard: Story = {
     options: ACCOUNT_OPTIONS,
     placeholder: 'Pilih Rekening Sumber...',
     showCheckmark: true,
-    borderRadius: 3,
-    slotSx: {
-      optionRow: {
-        rightTitle: {
-          fontWeight: 500,
-        },
-        rightSubtitle: {
-          color: '#64748B',
-        },
-      },
-    },
+    borderRadius: 12,
+    rightTitleSx: { fontWeight: 500 },
+    rightSubtitleSx: { color: '#64748B' },
+  },
+}
+
+/** Rich Transfer Method Selector Dropdown with Bullet Lists */
+export const TransferMethodSelector: Story = {
+  args: {
+    name: 'transferMethod',
+    options: TRANSFER_METHOD_OPTIONS,
+    placeholder: 'Pilih Metode Transfer...',
+    showCheckmark: true,
+    borderRadius: 12,
+    size: 'large',
   },
 }
 

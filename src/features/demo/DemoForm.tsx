@@ -1,31 +1,20 @@
+import { useState } from 'react'
 import {
   Box,
-  Button,
-  Card,
-  CardContent,
-  Divider,
-  Stack,
-  Typography,
-  Alert,
   Chip,
+  InputAdornment,
+  Button,
+  Stack,
 } from '@mui/material'
-import { useState } from 'react'
-import { createTypedForm } from '../../components/form'
-import type { SelectOption, RadioOption, AutocompleteOption } from '../../components/form'
-import { PageLayout } from '../../widgets/pageLayout'
-import { demoSchema } from './demoSchema'
-import type { DemoFormValues } from './demoSchema'
+import Grid from '@mui/material/Grid'
 
-const ROLE_OPTIONS: SelectOption[] = [
-  { label: 'Frontend Developer', value: 'frontend_developer' },
-  { label: 'Backend Developer', value: 'backend_developer' },
-  { label: 'Full Stack Developer', value: 'fullstack_developer' },
-  { label: 'UI/UX Designer', value: 'designer' },
-  { label: 'Product Manager', value: 'product_manager' },
-  { label: 'QA Engineer', value: 'qa_engineer' },
-  { label: 'DevOps Engineer', value: 'devops_engineer' },
-  { label: 'Data Scientist', value: 'data_scientist' },
-]
+import { createTypedForm } from '../../components/form'
+import { demoSchema, type DemoFormValues } from './demoSchema'
+import type { AutocompleteOption } from '../../components/form/FormAutocomplete'
+import type { RadioOption } from '../../components/form/FormRadioGroup'
+import type { SelectOption } from '../../components/form/FormSelect'
+import { Card } from '../../components/card'
+import { PageLayout } from '../../widgets/pageLayout'
 
 const FRAMEWORK_OPTIONS: AutocompleteOption[] = [
   { label: 'React', value: 'react' },
@@ -42,6 +31,41 @@ const PLAN_OPTIONS: RadioOption[] = [
   { label: 'Enterprise Plan (Custom)', value: 'enterprise' },
 ]
 
+const TRANSFER_METHOD_OPTIONS: SelectOption[] = [
+  {
+    value: 'bifast',
+    leftTitle: 'BI Fast (+Rp2.500)',
+    bullets: [
+      'Nominal transfer: Rp10.000–Rp250.000.000',
+      'Langsung diproses dan diterima',
+    ],
+  },
+  {
+    value: 'online',
+    leftTitle: 'Online (+Rp6.500)',
+    bullets: [
+      'Nominal transfer: Rp10.000–Rp50.000.000',
+      'Langsung diproses dan diterima',
+    ],
+  },
+  {
+    value: 'rtgs',
+    leftTitle: 'RTGS (+Rp25.000)',
+    bullets: [
+      'Nominal transfer: Rp100.000.001–Rp500.000.000',
+      'Operasional: Senin–Jumat jam 06:00 – 14:30 WIB\nTransaksi di luar waktu tersebut akan diproses di hari kerja berikutnya',
+    ],
+  },
+  {
+    value: 'skn',
+    leftTitle: 'SKN (+Rp2.900)',
+    bullets: [
+      'Nominal transfer: Rp10.000–Rp500.000.000',
+      'Operasional: Senin–Jumat jam 06:00 – 14:30 WIB\nTransaksi di luar waktu tersebut akan diproses di hari kerja berikutnya',
+    ],
+  },
+]
+
 const { Form, Field } = createTypedForm<DemoFormValues>()
 
 const DEFAULT_VALUES: DemoFormValues = {
@@ -51,6 +75,7 @@ const DEFAULT_VALUES: DemoFormValues = {
   birthDate: null,
   role: '7200000001',
   role2: '',
+  transferMethod: 'bifast',
   framework: '',
   experienceYears: 3,
   plan: 'free',
@@ -72,7 +97,6 @@ export function DemoForm() {
 
   return (
     <PageLayout maxWidth="sm">
-
       <PageLayout.Header
         title="RHF + MUI Form Component Kit"
         subtitle={
@@ -84,32 +108,47 @@ export function DemoForm() {
         status={<Chip label="Type-Safe" color="primary" size="small" />}
       />
 
-      <PageLayout.Content>
-        {/* Form card */}
-        <Card variant="outlined">
-          <CardContent>
-            <Form
-              schema={demoSchema}
-              defaultValues={DEFAULT_VALUES}
-              onSubmit={handleSubmit}
-            >
-              <Stack spacing={2.5}>
+      <Form
+        schema={demoSchema}
+        defaultValues={DEFAULT_VALUES}
+        onSubmit={handleSubmit}
+        mode="onTouched"
+      >
+        <PageLayout.Content>
+          <Card
+            title="User Registration"
+            subtitle="Fill in the details below to test every form field component"
+          > <Stack spacing={2.5}>
+              <Grid container spacing={2.5}>
+
                 {/* 1. Field.Text */}
                 <Field.Text
                   name="fullName"
-                  placeholder="John Doe"
+                  label="Full Name"
+                  placeholder="e.g. John Doe"
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          kg
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
                 />
 
-                {/* 2. Email Field.Text */}
+                {/* 2. Field.Text (Email) */}
                 <Field.Text
                   name="email"
+                  label="Email Address"
                   type="email"
                   placeholder="john@example.com"
                 />
 
-                {/* 3. Password Field.Text */}
+                {/* 3. Field.Text (Password) */}
                 <Field.Text
                   name="password"
+                  label="Password"
                   type="password"
                   helperText="Min 8 chars, 1 uppercase, 1 number"
                 />
@@ -117,38 +156,29 @@ export function DemoForm() {
                 {/* 4. Field.DatePicker */}
                 <Field.DatePicker
                   name="birthDate"
-                  label="Date of Birth"
-                  helperText="Select your birth date"
+                  label="Birth Date"
+                  disableFuture
                 />
 
-                {/* 5. Field.Select */}
-                <Field.Select
-                  name="role"
-                  label="Role"
-                  options={ROLE_OPTIONS}
-                  searchable
-                  searchPlaceholder="Filter roles..."
-                />
-
-                {/* 6. Field.Autocomplete */}
+                {/* 5. Field.Autocomplete */}
                 <Field.Autocomplete
                   name="framework"
-                  label="Primary Tech Framework"
+                  label="Favorite Framework"
                   options={FRAMEWORK_OPTIONS}
                 />
 
-                {/* 7. Field.Slider */}
+                {/* 6. Field.Slider */}
                 <Field.Slider
                   name="experienceYears"
                   label="Years of Experience"
-                  min={0}
+                  min={1}
                   max={20}
                   step={1}
                   valueLabelDisplay="auto"
                   formatValue={(val) => `${val} year${val === 1 ? '' : 's'}`}
                 />
 
-                {/* 7.1 Field.Select with avatar */}
+                {/* 7.1 Field.Select with Bank Account Card */}
                 <Field.Select
                   name="role"
                   placeholder="Pilih Rekening Sumber..."
@@ -186,6 +216,16 @@ export function DemoForm() {
                   rightSubtitleSx={{ color: '#64748B' }}
                 />
 
+                {/* 7.2 Field.Select with Bullet Lists (Transfer Method Selector) */}
+                <Field.Select
+                  name="transferMethod"
+                  placeholder="Pilih Metode Transfer..."
+                  options={TRANSFER_METHOD_OPTIONS}
+                  searchable
+                  searchPlaceholder="Filter metode transfer..."
+                  borderRadius={12}
+                />
+
                 {/* 8. Field.Radio */}
                 <Field.Radio
                   name="plan"
@@ -196,76 +236,70 @@ export function DemoForm() {
                 {/* 9. Multiline Field.Text */}
                 <Field.Text
                   name="bio"
+                  label="Bio / Notes"
+                  placeholder="Tell us a bit about yourself..."
                   multiline
                   rows={3}
-                  placeholder="Tell us about yourself..."
                 />
-
-                <Divider />
 
                 {/* 10. Field.Switch */}
                 <Field.Switch
                   name="subscribeNewsletter"
-                  label="Subscribe to weekly developer updates"
+                  label="Subscribe to weekly product newsletter"
                 />
 
                 {/* 11. Field.Checkbox */}
                 <Field.Checkbox
                   name="agreeTerms"
-                  label="I agree to the Terms of Service and Privacy Policy"
+                  label="I accept the Terms & Conditions and Privacy Policy *"
                 />
 
-                <Divider />
+              </Grid>  </Stack>
+          </Card>
 
-                <Stack direction="row" spacing={1.5}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    disabled={isSubmitting}
-                    fullWidth
-                  >
-                    {isSubmitting ? 'Submitting…' : 'Submit'}
-                  </Button>
-                  <Button
-                    type="reset"
-                    variant="outlined"
-                    onClick={() => setSubmittedData(null)}
-                    disabled={isSubmitting}
-                  >
-                    Reset
-                  </Button>
-                </Stack>
-              </Stack>
-            </Form>
-          </CardContent>
-        </Card>
-
-        {/* Success output */}
-        {submittedData && (
-          <Box sx={{ mt: 1 }}>
-            <Alert severity="success" sx={{ mb: 2 }}>
-              Form submitted successfully!
-            </Alert>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5 }}>
-                  Submitted Values
-                </Typography>
-                <Stack spacing={1}>
-                  {Object.entries(submittedData).map(([key, value]) => (
-                    <Box key={key} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Chip label={key} size="small" variant="outlined" />
-                      <Typography variant="body2" color="text.secondary">
-                        {typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value) || '—'}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Stack>
-              </CardContent>
+          {/* Submission Result */}
+          {submittedData && (
+            <Card
+              title="Form Submitted Successfully!"
+            >
+              <Box
+                component="pre"
+                sx={{
+                  bgcolor: 'grey.100',
+                  p: 2,
+                  borderRadius: 1,
+                  overflowX: 'auto',
+                  fontSize: '0.8125rem',
+                  fontFamily: 'monospace',
+                  m: 0,
+                }}
+              >
+                {JSON.stringify(submittedData, null, 2)}
+              </Box>
             </Card>
-          </Box>
-        )}
-      </PageLayout.Content>
+          )}
+        </PageLayout.Content>
+
+        <PageLayout.StickyFooter>
+          <Button
+            type="button"
+            variant="outlined"
+            color="inherit"
+            disabled={isSubmitting}
+            onClick={() => setSubmittedData(null)}
+          >
+            Reset
+          </Button>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={isSubmitting}
+            sx={{ minWidth: 140 }}
+          >
+            {isSubmitting ? 'Submitting...' : 'Create Account'}
+          </Button>
+        </PageLayout.StickyFooter>
+      </Form>
     </PageLayout>
   )
 }

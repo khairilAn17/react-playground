@@ -37,12 +37,14 @@ function toSearchable(node: ReactNode): string {
 }
 
 function buildSearchText(opt: SelectOption): string {
+  const bulletTexts = opt.bullets ? opt.bullets.map(toSearchable).join(' ') : ''
   return [
     opt.label ?? '',
     toSearchable(opt.leftTitle),
     toSearchable(opt.leftSubtitle),
     toSearchable(opt.rightTitle),
     toSearchable(opt.rightSubtitle),
+    bulletTexts,
   ]
     .join(' ')
     .toLowerCase()
@@ -74,6 +76,9 @@ export function FormSelect<T extends FieldValues>({
   optionRowSx,
   checkmarkSx,
   statusIconSx,
+  bulletListSx,
+  bulletItemSx,
+  bulletTextSx,
   selectSx,
   menuPaperSx,
   menuItemSx,
@@ -135,7 +140,7 @@ export function FormSelect<T extends FieldValues>({
             mt: 1,
             boxShadow: '0px 10px 25px rgba(0, 0, 0, 0.08)',
             border: '1px solid #E2E8F0',
-            maxHeight: 340,
+            maxHeight: 380,
             '& .MuiMenuItem-root': [
               {
                 py: isLarge ? 1.75 : isSmall ? 0.75 : 1.25,
@@ -205,6 +210,9 @@ export function FormSelect<T extends FieldValues>({
     optionRowSx,
     checkmarkSx,
     statusIconSx,
+    bulletListSx,
+    bulletItemSx,
+    bulletTextSx,
     slotSx: slotSx?.optionRow,
   }
 
@@ -329,7 +337,7 @@ export function FormSelect<T extends FieldValues>({
               filteredOptions.map((opt) => {
                 const isSelected = opt.value === value
                 return (
-                  <MenuItem key={opt.value} value={opt.value} disabled={opt.disabled}>
+                  <MenuItem key={opt.value} value={opt.value} disabled={opt.disabled} sx={{ alignItems: 'flex-start' }}>
                     <SelectOptionRow
                       option={opt}
                       isSelected={isSelected}

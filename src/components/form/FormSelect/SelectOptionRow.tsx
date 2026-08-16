@@ -2,6 +2,7 @@ import { Box, Typography, Avatar } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
+import { SelectOptionBulletList } from './SelectOptionBulletList'
 import type { SelectOption, SelectOptionSlotSx } from './types'
 
 export interface SelectOptionRowProps {
@@ -18,6 +19,9 @@ export interface SelectOptionRowProps {
   optionRowSx?: SxProps<Theme>
   checkmarkSx?: SxProps<Theme>
   statusIconSx?: SxProps<Theme>
+  bulletListSx?: SxProps<Theme>
+  bulletItemSx?: SxProps<Theme>
+  bulletTextSx?: SxProps<Theme>
   slotSx?: SelectOptionSlotSx
 }
 
@@ -35,14 +39,27 @@ export function SelectOptionRow({
   optionRowSx,
   checkmarkSx,
   statusIconSx,
+  bulletListSx,
+  bulletItemSx,
+  bulletTextSx,
   slotSx = {},
 }: SelectOptionRowProps) {
   const leftTitle = option.leftTitle ?? option.label
   const leftSubtitle = option.leftSubtitle
   const rightTitle = option.rightTitle
   const rightSubtitle = option.rightSubtitle
+  const bullets = option.bullets
+  const compactSelected = option.compactSelected ?? true
 
-  const hasRichMeta = leftTitle || leftSubtitle || rightTitle || rightSubtitle || option.avatar
+  const shouldRenderBullets = Boolean(bullets && bullets.length > 0 && (isMenu || !compactSelected))
+
+  const hasRichMeta =
+    leftTitle ||
+    leftSubtitle ||
+    rightTitle ||
+    rightSubtitle ||
+    option.avatar ||
+    shouldRenderBullets
 
   const avatarSize = size === 'small' ? 28 : size === 'large' ? 44 : 36
   const avatarFontSize = size === 'small' ? '0.75rem' : size === 'large' ? '1rem' : '0.875rem'
@@ -87,6 +104,21 @@ export function SelectOptionRow({
   const combinedStatusIconSx: SxProps<Theme> = [
     ...(statusIconSx ? (Array.isArray(statusIconSx) ? statusIconSx : [statusIconSx]) : []),
     ...(slotSx.statusIcon ? (Array.isArray(slotSx.statusIcon) ? slotSx.statusIcon : [slotSx.statusIcon]) : []),
+  ]
+
+  const combinedBulletListSx: SxProps<Theme> = [
+    ...(bulletListSx ? (Array.isArray(bulletListSx) ? bulletListSx : [bulletListSx]) : []),
+    ...(slotSx.bulletList ? (Array.isArray(slotSx.bulletList) ? slotSx.bulletList : [slotSx.bulletList]) : []),
+  ]
+
+  const combinedBulletItemSx: SxProps<Theme> = [
+    ...(bulletItemSx ? (Array.isArray(bulletItemSx) ? bulletItemSx : [bulletItemSx]) : []),
+    ...(slotSx.bulletItem ? (Array.isArray(slotSx.bulletItem) ? slotSx.bulletItem : [slotSx.bulletItem]) : []),
+  ]
+
+  const combinedBulletTextSx: SxProps<Theme> = [
+    ...(bulletTextSx ? (Array.isArray(bulletTextSx) ? bulletTextSx : [bulletTextSx]) : []),
+    ...(slotSx.bulletText ? (Array.isArray(slotSx.bulletText) ? slotSx.bulletText : [slotSx.bulletText]) : []),
   ]
 
   if (!hasRichMeta) {
@@ -137,18 +169,18 @@ export function SelectOptionRow({
       sx={[
         {
           display: 'flex',
-          alignItems: 'center',
+          alignItems: shouldRenderBullets ? 'flex-start' : 'center',
           justifyContent: 'space-between',
           width: '100%',
           gap: size === 'large' ? 2 : 1.5,
-          py: isMenu ? (size === 'large' ? 1 : size === 'small' ? 0.25 : 0.5) : 0,
+          py: isMenu ? (shouldRenderBullets ? 0.75 : size === 'large' ? 1 : size === 'small' ? 0.25 : 0.5) : 0,
           opacity: isOptionDisabled ? 0.75 : 1,
         },
         ...combinedRootSx,
       ]}
     >
-      {/* ── Left Column: Avatar + leftTitle / leftSubtitle ── */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: size === 'large' ? 2 : 1.5, minWidth: 0, flex: 1 }}>
+      {/* ── Left Column: Avatar + Title/Subtitle + Bullet List ── */}
+      <Box sx={{ display: 'flex', alignItems: shouldRenderBullets ? 'flex-start' : 'center', gap: size === 'large' ? 2 : 1.5, minWidth: 0, flex: 1 }}>
         {option.avatar && (
           typeof option.avatar === 'string' ? (
             <Avatar
@@ -162,6 +194,7 @@ export function SelectOptionRow({
                   color: '#FFFFFF',
                   flexShrink: 0,
                   opacity: isOptionDisabled ? 0.8 : 1,
+                  mt: shouldRenderBullets ? 0.25 : 0,
                 },
                 ...combinedAvatarSx,
               ]}
@@ -181,10 +214,10 @@ export function SelectOptionRow({
                 fontWeight: 700,
                 fontSize: titleFontSize,
                 color: isOptionDisabled ? '#94A3B8' : '#1E293B',
-                lineHeight: 1.3,
+                lineHeight: 1.35,
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
+                whiteSpace: shouldRenderBullets ? 'normal' : 'nowrap',
               },
               ...combinedLeftTitleSx,
             ]}
@@ -204,6 +237,7 @@ export function SelectOptionRow({
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
+                  mt: 0.25,
                 },
                 ...combinedLeftSubtitleSx,
               ]}
@@ -211,11 +245,23 @@ export function SelectOptionRow({
               {leftSubtitle}
             </Typography>
           )}
+
+          {/* ── Extracted Dedicated Bullet List Sub-Component ── */}
+          {shouldRenderBullets && (
+            <SelectOptionBulletList
+              bullets={bullets}
+              size={size}
+              disabled={isOptionDisabled}
+              listSx={combinedBulletListSx}
+              itemSx={combinedBulletItemSx}
+              textSx={combinedBulletTextSx}
+            />
+          )}
         </Box>
       </Box>
 
       {/* ── Right Column: rightTitle / rightSubtitle + Checkmark ── */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexShrink: 0, ml: 'auto' }}>
+      <Box sx={{ display: 'flex', alignItems: shouldRenderBullets ? 'flex-start' : 'center', gap: 1.5, flexShrink: 0, ml: 'auto', mt: shouldRenderBullets ? 0.25 : 0 }}>
         {(rightTitle || rightSubtitle) && (
           <Box sx={{ textAlign: 'right' }}>
             {rightTitle && (
