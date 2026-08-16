@@ -50,6 +50,7 @@ const DEFAULT_VALUES: DemoFormValues = {
   password: '',
   birthDate: null,
   role: '',
+  role2: '',
   framework: '',
   experienceYears: 3,
   plan: 'free',
@@ -145,6 +146,44 @@ export function DemoForm() {
                   step={1}
                   valueLabelDisplay="auto"
                   formatValue={(val) => `${val} year${val === 1 ? '' : 's'}`}
+                />
+
+                {/* 7.1 Field.Select with avatar */}
+                <Field.Select
+                  name="role"
+                  placeholder="Pilih Rekening Sumber..."
+                  selectSx={{
+                    height: '64px',
+                  }}
+                  options={[
+                    {
+                      avatar: 'HB',
+                      leftTitle: 'Harian Bisnis',
+                      leftSubtitle: '7200000001',
+                      rightTitle: 'Rp 450.000.000,00',
+                      value: '7200000001',
+                    },
+                    {
+                      avatar: 'GK',
+                      leftTitle: 'Gaji Karyawan',
+                      leftSubtitle: '7200000002',
+                      rightTitle: 'Rp 120.500.000,00',
+                      rightSubtitle: 'BCA',
+                      value: '7200000002',
+                    },
+                    {
+                      avatar: 'OK',
+                      leftTitle: 'Operasional Kantor',
+                      leftSubtitle: '7200000003',
+                      rightTitle: 'Rp 15.000.000,00',
+                      value: '7200000003',
+                    },
+                  ]}
+                  searchable
+                  searchPlaceholder="Filter roles..."
+                  borderRadius={12}
+                  rightTitleSx={{ fontWeight: 500 }}
+                  rightSubtitleSx={{ color: '#64748B' }}
                 />
 
                 {/* 8. Field.Radio */}

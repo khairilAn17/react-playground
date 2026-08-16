@@ -24,6 +24,7 @@ export const demoSchema = z.object({
   birthDate: z.any().nullable().optional(),
 
   role: z.string().min(1, 'Please select a role'),
+  role2: z.string().min(1, 'Please select a role'),
 
   framework: z.string().min(1, 'Please select a framework'),
 
