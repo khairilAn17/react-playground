@@ -7,6 +7,7 @@ interface StoryFormValues {
   role: string
   accountId: string
   transferMethod: string
+  destinationBank: string
 }
 
 const SAMPLE_OPTIONS: SelectOption[] = [
@@ -96,13 +97,67 @@ const TRANSFER_METHOD_OPTIONS: SelectOption[] = [
   },
 ]
 
+const GROUPED_BANK_OPTIONS: SelectOption[] = [
+  // Group 1: Proxy
+  {
+    group: 'Proxy',
+    value: 'bifast_proxy',
+    leftTitle: 'BI Fast Proxy',
+    avatar: 'BF',
+    avatarBg: '#0284C7',
+  },
+  // Group 2: Semua Bank
+  {
+    group: 'Semua Bank',
+    value: 'bsi',
+    leftTitle: 'Bank Syariah Indonesia (BSI)',
+    avatar: 'BSI',
+    avatarBg: '#00A39D',
+  },
+  {
+    group: 'Semua Bank',
+    value: 'bca',
+    leftTitle: 'Bank Central Asia (BCA)',
+    avatar: 'BCA',
+    avatarBg: '#1D4ED8',
+  },
+  {
+    group: 'Semua Bank',
+    value: 'mandiri',
+    leftTitle: 'Bank Mandiri',
+    avatar: 'BM',
+    avatarBg: '#0369A1',
+  },
+  {
+    group: 'Semua Bank',
+    value: 'bri',
+    leftTitle: 'Bank Rakyat Indonesia (BRI)',
+    avatar: 'BRI',
+    avatarBg: '#1E40AF',
+  },
+  {
+    group: 'Semua Bank',
+    value: 'bni',
+    leftTitle: 'Bank Negara Indonesia (BNI)',
+    avatar: 'BNI',
+    avatarBg: '#EA580C',
+  },
+]
+
 const meta: Meta<typeof FormSelect> = {
   title: 'Components/Form/FormSelect',
   component: FormSelect,
   tags: ['autodocs'],
   decorators: [
     (Story) => (
-      <TestFormWrapper<StoryFormValues> defaultValues={{ role: '', accountId: '7200000001', transferMethod: 'bifast' }}>
+      <TestFormWrapper<StoryFormValues>
+        defaultValues={{
+          role: '',
+          accountId: '7200000001',
+          transferMethod: 'bifast',
+          destinationBank: 'bca',
+        }}
+      >
         <Story />
       </TestFormWrapper>
     ),
@@ -130,6 +185,19 @@ export const AccountSelectorCard: Story = {
     borderRadius: 12,
     rightTitleSx: { fontWeight: 500 },
     rightSubtitleSx: { color: '#64748B' },
+  },
+}
+
+/** Grouped Bank Selector Dropdown ("Proxy" and "Semua Bank") */
+export const GroupedBankSelector: Story = {
+  args: {
+    name: 'destinationBank',
+    options: GROUPED_BANK_OPTIONS,
+    placeholder: 'Pilih Bank Tujuan...',
+    searchable: true,
+    searchPlaceholder: 'Cari bank atau proxy...',
+    showCheckmark: true,
+    borderRadius: 12,
   },
 }
 

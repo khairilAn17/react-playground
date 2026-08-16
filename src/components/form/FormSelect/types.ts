@@ -20,13 +20,16 @@ export interface SelectOption {
   value: string | number
   label?: string
 
-  /* ── 1. Header (Title & Subtitle) ── */
+  /* ── 1. Group Header (e.g. "Proxy", "Semua Bank") ── */
+  group?: string
+
+  /* ── 2. Header (Title & Subtitle) ── */
   leftTitle?: ReactNode
   leftSubtitle?: ReactNode
   rightTitle?: ReactNode
   rightSubtitle?: ReactNode
 
-  /* ── 2. Detailed Bullet List (for Transfer Methods, Features, Rules) ── */
+  /* ── 3. Detailed Bullet List (for Transfer Methods, Features, Rules) ── */
   bullets?: (string | ReactNode)[]
   /**
    * If true (default), the closed select trigger only shows the header (compact).
@@ -35,7 +38,7 @@ export interface SelectOption {
    */
   compactSelected?: boolean
 
-  /* ── 3. Avatar & Status Metadata ── */
+  /* ── 4. Avatar & Status Metadata ── */
   avatar?: ReactNode
   avatarBg?: string
   statusColor?: string
@@ -49,6 +52,7 @@ export interface FormSelectSlotSx {
   select?: SxProps<Theme>
   menuPaper?: SxProps<Theme>
   menuItem?: SxProps<Theme>
+  groupHeader?: SxProps<Theme>
   optionRow?: SelectOptionSlotSx
   listSubheader?: SxProps<Theme>
   searchField?: SxProps<Theme>
@@ -70,6 +74,12 @@ export interface FormSelectProps<T extends FieldValues>
   variant?: 'outlined' | 'filled' | 'standard'
   size?: 'small' | 'medium' | 'large'
 
+  /**
+   * Optional custom group resolver function.
+   * By default, reads `option.group`.
+   */
+  groupBy?: (option: SelectOption) => string | undefined
+
   /* ── Direct Element Style Props ── */
   leftTitleSx?: SxProps<Theme>
   leftSubtitleSx?: SxProps<Theme>
@@ -82,6 +92,7 @@ export interface FormSelectProps<T extends FieldValues>
   bulletListSx?: SxProps<Theme>
   bulletItemSx?: SxProps<Theme>
   bulletTextSx?: SxProps<Theme>
+  groupHeaderSx?: SxProps<Theme>
   selectSx?: SxProps<Theme>
   menuPaperSx?: SxProps<Theme>
   menuItemSx?: SxProps<Theme>

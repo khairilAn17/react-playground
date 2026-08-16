@@ -8,6 +8,7 @@ interface TestFormValues {
   role: string
   account: string
   transferMethod: string
+  bank: string
 }
 
 const SIMPLE_OPTIONS: SelectOption[] = [
@@ -54,10 +55,28 @@ const BULLET_TRANSFER_OPTIONS: SelectOption[] = [
   },
 ]
 
+const GROUPED_BANK_OPTIONS: SelectOption[] = [
+  {
+    group: 'Proxy',
+    value: 'bifast_proxy',
+    leftTitle: 'BI Fast Proxy',
+  },
+  {
+    group: 'Semua Bank',
+    value: 'bsi',
+    leftTitle: 'Bank Syariah Indonesia (BSI)',
+  },
+  {
+    group: 'Semua Bank',
+    value: 'bca',
+    leftTitle: 'Bank Central Asia (BCA)',
+  },
+]
+
 describe('FormSelect', () => {
   it('renders label correctly inside FormProvider', () => {
     render(
-      <TestFormWrapper<TestFormValues> defaultValues={{ role: '', account: '', transferMethod: '' }}>
+      <TestFormWrapper<TestFormValues> defaultValues={{ role: '', account: '', transferMethod: '', bank: '' }}>
         <FormSelect<TestFormValues> name="role" label="Role" options={SIMPLE_OPTIONS} />
       </TestFormWrapper>
     )
@@ -67,7 +86,7 @@ describe('FormSelect', () => {
 
   it('displays helperText when provided', () => {
     render(
-      <TestFormWrapper<TestFormValues> defaultValues={{ role: '', account: '', transferMethod: '' }}>
+      <TestFormWrapper<TestFormValues> defaultValues={{ role: '', account: '', transferMethod: '', bank: '' }}>
         <FormSelect<TestFormValues>
           name="role"
           label="Role"
@@ -82,7 +101,7 @@ describe('FormSelect', () => {
 
   it('renders rich double-line account options with leftTitle, leftSubtitle, rightTitle, and rightSubtitle status text', () => {
     render(
-      <TestFormWrapper<TestFormValues> defaultValues={{ role: '', account: '7200000001', transferMethod: '' }}>
+      <TestFormWrapper<TestFormValues> defaultValues={{ role: '', account: '7200000001', transferMethod: '', bank: '' }}>
         <FormSelect<TestFormValues>
           name="account"
           options={RICH_ACCOUNT_OPTIONS}
@@ -107,7 +126,7 @@ describe('FormSelect', () => {
 
   it('renders bullet list options in dropdown menu for transfer methods', () => {
     render(
-      <TestFormWrapper<TestFormValues> defaultValues={{ role: '', account: '', transferMethod: 'bifast' }}>
+      <TestFormWrapper<TestFormValues> defaultValues={{ role: '', account: '', transferMethod: 'bifast', bank: '' }}>
         <FormSelect<TestFormValues>
           name="transferMethod"
           options={BULLET_TRANSFER_OPTIONS}
@@ -127,6 +146,31 @@ describe('FormSelect', () => {
     expect(screen.getByText('RTGS (+Rp25.000)')).toBeInTheDocument()
     expect(screen.getByText('Nominal transfer: Rp10.000–Rp250.000.000')).toBeInTheDocument()
     expect(screen.getByText('Operasional: Senin-Jumat jam 06:00 – 14:30 WIB')).toBeInTheDocument()
+  })
+
+  it('renders grouped options with ListSubheader group headers', () => {
+    render(
+      <TestFormWrapper<TestFormValues> defaultValues={{ role: '', account: '', transferMethod: '', bank: 'bca' }}>
+        <FormSelect<TestFormValues>
+          name="bank"
+          options={GROUPED_BANK_OPTIONS}
+          placeholder="Pilih Bank"
+        />
+      </TestFormWrapper>
+    )
+
+    // Trigger value rendering
+    expect(screen.getByText('Bank Central Asia (BCA)')).toBeInTheDocument()
+
+    // Open dropdown menu
+    const combobox = screen.getByRole('combobox')
+    fireEvent.mouseDown(combobox)
+
+    // Check group headers and items
+    expect(screen.getByText('Proxy')).toBeInTheDocument()
+    expect(screen.getByText('Semua Bank')).toBeInTheDocument()
+    expect(screen.getByText('BI Fast Proxy')).toBeInTheDocument()
+    expect(screen.getByText('Bank Syariah Indonesia (BSI)')).toBeInTheDocument()
   })
 
   it('throws error when rendered outside FormProvider without control', () => {

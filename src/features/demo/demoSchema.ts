@@ -25,6 +25,7 @@ export const demoSchema = z.object({
 
   role: z.string().min(1, 'Please select a role'),
   role2: z.string().min(1, 'Please select a role').optional(),
+  destinationBank: z.string().optional(),
   transferMethod: z.string().optional(),
 
   framework: z.string().min(1, 'Please select a framework'),

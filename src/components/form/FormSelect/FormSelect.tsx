@@ -40,6 +40,7 @@ function buildSearchText(opt: SelectOption): string {
   const bulletTexts = opt.bullets ? opt.bullets.map(toSearchable).join(' ') : ''
   return [
     opt.label ?? '',
+    opt.group ?? '',
     toSearchable(opt.leftTitle),
     toSearchable(opt.leftSubtitle),
     toSearchable(opt.rightTitle),
@@ -67,6 +68,7 @@ export function FormSelect<T extends FieldValues>({
   sx,
   disabled,
   variant = 'outlined',
+  groupBy,
   MenuProps,
   leftTitleSx,
   leftSubtitleSx,
@@ -79,6 +81,7 @@ export function FormSelect<T extends FieldValues>({
   bulletListSx,
   bulletItemSx,
   bulletTextSx,
+  groupHeaderSx,
   selectSx,
   menuPaperSx,
   menuItemSx,
@@ -118,6 +121,29 @@ export function FormSelect<T extends FieldValues>({
     const term = searchTerm.toLowerCase()
     return safeOptions.filter((opt) => buildSearchText(opt).includes(term))
   }, [safeOptions, searchable, searchTerm])
+
+  const hasGrouping = useMemo(() => {
+    if (groupBy) return true
+    return safeOptions.some((opt) => Boolean(opt.group))
+  }, [safeOptions, groupBy])
+
+  const groupedOptions = useMemo(() => {
+    if (!hasGrouping) return null
+    const groups: { name?: string; options: SelectOption[] }[] = []
+    const groupMap = new Map<string | undefined, SelectOption[]>()
+
+    filteredOptions.forEach((opt) => {
+      const g = groupBy ? groupBy(opt) : opt.group
+      if (!groupMap.has(g)) {
+        const list: SelectOption[] = []
+        groupMap.set(g, list)
+        groups.push({ name: g, options: list })
+      }
+      groupMap.get(g)!.push(opt)
+    })
+
+    return groups
+  }, [hasGrouping, groupBy, filteredOptions])
 
   const handleClose = (event: React.SyntheticEvent) => {
     if (searchable) {
@@ -333,6 +359,45 @@ export function FormSelect<T extends FieldValues>({
 
             {children ? (
               children
+            ) : groupedOptions ? (
+              groupedOptions.map((grp, grpIdx) => [
+                grp.name ? (
+                  <ListSubheader
+                    key={`header-${grp.name}`}
+                    disableSticky
+                    sx={[
+                      {
+                        color: '#64748B',
+                        fontWeight: 600,
+                        fontSize: '0.8125rem',
+                        bgcolor: 'transparent',
+                        lineHeight: '2',
+                        pt: grpIdx === 0 ? 0.5 : 1.25,
+                        pb: 0.25,
+                        px: 2,
+                      },
+                      ...(groupHeaderSx ? (Array.isArray(groupHeaderSx) ? groupHeaderSx : [groupHeaderSx]) : []),
+                      ...(slotSx?.groupHeader ? (Array.isArray(slotSx.groupHeader) ? slotSx.groupHeader : [slotSx.groupHeader]) : []),
+                    ]}
+                  >
+                    {grp.name}
+                  </ListSubheader>
+                ) : null,
+                ...grp.options.map((opt) => {
+                  const isSelected = opt.value === value
+                  return (
+                    <MenuItem key={opt.value} value={opt.value} disabled={opt.disabled} sx={{ alignItems: 'flex-start' }}>
+                      <SelectOptionRow
+                        option={opt}
+                        isSelected={isSelected}
+                        isMenu={true}
+                        showCheckmark={showCheckmark}
+                        {...optionRowProps}
+                      />
+                    </MenuItem>
+                  )
+                }),
+              ])
             ) : filteredOptions.length > 0 ? (
               filteredOptions.map((opt) => {
                 const isSelected = opt.value === value

@@ -31,6 +31,53 @@ const PLAN_OPTIONS: RadioOption[] = [
   { label: 'Enterprise Plan (Custom)', value: 'enterprise' },
 ]
 
+const GROUPED_BANK_OPTIONS: SelectOption[] = [
+  // Group 1: Proxy
+  {
+    group: 'Proxy',
+    value: 'bifast_proxy',
+    leftTitle: 'BI Fast Proxy',
+    avatar: 'BF',
+    avatarBg: '#0284C7',
+  },
+  // Group 2: Semua Bank
+  {
+    group: 'Semua Bank',
+    value: 'bsi',
+    leftTitle: 'Bank Syariah Indonesia (BSI)',
+    avatar: 'BSI',
+    avatarBg: '#00A39D',
+  },
+  {
+    group: 'Semua Bank',
+    value: 'bca',
+    leftTitle: 'Bank Central Asia (BCA)',
+    avatar: 'BCA',
+    avatarBg: '#1D4ED8',
+  },
+  {
+    group: 'Semua Bank',
+    value: 'mandiri',
+    leftTitle: 'Bank Mandiri',
+    avatar: 'BM',
+    avatarBg: '#0369A1',
+  },
+  {
+    group: 'Semua Bank',
+    value: 'bri',
+    leftTitle: 'Bank Rakyat Indonesia (BRI)',
+    avatar: 'BRI',
+    avatarBg: '#1E40AF',
+  },
+  {
+    group: 'Semua Bank',
+    value: 'bni',
+    leftTitle: 'Bank Negara Indonesia (BNI)',
+    avatar: 'BNI',
+    avatarBg: '#EA580C',
+  },
+]
+
 const TRANSFER_METHOD_OPTIONS: SelectOption[] = [
   {
     value: 'bifast',
@@ -75,6 +122,7 @@ const DEFAULT_VALUES: DemoFormValues = {
   birthDate: null,
   role: '7200000001',
   role2: '',
+  destinationBank: 'bca',
   transferMethod: 'bifast',
   framework: '',
   experienceYears: 3,
@@ -118,7 +166,8 @@ export function DemoForm() {
           <Card
             title="User Registration"
             subtitle="Fill in the details below to test every form field component"
-          > <Stack spacing={2.5}>
+          >
+            <Stack spacing={2.5}>
               <Grid container spacing={2.5}>
 
                 {/* 1. Field.Text */}
@@ -216,7 +265,20 @@ export function DemoForm() {
                   rightSubtitleSx={{ color: '#64748B' }}
                 />
 
-                {/* 7.2 Field.Select with Bullet Lists (Transfer Method Selector) */}
+                {/* 7.2 Field.Select with Grouped Bank Options */}
+                <Field.Select
+                  name="destinationBank"
+                  placeholder="Pilih Bank Tujuan..."
+                  options={GROUPED_BANK_OPTIONS}
+                  searchable
+                  searchPlaceholder="Cari bank atau proxy..."
+                  borderRadius={12}
+                  selectSx={{
+                    height: '64px',
+                  }}
+                />
+
+                {/* 7.3 Field.Select with Bullet Lists (Transfer Method Selector) */}
                 <Field.Select
                   name="transferMethod"
                   placeholder="Pilih Metode Transfer..."
@@ -254,7 +316,8 @@ export function DemoForm() {
                   label="I accept the Terms & Conditions and Privacy Policy *"
                 />
 
-              </Grid>  </Stack>
+              </Grid>
+            </Stack>
           </Card>
 
           {/* Submission Result */}
