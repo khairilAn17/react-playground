@@ -49,7 +49,7 @@ const DEFAULT_VALUES: DemoFormValues = {
   email: '',
   password: '',
   birthDate: null,
-  role: '',
+  role: '7200000001',
   role2: '',
   framework: '',
   experienceYears: 3,
