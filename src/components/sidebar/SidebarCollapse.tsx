@@ -10,7 +10,6 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { useSidebar } from './SidebarContext'
 import type { SidebarBadge } from './types'
 
-const TEAL_PRIMARY = '#00A39D'
 const TEXT_MAIN = '#1E293B'
 const TEXT_MUTED = '#64748B'
 const ORANGE_ACCENT = '#F59E0B'

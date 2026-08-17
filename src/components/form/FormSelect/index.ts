@@ -1,8 +1,6 @@
 export { FormSelect } from './FormSelect'
-export { SelectOptionRow } from './SelectOptionRow'
-export type { SelectOptionRowProps } from './SelectOptionRow'
-export { SelectOptionBulletList } from './SelectOptionBulletList'
-export type { SelectOptionBulletListProps } from './SelectOptionBulletList'
+export { Select, SelectOptionRow, SelectOptionBulletList } from '../../select'
+export type { SelectOptionRowProps, SelectOptionBulletListProps } from '../../select'
 export type {
   SelectOption,
   FormSelectProps,

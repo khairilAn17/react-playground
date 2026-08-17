@@ -63,7 +63,11 @@ const statusConfig: Record<string, { label: string; bg: string; color: string }>
   pending: { label: 'Pending', bg: '#FEF9C3', color: '#92400E' },
 }
 
-export function ManajemenAkunPage() {
+export interface ManajemenAkunPageProps {
+  onBack?: () => void
+}
+
+export function ManajemenAkunPage({ onBack }: ManajemenAkunPageProps = {}) {
   return (
     <PageLayout
       maxWidth="full"
@@ -75,14 +79,15 @@ export function ManajemenAkunPage() {
       breadcrumbs={[
         {
           label: 'Home',
-          href: '/',
+          href: '#',
+          onClick: onBack,
         },
         {
           label: 'Business Banking',
-          href: '/business-banking',
+          href: '#',
+          onClick: onBack,
         },
-      ]
-      }
+      ]}
       footerActions={
         <>
           <Box sx={{ fontSize: '0.85rem', color: TEXT_MUTED }}>

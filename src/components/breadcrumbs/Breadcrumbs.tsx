@@ -7,6 +7,7 @@ export interface BreadcrumbItem {
   label: string
   href?: string
   icon?: ReactNode
+  onClick?: (event: React.MouseEvent) => void
 }
 
 export interface BreadcrumbsProps extends Omit<MuiBreadcrumbsProps, 'children'> {
@@ -66,8 +67,9 @@ export function Breadcrumbs({
             underline="hover"
             color="text.secondary"
             href={item.href}
+            onClick={item.onClick}
             variant="caption"
-            sx={{ fontWeight: 500, display: 'flex', alignItems: 'center', gap: 0.5 }}
+            sx={{ fontWeight: 500, display: 'flex', alignItems: 'center', gap: 0.5, cursor: item.onClick ? 'pointer' : undefined }}
           >
             {item.icon}
             {item.label}

@@ -3,7 +3,7 @@ import type { SxProps, Theme } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import { SelectOptionBulletList } from './SelectOptionBulletList'
-import type { SelectOption, SelectOptionSlotSx } from './types'
+import type { SelectOption, SelectOptionSlotSx } from '../types'
 
 export interface SelectOptionRowProps {
   option: SelectOption
@@ -246,7 +246,7 @@ export function SelectOptionRow({
             </Typography>
           )}
 
-          {/* ── Extracted Dedicated Bullet List Sub-Component ── */}
+          {/* ── Bullet List Sub-Component ── */}
           {shouldRenderBullets && (
             <SelectOptionBulletList
               bullets={bullets}
