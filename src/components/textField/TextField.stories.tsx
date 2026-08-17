@@ -140,7 +140,48 @@ export const NumberInput: Story = {
   },
 }
 
-/** 12. Small, Medium, Large size comparison. */
+/** 12. Indonesian Rupiah Currency formatting (1.000.000,00). */
+export const IndonesianCurrency: Story = {
+  args: {
+    label: 'Nominal Transfer Rupiah (IDR)',
+    format: 'currency',
+    prefixBlock: 'Rp',
+    defaultValue: '1000000',
+    allowDecimals: true,
+    placeholder: '0',
+    clearable: true,
+    helperText: 'Otomatis diformat dengan titik (.) ribuan dan koma (,) desimal sen',
+  },
+}
+
+/** 13. Indonesian Rupiah with fixed trailing decimals (,00). */
+export const IndonesianCurrencyFixedDecimals: Story = {
+  args: {
+    label: 'Nominal Tagihan Pajak (Fixed ,00)',
+    format: 'currency',
+    prefixBlock: 'Rp',
+    defaultValue: '2500000',
+    fixedDecimals: true,
+    placeholder: '0,00',
+    clearable: true,
+  },
+}
+
+/** 14. US Dollar Currency formatting ($ 1,250,000.50). */
+export const USDCurrency: Story = {
+  args: {
+    label: 'Foreign Currency Transfer (USD)',
+    format: 'currency',
+    prefixBlock: '$',
+    thousandSeparator: ',',
+    decimalSeparator: '.',
+    defaultValue: '1250000.50',
+    placeholder: '0.00',
+    clearable: true,
+  },
+}
+
+/** 15. Small, Medium, Large size comparison. */
 export const SizeVariants: Story = {
   render: () => (
     <Stack spacing={2.5}>

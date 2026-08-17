@@ -1,4 +1,4 @@
-import { forwardRef, useState, useId, useCallback } from 'react'
+import { forwardRef, useState, useId, useCallback, useMemo } from 'react'
 import {
   FormControl,
   InputLabel,
@@ -15,6 +15,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff'
 
 import type { TextFieldProps } from './types'
 import { toSxArray, getTextFieldInputSx, getBlockSidebarSx } from './utils'
+import { formatNumberValue, parseNumberValue } from './formatUtils'
 
 export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldProps>(
   function TextField(
@@ -41,6 +42,15 @@ export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Text
       step,
       hideSpinButtons = true,
       allowScrollWheel = false,
+      format,
+      thousandSeparator = '.',
+      decimalSeparator = ',',
+      decimalScale = 2,
+      allowDecimals = true,
+      fixedDecimals = false,
+      allowNegative = false,
+      formatter,
+      parser,
       error = false,
       disabled = false,
       readOnly = false,
@@ -70,8 +80,41 @@ export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Text
     const [internalValue, setInternalValue] = useState<string | number>(
       defaultValue ?? ''
     )
+    const [isFocused, setIsFocused] = useState(false)
     const currentValue = isControlled ? controlledValue : internalValue
-    const stringValue = currentValue !== undefined && currentValue !== null ? String(currentValue) : ''
+    const rawStringValue = currentValue !== undefined && currentValue !== null ? String(currentValue) : ''
+
+    // Format options memo
+    const formatOptions = useMemo(
+      () => ({
+        thousandSeparator,
+        decimalSeparator,
+        decimalScale,
+        allowDecimals,
+        fixedDecimals: isFocused ? false : fixedDecimals,
+        allowNegative,
+      }),
+      [
+        thousandSeparator,
+        decimalSeparator,
+        decimalScale,
+        allowDecimals,
+        fixedDecimals,
+        isFocused,
+        allowNegative,
+      ]
+    )
+
+    // Compute display value when formatted
+    const displayValue = useMemo(() => {
+      if (format === 'currency' || format === 'number') {
+        return formatNumberValue(rawStringValue, formatOptions)
+      }
+      if (format === 'custom' && formatter) {
+        return formatter(rawStringValue)
+      }
+      return rawStringValue
+    }, [format, formatOptions, formatter, rawStringValue])
 
     // Password show/hide state
     const [showPassword, setShowPassword] = useState(false)
@@ -90,17 +133,26 @@ export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Text
     // Change handler
     const handleChange = useCallback(
       (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const nextVal = event.target.value
-        if (maxLength !== undefined && nextVal.length > maxLength) {
+        const typedVal = event.target.value
+
+        let rawVal = typedVal
+        if (format === 'currency' || format === 'number') {
+          rawVal = parseNumberValue(typedVal, formatOptions)
+        } else if (format === 'custom' && parser) {
+          rawVal = parser(typedVal)
+        }
+
+        if (maxLength !== undefined && rawVal.length > maxLength) {
           return
         }
+
         if (!isControlled) {
-          setInternalValue(nextVal)
+          setInternalValue(rawVal)
         }
         onChange?.(event)
-        onValueChange?.(nextVal)
+        onValueChange?.(rawVal)
       },
-      [isControlled, maxLength, onChange, onValueChange]
+      [format, formatOptions, isControlled, maxLength, onChange, onValueChange, parser]
     )
 
     // Clear handler
@@ -119,7 +171,7 @@ export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Text
 
     // ── Build End Adornments ──────────────────────────────────────────────────
     const renderEndAdornments = () => {
-      const showClearBtn = clearable && stringValue.length > 0 && !disabled && !readOnly
+      const showClearBtn = clearable && rawStringValue.length > 0 && !disabled && !readOnly
       const showPwdToggle = isPasswordType && showPasswordToggle && !disabled
 
       if (!endAdornment && !showClearBtn && !showPwdToggle && !showCount) {
@@ -183,7 +235,7 @@ export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Text
                   fontSize: isSmall ? '0.75rem' : '0.8125rem',
                   fontWeight: 500,
                   color:
-                    maxLength && stringValue.length >= maxLength
+                    maxLength && rawStringValue.length >= maxLength
                       ? 'error.main'
                       : '#94A3B8',
                   userSelect: 'none',
@@ -192,7 +244,7 @@ export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Text
                 ...toSxArray(slotSx?.characterCount),
               ]}
             >
-              {stringValue.length}
+              {rawStringValue.length}
               {maxLength !== undefined ? `/${maxLength}` : ''}
             </Typography>
           )}
@@ -223,9 +275,17 @@ export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Text
         id={inputId}
         name={name}
         type={effectiveType}
-        value={currentValue}
+        value={displayValue}
         placeholder={placeholder}
         onChange={handleChange}
+        onFocus={(e) => {
+          setIsFocused(true)
+          props.onFocus?.(e)
+        }}
+        onBlur={(e) => {
+          setIsFocused(false)
+          props.onBlur?.(e)
+        }}
         error={error}
         disabled={disabled}
         readOnly={readOnly}
@@ -239,6 +299,12 @@ export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Text
           min,
           max,
           step,
+          inputMode:
+            format === 'currency' || format === 'number'
+              ? allowDecimals
+                ? 'decimal'
+                : 'numeric'
+              : props.inputProps?.inputMode,
           'aria-describedby': helperText ? helperId : undefined,
           ...props.inputProps,
         }}

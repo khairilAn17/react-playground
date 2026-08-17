@@ -47,13 +47,20 @@ const { Form, Field } = createTypedForm<DemoFormValues>()
 
 export function TextFieldDemoPage() {
   // ── Sandbox Controls State ─────────────────────────────────────────────────
-  const [preset, setPreset] = useState<'label' | 'value' | 'idpel' | 'doa' | 'rp' | 'number' | 'domain'>('label')
+  const [preset, setPreset] = useState<
+    'label' | 'value' | 'idpel' | 'doa' | 'rp' | 'number' | 'currency_id' | 'currency_usd' | 'domain'
+  >('label')
   const [size, setSize] = useState<TextFieldSize>('medium')
   const [borderRadius, setBorderRadius] = useState<number>(12)
   const [prefixBlockVal, setPrefixBlockVal] = useState<'none' | 'Rp' | '$' | '+62'>('none')
   const [suffixBlockVal, setSuffixBlockVal] = useState<'none' | '.com' | '/bln' | 'IDR'>('none')
   const [startAdornmentVal, setStartAdornmentVal] = useState<'none' | 'search' | 'email' | 'lock'>('none')
   const [inputType, setInputType] = useState<'text' | 'password' | 'number'>('text')
+  const [formatMode, setFormatMode] = useState<'none' | 'currency' | 'number'>('none')
+  const [thousandSep, setThousandSep] = useState<string>('.')
+  const [decimalSep, setDecimalSep] = useState<string>(',')
+  const [decimalScale, setDecimalScale] = useState<number>(2)
+  const [fixedDecimals, setFixedDecimals] = useState(false)
   const [clearable, setClearable] = useState(false)
   const [showPasswordToggle, setShowPasswordToggle] = useState(false)
   const [showCount, setShowCount] = useState(false)
@@ -73,7 +80,9 @@ export function TextFieldDemoPage() {
   const [sandboxPlaceholder, setSandboxPlaceholder] = useState('Label')
 
   // Apply preset configuration
-  const handleSelectPreset = (key: 'label' | 'value' | 'idpel' | 'doa' | 'rp' | 'number' | 'domain') => {
+  const handleSelectPreset = (
+    key: 'label' | 'value' | 'idpel' | 'doa' | 'rp' | 'number' | 'currency_id' | 'currency_usd' | 'domain'
+  ) => {
     setPreset(key)
     switch (key) {
       case 'label':
@@ -81,6 +90,7 @@ export function TextFieldDemoPage() {
         setSandboxPlaceholder('Label')
         setSandboxValue('')
         setInputType('text')
+        setFormatMode('none')
         setPrefixBlockVal('none')
         setSuffixBlockVal('none')
         setShowCount(false)
@@ -91,6 +101,7 @@ export function TextFieldDemoPage() {
         setSandboxPlaceholder('Label')
         setSandboxValue('Value')
         setInputType('text')
+        setFormatMode('none')
         setPrefixBlockVal('none')
         setSuffixBlockVal('none')
         setShowCount(false)
@@ -101,6 +112,7 @@ export function TextFieldDemoPage() {
         setSandboxPlaceholder('Nomor IDPEL')
         setSandboxValue('87654321908')
         setInputType('text')
+        setFormatMode('none')
         setPrefixBlockVal('none')
         setSuffixBlockVal('none')
         setShowCount(false)
@@ -111,6 +123,7 @@ export function TextFieldDemoPage() {
         setSandboxPlaceholder('Tulis Doa')
         setSandboxValue('Semoga berkah ya')
         setInputType('text')
+        setFormatMode('none')
         setPrefixBlockVal('none')
         setSuffixBlockVal('none')
         setShowCount(true)
@@ -122,6 +135,7 @@ export function TextFieldDemoPage() {
         setSandboxPlaceholder('Dari')
         setSandboxValue('')
         setInputType('text')
+        setFormatMode('none')
         setPrefixBlockVal('Rp')
         setSuffixBlockVal('none')
         setShowCount(false)
@@ -132,6 +146,7 @@ export function TextFieldDemoPage() {
         setSandboxPlaceholder('0')
         setSandboxValue('250000')
         setInputType('number')
+        setFormatMode('none')
         setPrefixBlockVal('Rp')
         setSuffixBlockVal('none')
         setMinVal(10000)
@@ -141,11 +156,44 @@ export function TextFieldDemoPage() {
         setShowCount(false)
         setIsError(false)
         break
+      case 'currency_id':
+        setSandboxLabel('Nominal Transfer Rupiah (Rp 1.000.000,00)')
+        setSandboxPlaceholder('0,00')
+        setSandboxValue('1000000')
+        setInputType('text')
+        setFormatMode('currency')
+        setPrefixBlockVal('Rp')
+        setSuffixBlockVal('none')
+        setThousandSep('.')
+        setDecimalSep(',')
+        setDecimalScale(2)
+        setFixedDecimals(true)
+        setClearable(true)
+        setShowCount(false)
+        setIsError(false)
+        break
+      case 'currency_usd':
+        setSandboxLabel('Foreign Exchange Transfer (USD $1,250,000.50)')
+        setSandboxPlaceholder('0.00')
+        setSandboxValue('1250000.50')
+        setInputType('text')
+        setFormatMode('currency')
+        setPrefixBlockVal('$')
+        setSuffixBlockVal('none')
+        setThousandSep(',')
+        setDecimalSep('.')
+        setDecimalScale(2)
+        setFixedDecimals(false)
+        setClearable(true)
+        setShowCount(false)
+        setIsError(false)
+        break
       case 'domain':
         setSandboxLabel('')
         setSandboxPlaceholder('perusahaan')
         setSandboxValue('')
         setInputType('text')
+        setFormatMode('none')
         setPrefixBlockVal('none')
         setSuffixBlockVal('.com')
         setShowCount(false)
@@ -240,7 +288,16 @@ export function TextFieldDemoPage() {
                         value={preset}
                         onChange={(e) =>
                           handleSelectPreset(
-                            e.target.value as 'label' | 'value' | 'idpel' | 'doa' | 'rp' | 'number' | 'domain'
+                            e.target.value as
+                              | 'label'
+                              | 'value'
+                              | 'idpel'
+                              | 'doa'
+                              | 'rp'
+                              | 'number'
+                              | 'currency_id'
+                              | 'currency_usd'
+                              | 'domain'
                           )
                         }
                       >
@@ -250,7 +307,9 @@ export function TextFieldDemoPage() {
                         <FormControlLabel value="doa" control={<MuiRadio size="small" />} label="4. Counter (15/75)" />
                         <FormControlLabel value="rp" control={<MuiRadio size="small" />} label="5. Prefix Rp" />
                         <FormControlLabel value="number" control={<MuiRadio size="small" />} label="6. Number (Rp)" />
-                        <FormControlLabel value="domain" control={<MuiRadio size="small" />} label="7. Suffix .com" />
+                        <FormControlLabel value="currency_id" control={<MuiRadio size="small" />} label="7. Rp 1.000.000,00" />
+                        <FormControlLabel value="currency_usd" control={<MuiRadio size="small" />} label="8. $ 1,250,000.50" />
+                        <FormControlLabel value="domain" control={<MuiRadio size="small" />} label="9. Suffix .com" />
                       </MuiRadioGroup>
                     </FormControl>
 
@@ -509,6 +568,11 @@ export function TextFieldDemoPage() {
                         min={minVal}
                         max={maxVal}
                         step={stepVal}
+                        format={formatMode !== 'none' ? formatMode : undefined}
+                        thousandSeparator={thousandSep}
+                        decimalSeparator={decimalSep}
+                        decimalScale={decimalScale}
+                        fixedDecimals={fixedDecimals}
                         multiline={isMultiline}
                         rows={isMultiline ? 3 : undefined}
                         error={isError}
@@ -517,9 +581,11 @@ export function TextFieldDemoPage() {
                         helperText={
                           isError
                             ? 'No. Meter/IDPEL tidak terdaftar'
-                            : inputType === 'number'
-                              ? 'Batas minimal transfer Rp 10.000, maksimal Rp 50.000.000'
-                              : 'Silakan isi kolom ini sesuai identitas yang valid'
+                            : formatMode === 'currency'
+                              ? 'Format aktif: pemisah ribuan otomatis & koma desimal'
+                              : inputType === 'number'
+                                ? 'Batas minimal transfer Rp 10.000, maksimal Rp 50.000.000'
+                                : 'Silakan isi kolom ini sesuai identitas yang valid'
                         }
                       />
                     </Paper>
@@ -815,6 +881,54 @@ export function TextFieldDemoPage() {
                   type: 'boolean',
                   def: 'false',
                   desc: 'Displays a quick clear "X" icon button when text is present.',
+                },
+                {
+                  prop: 'format',
+                  type: "'currency' | 'number' | 'custom'",
+                  def: 'undefined',
+                  desc: 'Enables live number/currency formatting with thousand separators and decimal scale.',
+                },
+                {
+                  prop: 'thousandSeparator',
+                  type: 'string',
+                  def: "'.'",
+                  desc: 'Character used for grouping thousands (e.g. "." in Indonesia, "," in US).',
+                },
+                {
+                  prop: 'decimalSeparator',
+                  type: 'string',
+                  def: "','",
+                  desc: 'Character used for decimal fraction point (e.g. "," in Indonesia, "." in US).',
+                },
+                {
+                  prop: 'decimalScale',
+                  type: 'number',
+                  def: '2',
+                  desc: 'Maximum allowed decimal digits when format is enabled.',
+                },
+                {
+                  prop: 'allowDecimals',
+                  type: 'boolean',
+                  def: 'true',
+                  desc: 'Controls whether fractional decimals are allowed in format mode.',
+                },
+                {
+                  prop: 'fixedDecimals',
+                  type: 'boolean',
+                  def: 'false',
+                  desc: 'Forces trailing decimal zeros (e.g. ",00") on blur.',
+                },
+                {
+                  prop: 'formatter',
+                  type: '(value: string) => string',
+                  def: 'undefined',
+                  desc: 'Custom formatter function for bespoke mask/account formatting.',
+                },
+                {
+                  prop: 'parser',
+                  type: '(displayValue: string) => string',
+                  def: 'undefined',
+                  desc: 'Custom parser function converting display value back to clean form value.',
                 },
                 {
                   prop: 'type',

@@ -77,6 +77,29 @@ export interface TextFieldProps
   hideSpinButtons?: boolean
   /** Allow mouse wheel scrolling to increment/decrement numbers when focused. @default false */
   allowScrollWheel?: boolean
+  /**
+   * Formatting mode for the text field:
+   * - `'currency'`: Live thousand separators and decimal formatting (default `.` thousand, `,` decimal).
+   * - `'number'`: Live thousand separators for numeric integer/decimal fields.
+   * - `'custom'`: Uses provided `formatter` and `parser` functions.
+   */
+  format?: 'currency' | 'number' | 'custom'
+  /** Character used to separate thousands when format is enabled. @default '.' */
+  thousandSeparator?: string
+  /** Character used for decimal point when format is enabled. @default ',' */
+  decimalSeparator?: string
+  /** Maximum number of decimal digits allowed when format is enabled. @default 2 */
+  decimalScale?: number
+  /** Whether decimal values are allowed when format is enabled. @default true */
+  allowDecimals?: boolean
+  /** Whether to format with fixed trailing zeros (e.g. ",00") on blur. @default false */
+  fixedDecimals?: boolean
+  /** Whether negative values are allowed. @default false */
+  allowNegative?: boolean
+  /** Custom formatter function converting raw value to display value. */
+  formatter?: (value: string) => string
+  /** Custom parser function converting formatted display value back to raw value. */
+  parser?: (displayValue: string) => string
   /** Whether the field is in an error state. @default false */
   error?: boolean
   /** Whether the field is disabled. @default false */

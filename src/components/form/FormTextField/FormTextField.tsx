@@ -55,6 +55,15 @@ export function FormTextField<T extends FieldValues>({
   step,
   hideSpinButtons = true,
   allowScrollWheel = false,
+  format,
+  thousandSeparator,
+  decimalSeparator,
+  decimalScale,
+  allowDecimals,
+  fixedDecimals,
+  allowNegative,
+  formatter,
+  parser,
   disabled = false,
   readOnly = false,
   required = false,
@@ -113,6 +122,15 @@ export function FormTextField<T extends FieldValues>({
           step={step}
           hideSpinButtons={hideSpinButtons}
           allowScrollWheel={allowScrollWheel}
+          format={format}
+          thousandSeparator={thousandSeparator}
+          decimalSeparator={decimalSeparator}
+          decimalScale={decimalScale}
+          allowDecimals={allowDecimals}
+          fixedDecimals={fixedDecimals}
+          allowNegative={allowNegative}
+          formatter={formatter}
+          parser={parser}
           disabled={disabled}
           readOnly={readOnly}
           required={required}

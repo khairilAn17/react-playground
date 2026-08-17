@@ -134,4 +134,46 @@ describe('TextField Primitive', () => {
     fireEvent.wheel(input)
     expect(blurSpy).toHaveBeenCalled()
   })
+
+  it('formats Indonesian currency with live thousand separators (format="currency")', () => {
+    const handleValueChange = vi.fn()
+    render(
+      <TextField
+        format="currency"
+        defaultValue="1000000"
+        placeholder="0"
+        onValueChange={handleValueChange}
+      />
+    )
+
+    const input = screen.getByPlaceholderText('0') as HTMLInputElement
+    // Initial display value formatted with dots
+    expect(input.value).toBe('1.000.000')
+
+    // Typing changes format to display with dots and comma for decimals
+    fireEvent.change(input, { target: { value: '2500000,50' } })
+    expect(input.value).toBe('2.500.000,50')
+    expect(handleValueChange).toHaveBeenCalledWith('2500000.50')
+  })
+
+  it('formats with custom US separators when configured', () => {
+    const handleValueChange = vi.fn()
+    render(
+      <TextField
+        format="currency"
+        thousandSeparator=","
+        decimalSeparator="."
+        defaultValue="1000000.50"
+        placeholder="0"
+        onValueChange={handleValueChange}
+      />
+    )
+
+    const input = screen.getByPlaceholderText('0') as HTMLInputElement
+    expect(input.value).toBe('1,000,000.50')
+
+    fireEvent.change(input, { target: { value: '3,500,000.75' } })
+    expect(input.value).toBe('3,500,000.75')
+    expect(handleValueChange).toHaveBeenCalledWith('3500000.75')
+  })
 })
