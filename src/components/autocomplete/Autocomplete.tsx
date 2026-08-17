@@ -76,6 +76,8 @@ export function Autocomplete<
   checkboxPlacement = 'right',
   maxVisibleTags,
   tagDisplay = 'avatar+label',
+  onChange,
+  onValueChange,
   ...props
 }: AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>) {
   const generatedId = useId()
@@ -186,6 +188,20 @@ export function Autocomplete<
     ]
   )
 
+  // ── 4. Memoized change handler supporting onValueChange ─────────────────
+  const handleMuiChange = useCallback(
+    (
+      event: React.SyntheticEvent,
+      value: unknown,
+      reason: string,
+      details?: unknown
+    ) => {
+      onValueChange?.(value as any)
+      onChange?.(event as any, value as any, reason as any, details as any)
+    },
+    [onValueChange, onChange]
+  )
+
   return (
     <FormControl
       fullWidth={fullWidth}
@@ -228,6 +244,7 @@ export function Autocomplete<
         options={options}
         getOptionLabel={getOptionLabel}
         isOptionEqualToValue={isOptionEqualToValue}
+        onChange={handleMuiChange}
         popupIcon={<KeyboardArrowDownIcon sx={{ fontSize: isSmall ? 20 : 22 }} />}
         clearIcon={<CloseIcon sx={{ fontSize: isSmall ? 18 : 20 }} />}
         slotProps={{

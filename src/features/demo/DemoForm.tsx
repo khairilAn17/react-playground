@@ -451,7 +451,7 @@ export function DemoForm() {
                   placeholder="Filter Berdasarkan Kategori..."
                   options={INFAQ_OPTIONS}
                   value={singleValue}
-                  onChange={(_, v) => setSingleValue(v as AutocompleteOption | null)}
+                  onValueChange={setSingleValue}
                   helperText={singleValue ? `✓ Dipilih: ${singleValue.label}` : 'Belum ada kategori dipilih'}
                 />
               </Box>
@@ -464,9 +464,9 @@ export function DemoForm() {
                   placeholder={multiValues.length === 0 ? 'Pilih Kategori...' : ''}
                   options={INFAQ_OPTIONS}
                   value={multiValues}
-                  onChange={(_, v) => setMultiValues(v as AutocompleteOption[])}
+                  onValueChange={setMultiValues}
                   checkboxPlacement="right"
-                  maxVisibleTags={2}
+                  maxVisibleTags={3}
                   tagDisplay="avatar+label"
                   helperText={`${multiValues.length} kategori dipilih — chip ke-3+ tersembunyi sebagai +N overflow`}
                 />

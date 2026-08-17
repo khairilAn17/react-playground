@@ -1,6 +1,7 @@
 import type { Key, ReactNode, Ref } from 'react'
 import type {
   AutocompleteProps as MuiAutocompleteProps,
+  AutocompleteValue,
   SxProps,
   Theme,
   TextFieldProps,
@@ -55,6 +56,22 @@ export interface AutocompleteProps<
   inputRef?: Ref<HTMLInputElement>
   textFieldProps?: Partial<Omit<TextFieldProps, 'error' | 'helperText' | 'label' | 'placeholder' | 'size'>>
   slotSx?: AutocompleteSlotSx
+  /**
+   * Modern value-first change handler (Radix / Mantine / Shadcn pattern).
+   * Directly receives the updated value without requiring a throwaway event parameter.
+   *
+   * @example
+   * ```tsx
+   * // Single-select: value is `T | null`
+   * <Autocomplete options={INFAQ_OPTIONS} value={value} onValueChange={setValue} />
+   *
+   * // Multi-select: value is `T[]`
+   * <Autocomplete multiple options={INFAQ_OPTIONS} value={multi} onValueChange={setMulti} />
+   * ```
+   */
+  onValueChange?: (
+    value: AutocompleteValue<T, Multiple, DisableClearable, FreeSolo>
+  ) => void
   /**
    * Custom tags renderer for multiple selection.
    */

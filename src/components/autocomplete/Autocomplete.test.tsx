@@ -113,21 +113,24 @@ describe('Autocomplete', () => {
     expect(screen.getByText('+1')).toBeInTheDocument()
   })
 
-  it('renders checkbox in options when multiple is true', async () => {
+  it('calls onValueChange directly with updated value', async () => {
+    const handleValueChange = vi.fn()
     const user = userEvent.setup()
+
     render(
       <Autocomplete
-        multiple
-        label="Frameworks"
+        label="Framework"
         options={OPTIONS}
-        checkboxPlacement="right"
+        onValueChange={handleValueChange}
       />
     )
 
     const input = screen.getByRole('combobox')
     await user.click(input)
 
-    const checkboxes = screen.getAllByRole('checkbox')
-    expect(checkboxes.length).toBeGreaterThan(0)
+    const option = await screen.findByRole('option', { name: /React/i })
+    await user.click(option)
+
+    expect(handleValueChange).toHaveBeenCalledWith(OPTIONS[0])
   })
 })
