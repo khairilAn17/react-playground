@@ -468,6 +468,13 @@ export function DemoForm() {
                   checkboxPlacement="right"
                   maxVisibleTags={3}
                   tagDisplay="avatar+label"
+                  slotSx={{
+                    option: {
+                      fontWeight: 600,
+                      color: 'white',
+                      px: 4
+                    }
+                  }}
                   helperText={`${multiValues.length} kategori dipilih — chip ke-3+ tersembunyi sebagai +N overflow`}
                 />
               </Box>

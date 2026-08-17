@@ -20,14 +20,45 @@ export interface AutocompleteOption {
 }
 
 export interface AutocompleteSlotSx {
+  /** Styles the outer `<FormControl>` wrapper. */
   root?: SxProps<Theme>
   formControl?: SxProps<Theme>
+  /** Styles the floating `<InputLabel>` above the field. */
   inputLabel?: SxProps<Theme>
+  /** Styles the inner `<TextField>` input element. */
   textField?: SxProps<Theme>
+  /** Styles the dropdown `<Paper>` popover container. */
   paper?: SxProps<Theme>
+  /** Styles the `<ul>` listbox inside the popover. */
   listbox?: SxProps<Theme>
+  /** Styles the outer `<li>` row element of each dropdown option. */
   option?: SxProps<Theme>
+  /**
+   * Styles the primary label `<Typography>` inside each option row.
+   * Note: `color` and `fontWeight` here override the selection-state defaults.
+   */
+  optionLabel?: SxProps<Theme>
+  /** Styles the subtitle `<Typography>` inside each option row. */
+  optionSubtitle?: SxProps<Theme>
+  /** Styles the `<Checkbox>` inside each option row (only when `multiple` is true). */
+  optionCheckbox?: SxProps<Theme>
+  /** Styles the `<Avatar>` element inside each option row. */
+  optionAvatar?: SxProps<Theme>
+  /** Styles the icon wrapper `<Box>` inside each option row. */
+  optionIcon?: SxProps<Theme>
+  /** Styles the selected value chip(s) displayed in the input. */
   tag?: SxProps<Theme>
+  /** Styles the `<Chip>` element itself for each selected value tag. */
+  tagChip?: SxProps<Theme>
+  /** Styles the `<Avatar>` inside each selected value chip (string avatar variant). */
+  tagAvatar?: SxProps<Theme>
+  /** Styles the icon wrapper `<Box>` inside each selected value chip. */
+  tagIcon?: SxProps<Theme>
+  /** Styles the label container `<Box>` inside each selected value chip (wraps avatar/icon + text). */
+  tagLabel?: SxProps<Theme>
+  /** Styles the `+N` overflow `<Chip>` that appears when `maxVisibleTags` is exceeded. */
+  tagOverflow?: SxProps<Theme>
+  /** Styles the `<FormHelperText>` below the field. */
   helperText?: SxProps<Theme>
 }
 

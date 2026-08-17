@@ -113,12 +113,30 @@ export function Autocomplete<
           multiple={Boolean(multiple)}
           checkboxPlacement={checkboxPlacement}
           size={size}
-          optionSx={slotSx?.option}
+          slotSx={{
+            option: slotSx?.option,
+            optionLabel: slotSx?.optionLabel,
+            optionSubtitle: slotSx?.optionSubtitle,
+            optionCheckbox: slotSx?.optionCheckbox,
+            optionAvatar: slotSx?.optionAvatar,
+            optionIcon: slotSx?.optionIcon,
+          }}
           {...restOptionProps}
         />
       )
     },
-    [getOptionLabel, multiple, checkboxPlacement, size, slotSx?.option]
+    [
+      getOptionLabel,
+      multiple,
+      checkboxPlacement,
+      size,
+      slotSx?.option,
+      slotSx?.optionLabel,
+      slotSx?.optionSubtitle,
+      slotSx?.optionCheckbox,
+      slotSx?.optionAvatar,
+      slotSx?.optionIcon,
+    ]
   )
 
   // ── 2. Memoized tag / value renderer (MUI v9 renderValue) ────────────────
@@ -142,6 +160,13 @@ export function Autocomplete<
           maxVisibleTags,
           tagDisplay,
           tagSx: slotSx?.tag,
+          slotSx: {
+            tagChip: slotSx?.tagChip,
+            tagAvatar: slotSx?.tagAvatar,
+            tagIcon: slotSx?.tagIcon,
+            tagLabel: slotSx?.tagLabel,
+            tagOverflow: slotSx?.tagOverflow,
+          },
           getOptionLabel,
         })
       }
@@ -154,6 +179,11 @@ export function Autocomplete<
       maxVisibleTags,
       tagDisplay,
       slotSx?.tag,
+      slotSx?.tagChip,
+      slotSx?.tagAvatar,
+      slotSx?.tagIcon,
+      slotSx?.tagLabel,
+      slotSx?.tagOverflow,
       getOptionLabel,
     ]
   )

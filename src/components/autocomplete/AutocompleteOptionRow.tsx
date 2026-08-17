@@ -4,6 +4,21 @@ import type { SxProps, Theme } from '@mui/material'
 import { toSxArray } from '../select/utils'
 import type { AutocompleteOption } from './types'
 
+export interface AutocompleteOptionRowSlotSx {
+  /** Styles the outer `<li>` row container. */
+  option?: SxProps<Theme>
+  /** Styles the primary label `<Typography>`. Overrides selection-state defaults for `color` and `fontWeight`. */
+  optionLabel?: SxProps<Theme>
+  /** Styles the subtitle caption `<Typography>`. */
+  optionSubtitle?: SxProps<Theme>
+  /** Styles the `<Checkbox>` element (only rendered when `multiple` is true). */
+  optionCheckbox?: SxProps<Theme>
+  /** Styles the `<Avatar>` element (string avatar variant). */
+  optionAvatar?: SxProps<Theme>
+  /** Styles the icon wrapper `<Box>` (icon variant). */
+  optionIcon?: SxProps<Theme>
+}
+
 export interface AutocompleteOptionRowProps extends HTMLAttributes<HTMLLIElement> {
   option: AutocompleteOption
   label: string
@@ -11,7 +26,9 @@ export interface AutocompleteOptionRowProps extends HTMLAttributes<HTMLLIElement
   multiple?: boolean
   checkboxPlacement?: 'left' | 'right' | false
   size?: 'small' | 'medium' | 'large'
+  /** @deprecated – pass individual sub-slots via `slotSx` instead */
   optionSx?: SxProps<Theme>
+  slotSx?: AutocompleteOptionRowSlotSx
 }
 
 export const AutocompleteOptionRow = memo(function AutocompleteOptionRow({
@@ -22,6 +39,7 @@ export const AutocompleteOptionRow = memo(function AutocompleteOptionRow({
   checkboxPlacement = 'right',
   size = 'medium',
   optionSx,
+  slotSx,
   ...restProps
 }: AutocompleteOptionRowProps) {
   const isSmall = size === 'small'
@@ -33,13 +51,16 @@ export const AutocompleteOptionRow = memo(function AutocompleteOptionRow({
       tabIndex={-1}
       disableRipple
       size="small"
-      sx={{
-        p: 0.5,
-        flexShrink: 0,
-        color: 'action.active',
-        borderRadius: '6px',
-        '&.Mui-checked': { color: '#00A39D' },
-      }}
+      sx={[
+        {
+          p: 0.5,
+          flexShrink: 0,
+          color: 'action.active',
+          borderRadius: '6px',
+          '&.Mui-checked': { color: '#00A39D' },
+        },
+        ...toSxArray(slotSx?.optionCheckbox),
+      ]}
     />
   ) : null
 
@@ -50,15 +71,18 @@ export const AutocompleteOptionRow = memo(function AutocompleteOptionRow({
       avatarOrIconNode = (
         <Avatar
           src={isUrl ? option.avatar : undefined}
-          sx={{
-            width: isSmall ? 24 : 30,
-            height: isSmall ? 24 : 30,
-            fontSize: isSmall ? '0.75rem' : '0.8125rem',
-            bgcolor: option.avatarBg || '#00A39D',
-            color: '#FFFFFF',
-            fontWeight: 600,
-            flexShrink: 0,
-          }}
+          sx={[
+            {
+              width: isSmall ? 24 : 30,
+              height: isSmall ? 24 : 30,
+              fontSize: isSmall ? '0.75rem' : '0.8125rem',
+              bgcolor: option.avatarBg || '#00A39D',
+              color: '#FFFFFF',
+              fontWeight: 600,
+              flexShrink: 0,
+            },
+            ...toSxArray(slotSx?.optionAvatar),
+          ]}
         >
           {!isUrl ? option.avatar : undefined}
         </Avatar>
@@ -69,14 +93,17 @@ export const AutocompleteOptionRow = memo(function AutocompleteOptionRow({
   } else if (option.icon) {
     avatarOrIconNode = (
       <Box
-        sx={{
-          color: selected ? '#00A39D' : 'text.secondary',
-          display: 'flex',
-          alignItems: 'center',
-          flexShrink: 0,
-          fontSize: isSmall ? 18 : 22,
-          '& svg': { fontSize: 'inherit' },
-        }}
+        sx={[
+          {
+            color: selected ? '#00A39D' : 'text.secondary',
+            display: 'flex',
+            alignItems: 'center',
+            flexShrink: 0,
+            fontSize: isSmall ? 18 : 22,
+            '& svg': { fontSize: 'inherit' },
+          },
+          ...toSxArray(slotSx?.optionIcon),
+        ]}
       >
         {option.icon}
       </Box>
@@ -95,7 +122,9 @@ export const AutocompleteOptionRow = memo(function AutocompleteOptionRow({
           gap: 1.5,
           width: '100%',
         },
+        // backward-compat: support legacy optionSx prop
         ...toSxArray(optionSx),
+        ...toSxArray(slotSx?.option),
       ]}
     >
       <Box
@@ -114,11 +143,16 @@ export const AutocompleteOptionRow = memo(function AutocompleteOptionRow({
           <Typography
             variant="body2"
             noWrap
-            sx={{
-              fontWeight: selected ? 600 : 500,
-              color: selected ? '#00A39D' : 'text.primary',
-              fontSize: isSmall ? '0.8125rem' : '0.875rem',
-            }}
+            sx={[
+              {
+                // Default selection-state styles — overridable via slotSx.optionLabel
+                fontWeight: selected ? 600 : 500,
+                color: selected ? '#00A39D' : 'text.primary',
+                fontSize: isSmall ? '0.8125rem' : '0.875rem',
+              },
+              // Consumer-provided overrides always win (applied last)
+              ...toSxArray(slotSx?.optionLabel),
+            ]}
           >
             {label}
           </Typography>
@@ -126,11 +160,14 @@ export const AutocompleteOptionRow = memo(function AutocompleteOptionRow({
             <Typography
               variant="caption"
               noWrap
-              sx={{
-                color: 'text.secondary',
-                fontSize: isSmall ? '0.6875rem' : '0.75rem',
-                display: 'block',
-              }}
+              sx={[
+                {
+                  color: 'text.secondary',
+                  fontSize: isSmall ? '0.6875rem' : '0.75rem',
+                  display: 'block',
+                },
+                ...toSxArray(slotSx?.optionSubtitle),
+              ]}
             >
               {option.subtitle}
             </Typography>
