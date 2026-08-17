@@ -82,3 +82,5 @@ describe('SearchInput Primitive', () => {
     expect(screen.queryByLabelText('Clear search text')).not.toBeInTheDocument()
   })
 })
+
+

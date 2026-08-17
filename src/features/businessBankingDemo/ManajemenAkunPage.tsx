@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   Box,
   Button,
@@ -19,6 +20,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined'
 
 import { PageLayout } from '../../widgets/pageLayout'
+import { SearchInput } from '../../components/search'
 
 // ─── Theme Colors ─────────────────────────────────────────────────────────────
 const TEAL_PRIMARY = '#00A39D'
@@ -68,6 +70,14 @@ export interface ManajemenAkunPageProps {
 }
 
 export function ManajemenAkunPage({ onBack }: ManajemenAkunPageProps = {}) {
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const filteredMakers = makerList.filter(
+    (m) =>
+      m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.email.toLowerCase().includes(searchQuery.toLowerCase())
+  )
   return (
     <PageLayout
       maxWidth="full"
@@ -127,18 +137,30 @@ export function ManajemenAkunPage({ onBack }: ManajemenAkunPageProps = {}) {
         title="Daftar Akun Maker Aktif"
         description="Pengguna dengan hak akses pembuat transaksi (Maker)"
         actions={
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            sx={{
-              bgcolor: TEAL_PRIMARY,
-              borderRadius: 50,
-              fontWeight: 700,
-              '&:hover': { bgcolor: '#008F85' },
-            }}
-          >
-            Tambah Maker
-          </Button>
+          <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+            <SearchInput
+              size="small"
+              placeholder="Cari maker, username, email..."
+              value={searchQuery}
+              onValueChange={setSearchQuery}
+              onClear={() => setSearchQuery('')}
+              clearable
+              slotSx={{ container: { minWidth: 260 } }}
+            />
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              sx={{
+                bgcolor: TEAL_PRIMARY,
+                borderRadius: 50,
+                fontWeight: 700,
+                whiteSpace: 'nowrap',
+                '&:hover': { bgcolor: '#008F85' },
+              }}
+            >
+              Tambah Maker
+            </Button>
+          </Stack>
         }
         divider
       >
@@ -154,7 +176,7 @@ export function ManajemenAkunPage({ onBack }: ManajemenAkunPageProps = {}) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {makerList.map((row) => {
+            {filteredMakers.map((row) => {
               const status = statusConfig[row.status] || statusConfig.inactive
               return (
                 <TableRow key={row.id} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>

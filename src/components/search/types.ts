@@ -29,10 +29,6 @@ export interface SearchInputProps
   loadingIndicator?: ReactNode
   /** Convenience callback that receives the plain string value immediately on every keystroke. */
   onValueChange?: (value: string) => void
-  /** Debounce delay in milliseconds before triggering onDebouncedChange. Defaults to 300ms if onDebouncedChange is supplied. */
-  debounceMs?: number
-  /** Callback triggered after user stops typing for debounceMs milliseconds, or immediately on Enter/Clear. */
-  onDebouncedChange?: (value: string) => void
   onSearch?: (value: string) => void
   onClear?: () => void
   clearable?: boolean
@@ -43,4 +39,5 @@ export interface SearchInputProps
   fullWidth?: boolean
   slotSx?: SearchInputSlotSx
 }
+
 

@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { useState } from 'react'
-import { Box, Typography, Stack } from '@mui/material'
+import { useState, useMemo, useEffect } from 'react'
+import { Box, Typography, Stack, Chip, CircularProgress } from '@mui/material'
+import { debounce } from 'lodash-es'
 import { SearchInput } from './SearchInput'
-import { CheckCircle } from '@mui/icons-material'
+
 
 const meta: Meta<typeof SearchInput> = {
   title: 'Components/Search/SearchInput',
@@ -175,3 +176,161 @@ export const LoadingStateDemo: Story = {
     )
   },
 }
+
+const MOCK_ACCOUNTS = [
+  'PT Mega Berkah Utama - Operasional (002-882-991)',
+  'PT Mega Berkah Utama - Payroll (002-882-992)',
+  'PT Mega Berkah Utama - Pajak (002-882-993)',
+  'PT Sinar Abadi Sentosa - Giro IDR (110-334-551)',
+  'PT Sinar Abadi Sentosa - Valas USD (110-334-552)',
+  'CV Cahaya Nusantara - Escrow (991-002-334)',
+  'Bank Syariah Mandiri - Rekening Utama (772-110-441)',
+]
+
+export const ExternalLodashDebounceDemo: Story = {
+  render: () => {
+    // 1. Immediate local state for responsive input typing (zero lag)
+    const [inputValue, setInputValue] = useState('')
+    // 2. Debounced state emitted by lodash.debounce
+    const [debouncedQuery, setDebouncedQuery] = useState('')
+    const [isSearching, setIsSearching] = useState(false)
+    const [keystrokeCount, setKeystrokeCount] = useState(0)
+    const [searchCallCount, setSearchCallCount] = useState(0)
+
+    // 3. Create debounced handler using lodash debounce (500ms delay)
+    const debouncedSearch = useMemo(
+      () =>
+        debounce((query: string) => {
+          setDebouncedQuery(query)
+          setIsSearching(false)
+          setSearchCallCount((prev) => prev + 1)
+        }, 500),
+      []
+    )
+
+    // Clean up debounced timer when component unmounts
+    useEffect(() => {
+      return () => {
+        debouncedSearch.cancel()
+      }
+    }, [debouncedSearch])
+
+    const handleInputChange = (nextVal: string) => {
+      setInputValue(nextVal)
+      setKeystrokeCount((prev) => prev + 1)
+      setIsSearching(true)
+      debouncedSearch(nextVal)
+    }
+
+    const handleClear = () => {
+      debouncedSearch.cancel()
+      setInputValue('')
+      setDebouncedQuery('')
+      setIsSearching(false)
+    }
+
+    const filteredAccounts = MOCK_ACCOUNTS.filter((acc) =>
+      acc.toLowerCase().includes(debouncedQuery.toLowerCase())
+    )
+
+    return (
+      <Box sx={{ maxWidth: 540, display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+        <Box>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary', mb: 0.5 }}>
+            External Debounce Pattern (via `lodash-es/debounce`)
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
+            Input typing is 100% instant and responsive. The expensive search operation / API call is debounced by 500ms outside the component.
+          </Typography>
+
+          <SearchInput
+            variant="outlined"
+            placeholder="Type account name or number (e.g. Mega, Payroll, 002)..."
+            value={inputValue}
+            onValueChange={handleInputChange}
+            onClear={handleClear}
+            loading={isSearching}
+            clearable
+            loadingIndicator={
+              <CircularProgress size={15} thickness={4.5} color="inherit" />
+            }
+          />
+        </Box>
+
+        {/* ── Debounce Metrics & Telemetry ── */}
+        <Box
+          sx={{
+            p: 2,
+            bgcolor: 'grey.50',
+            border: '1px solid',
+            borderColor: 'grey.200',
+            borderRadius: '10px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1.5,
+          }}
+        >
+          <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+            Real-time Debounce Metrics
+          </Typography>
+
+          <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+            <Chip
+              label={`Immediate Keystrokes: ${keystrokeCount}`}
+              size="small"
+              color="default"
+              variant="outlined"
+            />
+            <Chip
+              label={`Debounced API Searches: ${searchCallCount}`}
+              size="small"
+              sx={{ bgcolor: '#00A39D', color: '#FFFFFF', fontWeight: 600 }}
+            />
+            <Chip
+              label={isSearching ? '⏳ Waiting for user to stop typing (500ms)...' : '✅ Settled / Idle'}
+              size="small"
+              color={isSearching ? 'warning' : 'success'}
+              variant="outlined"
+            />
+          </Stack>
+
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            <strong>Active Debounced Query:</strong> {debouncedQuery ? `"${debouncedQuery}"` : '<em>(empty)</em>'}
+          </Typography>
+        </Box>
+
+        {/* ── Search Results List ── */}
+        <Box sx={{ border: '1px solid', borderColor: 'grey.200', borderRadius: '10px', overflow: 'hidden' }}>
+          <Box sx={{ p: 1.5, bgcolor: 'grey.100', borderBottom: '1px solid', borderColor: 'grey.200' }}>
+            <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary' }}>
+              MATCHING RESULTS ({filteredAccounts.length})
+            </Typography>
+          </Box>
+          <Box sx={{ p: 1, maxHeight: 220, overflowY: 'auto' }}>
+            {filteredAccounts.length > 0 ? (
+              filteredAccounts.map((acc) => (
+                <Box
+                  key={acc}
+                  sx={{
+                    p: 1.25,
+                    borderRadius: '6px',
+                    fontSize: '0.875rem',
+                    color: 'text.primary',
+                    '&:hover': { bgcolor: 'grey.50' },
+                  }}
+                >
+                  {acc}
+                </Box>
+              ))
+            ) : (
+              <Typography variant="body2" sx={{ p: 2, color: 'text.secondary', textAlign: 'center' }}>
+                No accounts found matching "{debouncedQuery}"
+              </Typography>
+            )}
+          </Box>
+        </Box>
+      </Box>
+    )
+  },
+}
+
