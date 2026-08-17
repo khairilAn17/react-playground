@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react'
-import type { SxProps, Theme, SelectProps as MuiSelectProps, AvatarProps } from '@mui/material'
-import type { SearchVariant } from '../search'
+import type { ReactNode, Ref } from 'react'
+import type { SxProps, Theme, AvatarProps, MenuProps } from '@mui/material'
+import type { SearchVariant, SearchInputProps } from '../search'
 
 export interface SelectOptionSlotSx {
   root?: SxProps<Theme>
@@ -70,8 +70,21 @@ export interface SelectSlotSx {
   loadingMore?: SxProps<Theme>
 }
 
-export interface SelectProps
-  extends Omit<MuiSelectProps<string | number>, 'variant' | 'size'> {
+export interface SelectChangeEvent {
+  target: {
+    name?: string
+    value: string | number
+  }
+}
+
+export interface SelectProps {
+  id?: string
+  name?: string
+  value?: string | number
+  onChange?: (event: SelectChangeEvent) => void
+  onBlur?: (event: React.FocusEvent<HTMLElement>) => void
+  onClose?: (event: React.SyntheticEvent) => void
+  inputRef?: Ref<HTMLInputElement>
   label?: string
   options?: SelectOption[]
   searchable?: boolean
@@ -90,6 +103,15 @@ export interface SelectProps
    * Useful for triggering debounced API queries in server search mode.
    */
   onSearchChange?: (searchTerm: string) => void
+  /**
+   * Additional props passed directly to the internal `<SearchInput>` component.
+   * Overrides individual `searchPlaceholder`, `searchVariant`, `searchClearable`,
+   * `searchLoading` shorthands — use either approach, not both.
+   */
+  searchInputProps?: Omit<
+    SearchInputProps,
+    'value' | 'onValueChange' | 'onClear' | 'autoFocus' | 'fullWidth' | 'ref'
+  >
 
   /* ── Infinite Scroll & Pagination Props ── */
   /**
@@ -120,14 +142,28 @@ export interface SelectProps
   borderRadius?: number | string
   helperText?: ReactNode
   error?: boolean
+  fullWidth?: boolean
+  disabled?: boolean
   variant?: 'outlined' | 'filled' | 'standard'
   size?: 'small' | 'medium' | 'large'
+  sx?: SxProps<Theme>
 
   /**
    * Optional custom group resolver function.
    * By default, reads `option.group`.
    */
   groupBy?: (option: SelectOption) => string | undefined
+
+  /**
+   * Optional MenuProps for customizing the internal Popover paper styling.
+   * Only `slotProps.paper` is respected (for backward compatibility).
+   */
+  MenuProps?: Partial<MenuProps>
+
+  /**
+   * Optional custom render function for the trigger display value.
+   */
+  renderValue?: (value: string | number) => ReactNode
 
   /* ── Direct Element Style Props ── */
   leftTitleSx?: SxProps<Theme>

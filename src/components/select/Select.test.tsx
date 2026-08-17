@@ -283,5 +283,55 @@ describe('Select (Standalone UI Primitive)', () => {
     fireEvent.scroll(paper)
     expect(handleLoadMore).toHaveBeenCalledTimes(1)
   })
+
+  it('renders search input in pinned Paper header without injecting textbox inside role=listbox', () => {
+    render(
+      <Select
+        value=""
+        options={SIMPLE_OPTIONS}
+        placeholder="Pilih"
+        searchable
+      />
+    )
+
+    const combobox = screen.getByRole('combobox')
+    fireEvent.mouseDown(combobox)
+
+    const searchInput = screen.getByPlaceholderText('Search...')
+    expect(searchInput).toBeInTheDocument()
+
+    // The listbox should only contain option items, not the search input
+    const listbox = screen.getByRole('listbox')
+    expect(listbox).not.toContainElement(searchInput)
+  })
+
+  it('safely merges custom MenuProps.slotProps.paper sx and onScroll without clobbering defaults', () => {
+    const customOnScroll = vi.fn()
+    render(
+      <Select
+        value=""
+        options={SIMPLE_OPTIONS}
+        placeholder="Pilih"
+        MenuProps={{
+          slotProps: {
+            paper: {
+              className: 'custom-select-paper',
+              onScroll: customOnScroll,
+              sx: { opacity: 0.95 },
+            },
+          },
+        }}
+      />
+    )
+
+    const combobox = screen.getByRole('combobox')
+    fireEvent.mouseDown(combobox)
+
+    const paper = document.querySelector('.custom-select-paper') as HTMLElement
+    expect(paper).toBeInTheDocument()
+
+    fireEvent.scroll(paper)
+    expect(customOnScroll).toHaveBeenCalledTimes(1)
+  })
 })
 

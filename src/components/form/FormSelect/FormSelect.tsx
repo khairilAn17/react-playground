@@ -2,15 +2,10 @@ import { Controller, useFormContext } from 'react-hook-form'
 import type { FieldValues } from 'react-hook-form'
 import { Select } from '../../select'
 import type { FormSelectProps } from './types'
+import type { SelectChangeEvent } from '../../select/types'
 
 export type { SelectOption, FormSelectProps, SelectOptionSlotSx, FormSelectSlotSx } from './types'
 
-/**
- * FormSelect
- *
- * A type-safe, reusable Select adapter for React Hook Form.
- * Wraps the standalone `Select` primitive with RHF `<Controller>`.
- */
 export function FormSelect<T extends FieldValues>({
   name,
   control,
@@ -37,7 +32,7 @@ export function FormSelect<T extends FieldValues>({
           {...props}
           name={name}
           value={value ?? ''}
-          onChange={onChange}
+          onChange={(e: SelectChangeEvent) => onChange(e.target.value)}
           onBlur={onBlur}
           inputRef={ref}
           error={!!error}

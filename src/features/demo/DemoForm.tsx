@@ -289,6 +289,7 @@ export function DemoForm() {
                   placeholder="Pilih Metode Transfer..."
                   options={TRANSFER_METHOD_OPTIONS}
                   searchable
+                  onSearchChange={(search) => console.log({ search })}
                   searchPlaceholder="Filter metode transfer..."
                   borderRadius={12}
                 />
