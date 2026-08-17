@@ -8,6 +8,7 @@ import {
   ListSubheader,
   Box,
   Typography,
+  CircularProgress,
 } from '@mui/material'
 import type { SelectProps as MuiSelectProps, SxProps, Theme } from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
@@ -32,6 +33,13 @@ export function Select({
   searchVariant = 'outlined',
   searchClearable = true,
   searchLoading = false,
+  searchMode = 'client',
+  onSearchChange,
+  onLoadMore,
+  hasMore = false,
+  loadingMore = false,
+  loadingMoreText = 'Memuat lebih banyak...',
+  loadMoreThreshold = 60,
   placeholder,
   showCheckmark = true,
   borderRadius,
@@ -81,8 +89,11 @@ export function Select({
   const safeOptions = useMemo(() => options ?? [], [options])
 
   const filteredOptions = useMemo(() => {
+    if (searchMode === 'server') {
+      return safeOptions
+    }
     return filterSelectOptions(safeOptions, searchTerm, searchable)
-  }, [safeOptions, searchTerm, searchable])
+  }, [safeOptions, searchTerm, searchable, searchMode])
 
   const groupedOptions = useMemo(() => {
     return groupSelectOptions(filteredOptions, groupBy)
@@ -91,8 +102,37 @@ export function Select({
   const handleClose = (event: React.SyntheticEvent) => {
     if (searchable) {
       setSearchTerm('')
+      if (searchMode === 'server') {
+        onSearchChange?.('')
+      }
     }
     onClose?.(event)
+  }
+
+  const handleSearchChange = (val: string) => {
+    setSearchTerm(val)
+    onSearchChange?.(val)
+  }
+
+  const handleSearchClear = () => {
+    setSearchTerm('')
+    onSearchChange?.('')
+  }
+
+  const handlePaperScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.currentTarget
+    if (hasMore && !loadingMore && onLoadMore) {
+      const isNearBottom =
+        target.scrollHeight - target.scrollTop - target.clientHeight <= loadMoreThreshold
+      if (isNearBottom) {
+        onLoadMore()
+      }
+    }
+    const paperSlot = MenuProps?.slotProps?.paper
+    if (paperSlot && typeof paperSlot === 'object' && 'onScroll' in paperSlot) {
+      const userOnScroll = paperSlot.onScroll as React.UIEventHandler<HTMLDivElement> | undefined
+      userOnScroll?.(e)
+    }
   }
 
   const mergedMenuProps: MuiSelectProps['MenuProps'] = {
@@ -103,6 +143,7 @@ export function Select({
       ...MenuProps?.slotProps,
       paper: {
         ...MenuProps?.slotProps?.paper,
+        onScroll: handlePaperScroll,
         sx: [
           {
             borderRadius: effectiveBorderRadius ?? '8px',
@@ -273,8 +314,8 @@ export function Select({
               autoFocus
               placeholder={searchPlaceholder}
               value={searchTerm}
-              onValueChange={(val) => setSearchTerm(val)}
-              onClear={() => setSearchTerm('')}
+              onValueChange={handleSearchChange}
+              onClear={handleSearchClear}
               variant={searchVariant}
               clearable={searchClearable}
               loading={searchLoading}
@@ -356,6 +397,39 @@ export function Select({
               No options found
             </Box>
           </MenuItem>
+        )}
+
+        {/* ── Bottom Infinite Scroll Loading Row ── */}
+        {loadingMore && (
+          <Box
+            data-testid="select-loading-more"
+            aria-live="polite"
+            sx={[
+              {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 1.25,
+                py: 1.5,
+                px: 2,
+                color: 'text.secondary',
+                fontSize: '0.8125rem',
+                borderTop: '1px dashed #E2E8F0',
+                bgcolor: 'grey.50',
+                userSelect: 'none',
+              },
+              ...(slotSx?.loadingMore
+                ? Array.isArray(slotSx.loadingMore)
+                  ? slotSx.loadingMore
+                  : [slotSx.loadingMore]
+                : []),
+            ]}
+          >
+            <CircularProgress size={16} thickness={4.5} sx={{ color: '#00A39D' }} />
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+              {loadingMoreText}
+            </Typography>
+          </Box>
         )}
       </MuiSelect>
 

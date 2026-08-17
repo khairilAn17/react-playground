@@ -67,6 +67,7 @@ export interface SelectSlotSx {
   listSubheader?: SxProps<Theme>
   searchField?: SxProps<Theme>
   helperText?: SxProps<Theme>
+  loadingMore?: SxProps<Theme>
 }
 
 export interface SelectProps
@@ -78,6 +79,42 @@ export interface SelectProps
   searchVariant?: SearchVariant
   searchClearable?: boolean
   searchLoading?: boolean
+  /**
+   * Mode for option filtering when searchable=true:
+   * - 'client' (default): filters the in-memory `options` array synchronously.
+   * - 'server': leaves `options` as-is, delegating filtering to `onSearchChange`.
+   */
+  searchMode?: 'client' | 'server'
+  /**
+   * Emits the search string whenever user types in the search subheader.
+   * Useful for triggering debounced API queries in server search mode.
+   */
+  onSearchChange?: (searchTerm: string) => void
+
+  /* ── Infinite Scroll & Pagination Props ── */
+  /**
+   * Callback fired when user scrolls near the bottom of the dropdown menu.
+   */
+  onLoadMore?: () => void
+  /**
+   * If true, infinite scroll listener is active.
+   */
+  hasMore?: boolean
+  /**
+   * If true, displays a bottom loading indicator in the dropdown list.
+   */
+  loadingMore?: boolean
+  /**
+   * Custom text or ReactNode for the bottom loading indicator.
+   * @default 'Memuat lebih banyak...'
+   */
+  loadingMoreText?: ReactNode
+  /**
+   * Pixel distance from the bottom to trigger `onLoadMore`.
+   * @default 60
+   */
+  loadMoreThreshold?: number
+
   placeholder?: ReactNode
   showCheckmark?: boolean
   borderRadius?: number | string

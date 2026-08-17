@@ -312,3 +312,75 @@ export const ImageAvatarsDemo: Story = {
     )
   },
 }
+
+// ─── Mock Generator for Massive API Datasets ─────────────────────────────────
+function generateMockAccounts(page: number, pageSize = 12): SelectOption[] {
+  const startIndex = (page - 1) * pageSize
+  return Array.from({ length: pageSize }, (_, i) => {
+    const idx = startIndex + i + 1
+    const accNum = `8800${String(idx).padStart(6, '0')}`
+    const balance = (idx * 14_500_000).toLocaleString('id-ID')
+    return {
+      value: accNum,
+      leftTitle: `Rekening Operasional Cabang #${idx}`,
+      leftSubtitle: `No. ${accNum} • PT Berkah Jaya`,
+      rightTitle: `Rp ${balance},00`,
+      rightSubtitle: idx % 3 === 0 ? 'Giro IDR' : 'Tabungan Bisnis',
+      avatar: `C${idx}`,
+      avatarBg: idx % 2 === 0 ? '#00A39D' : '#0284C7',
+    }
+  })
+}
+
+export const InfiniteScrollApiDemo: Story = {
+  render: () => {
+    const [selectedAccount, setSelectedAccount] = useState('')
+    const [page, setPage] = useState(1)
+    const [accounts, setAccounts] = useState<SelectOption[]>(() => generateMockAccounts(1))
+    const [loadingMore, setLoadingMore] = useState(false)
+    const MAX_PAGES = 5 // Total 60 items
+
+    const hasMore = page < MAX_PAGES
+
+    const handleLoadMore = () => {
+      if (loadingMore || !hasMore) return
+      setLoadingMore(true)
+      // Simulate API network latency (600ms)
+      setTimeout(() => {
+        const nextPage = page + 1
+        const newBatch = generateMockAccounts(nextPage)
+        setAccounts((prev) => [...prev, ...newBatch])
+        setPage(nextPage)
+        setLoadingMore(false)
+      }, 600)
+    }
+
+    return (
+      <Box sx={{ maxWidth: 480, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
+            Infinite Scroll with Simulated API (Paginated Batches)
+          </Typography>
+          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 2 }}>
+            Scroll down the dropdown list. When nearing the bottom, it triggers <code>onLoadMore</code> and fetches the next 12 items (loaded {accounts.length} of 60).
+          </Typography>
+        </Box>
+
+        <Select
+          value={selectedAccount}
+          onChange={(e) => setSelectedAccount(e.target.value as string)}
+          options={accounts}
+          placeholder="Pilih rekening dari daftar..."
+          searchable
+          searchPlaceholder="Cari rekening..."
+          hasMore={hasMore}
+          loadingMore={loadingMore}
+          onLoadMore={handleLoadMore}
+          // loadingMoreText="Mengambil data rekening berikutnya..."
+          loadMoreThreshold={80}
+        />
+      </Box>
+    )
+  },
+}
+

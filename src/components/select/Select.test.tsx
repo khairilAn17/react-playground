@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { useState } from 'react'
 import { Select } from './Select'
 import type { SelectOption } from './types'
@@ -212,4 +212,76 @@ describe('Select (Standalone UI Primitive)', () => {
     expect(screen.getByText('Bank Syariah Indonesia (BSI)')).toBeInTheDocument()
     expect(screen.queryByText('Bank Central Asia (BCA)')).not.toBeInTheDocument()
   })
+
+  it('renders bottom loading indicator when loadingMore=true', () => {
+    render(
+      <Select
+        value=""
+        options={SIMPLE_OPTIONS}
+        placeholder="Pilih"
+        loadingMore
+        loadingMoreText="Loading extra banks..."
+      />
+    )
+
+    const combobox = screen.getByRole('combobox')
+    fireEvent.mouseDown(combobox)
+
+    expect(screen.getByText('Loading extra banks...')).toBeInTheDocument()
+    expect(screen.getByTestId('select-loading-more')).toBeInTheDocument()
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+  })
+
+  it('supports server-side search and triggers onSearchChange', () => {
+    const handleSearch = vi.fn()
+    render(
+      <Select
+        value=""
+        options={SIMPLE_OPTIONS}
+        placeholder="Pilih"
+        searchable
+        searchMode="server"
+        onSearchChange={handleSearch}
+      />
+    )
+
+    const combobox = screen.getByRole('combobox')
+    fireEvent.mouseDown(combobox)
+
+    const searchInput = screen.getByPlaceholderText('Search...')
+    fireEvent.change(searchInput, { target: { value: 'query text' } })
+
+    expect(handleSearch).toHaveBeenCalledWith('query text')
+    // in server mode, options are not filtered client-side
+    expect(screen.getByText('Developer')).toBeInTheDocument()
+  })
+
+  it('triggers onLoadMore when scrolled near bottom', () => {
+    const handleLoadMore = vi.fn()
+    render(
+      <Select
+        value=""
+        options={SIMPLE_OPTIONS}
+        placeholder="Pilih"
+        hasMore
+        onLoadMore={handleLoadMore}
+        loadMoreThreshold={50}
+      />
+    )
+
+    const combobox = screen.getByRole('combobox')
+    fireEvent.mouseDown(combobox)
+
+    const paper = document.querySelector('.MuiPaper-root') as HTMLElement
+    expect(paper).toBeInTheDocument()
+
+    // Simulate scroll event near bottom
+    Object.defineProperty(paper, 'scrollTop', { value: 200, writable: true })
+    Object.defineProperty(paper, 'scrollHeight', { value: 500, writable: true })
+    Object.defineProperty(paper, 'clientHeight', { value: 270, writable: true }) // 500 - 200 - 270 = 30 <= 50
+
+    fireEvent.scroll(paper)
+    expect(handleLoadMore).toHaveBeenCalledTimes(1)
+  })
 })
+
