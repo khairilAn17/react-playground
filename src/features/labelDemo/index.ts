@@ -1,0 +1,1 @@
+export { LabelDemoPage } from './LabelDemoPage'
