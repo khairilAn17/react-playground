@@ -1,21 +1,22 @@
-import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react'
-import { Box, MenuItem, Stack, Button, Typography, Paper } from '@mui/material'
+import { Box, Stack, Button, Typography, Paper } from '@mui/material'
 import FlashOnIcon from '@mui/icons-material/FlashOn'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined'
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
 import { FormSelect, type SelectOption } from './FormSelect'
 import { TestFormWrapper } from '../../../test/test-utils'
 import { createTypedForm } from '../createTypedForm'
 import { z } from 'zod'
+
+const TEAL_PRIMARY = '#00A39D'
 
 interface StoryFormValues {
   role: string
   accountId: string
   transferMethod: string
   destinationBank: string
-  customCity: string
+  nominal: string
+  domain: string
 }
 
 const SAMPLE_OPTIONS: SelectOption[] = [
@@ -63,7 +64,7 @@ const ACCOUNT_OPTIONS: SelectOption[] = [
   },
 ]
 
-const TRANSFER_METHOD_OPTIONS: SelectOption[] = [
+const BULLET_TRANSFER_OPTIONS: SelectOption[] = [
   {
     value: 'bifast',
     label: 'BI-FAST (Rekomendasi)',
@@ -110,37 +111,56 @@ const TRANSFER_METHOD_OPTIONS: SelectOption[] = [
 
 const GROUPED_BANK_OPTIONS: SelectOption[] = [
   {
-    group: 'Proxy',
-    value: 'bifast_proxy',
-    leftTitle: 'BI Fast Proxy',
-    leftSubtitle: 'Transfer via No. Handphone / Email',
-    avatar: 'BF',
+    group: 'Rekening Utama (Operational)',
+    value: 'acc-72001',
+    label: 'PT Digital Solusindo — Giro IDR',
+    leftTitle: 'Giro Bisnis Utama IDR',
+    leftSubtitle: '8830-0019-2810 • Rekening Operasional',
+    rightTitle: 'Rp 1.450.000.000',
+    avatar: 'ID',
+    avatarBg: '#00A39D',
+  },
+  {
+    group: 'Rekening Utama (Operational)',
+    value: 'acc-72002',
+    label: 'PT Digital Solusindo — Giro Payroll',
+    leftTitle: 'Giro Khusus Payroll IDR',
+    leftSubtitle: '8830-0019-9944 • Gaji Karyawan',
+    rightTitle: 'Rp 480.000.000',
+    avatar: 'PY',
     avatarBg: '#0284C7',
   },
   {
-    group: 'Semua Bank',
-    value: 'bsi',
-    leftTitle: 'Bank Syariah Indonesia (BSI)',
-    leftSubtitle: 'Bank Syariah BUMN',
-    avatar: <AccountBalanceIcon sx={{ color: '#00A39D' }} />,
+    group: 'Rekening Valas & Simpanan',
+    value: 'acc-72003',
+    label: 'PT Digital Solusindo — Giro USD',
+    leftTitle: 'Giro Valas USD',
+    leftSubtitle: '8830-0028-1100 • Valuta Asing',
+    rightTitle: '$ 85,250.00',
+    avatar: 'US',
+    avatarBg: '#EAA827',
   },
   {
-    group: 'Semua Bank',
-    value: 'bca',
-    leftTitle: 'Bank Central Asia (BCA)',
-    leftSubtitle: 'Jaringan ATM Terluas',
-    avatar: <AccountBalanceIcon sx={{ color: '#1D4ED8' }} />,
-  },
-  {
-    group: 'Semua Bank',
-    value: 'mandiri',
-    leftTitle: 'Bank Mandiri',
-    leftSubtitle: 'Bank Komersial Nasional',
-    avatar: <AccountBalanceIcon sx={{ color: '#0369A1' }} />,
+    group: 'Rekening Valas & Simpanan',
+    value: 'acc-72004',
+    label: 'PT Digital Solusindo — Deposito Berjangka',
+    leftTitle: 'Deposito Flexi 3 Bulan',
+    leftSubtitle: '9920-0001-4412 • Jatuh Tempo 28 Ags',
+    rightTitle: 'Rp 2.000.000.000',
+    avatar: 'DP',
+    avatarBg: '#7B5EA7',
   },
 ]
 
-const meta: Meta<typeof FormSelect> = {
+const NOMINAL_OPTIONS: SelectOption[] = [
+  { value: '50000', label: '50.000', leftSubtitle: 'Lima Puluh Ribu Rupiah' },
+  { value: '100000', label: '100.000', leftSubtitle: 'Seratus Ribu Rupiah' },
+  { value: '250000', label: '250.000', leftSubtitle: 'Dua Ratus Lima Puluh Ribu Rupiah' },
+  { value: '500000', label: '500.000', leftSubtitle: 'Lima Ratus Ribu Rupiah' },
+  { value: '1000000', label: '1.000.000', leftSubtitle: 'Satu Juta Rupiah' },
+]
+
+const meta: Meta<typeof FormSelect<StoryFormValues>> = {
   title: 'Components/Form/FormSelect',
   component: FormSelect,
   tags: ['autodocs'],
@@ -148,227 +168,199 @@ const meta: Meta<typeof FormSelect> = {
     (Story) => (
       <TestFormWrapper<StoryFormValues>
         defaultValues={{
-          role: '',
+          role: 'frontend',
           accountId: '7200000001',
           transferMethod: 'bifast',
-          destinationBank: 'bsi',
-          customCity: 'jkt',
+          destinationBank: 'acc-72001',
+          nominal: '100000',
+          domain: 'byond',
         }}
       >
-        <Story />
+        <Box sx={{ maxWidth: 520, p: 2 }}>
+          <Story />
+        </Box>
       </TestFormWrapper>
     ),
   ],
 }
 
 export default meta
-type Story = StoryObj<typeof FormSelect>
+type Story = StoryObj<typeof FormSelect<StoryFormValues>>
 
-// ── 1. Default Simple Form Select ────────────────────────────────────────────
+/** 1. Default Standard Select with placeholder. */
 export const Default: Story = {
   args: {
     name: 'role',
     label: 'Jabatan Karyawan',
-    placeholder: 'Pilih salah satu jabatan...',
+    placeholder: 'Pilih role...',
     options: SAMPLE_OPTIONS,
   },
 }
 
-// ── 2. Account Selector Card with Metadata ───────────────────────────────────
-export const AccountSelectorCard: Story = {
-  name: 'Account Selector Card (Balances & Avatars)',
+/** 2. Rich Account Option rows with left/right titles, balances, and avatars. */
+export const RichAccountOptions: Story = {
   args: {
     name: 'accountId',
     label: 'Rekening Sumber Dana',
+    placeholder: 'Pilih rekening operasional...',
     options: ACCOUNT_OPTIONS,
-    placeholder: 'Pilih Rekening Sumber...',
-    showCheckmark: true,
-    borderRadius: 12,
   },
 }
 
-// ── 3. Grouped Bank Selector Dropdown ─────────────────────────────────────────
-export const GroupedBankSelector: Story = {
-  name: 'Grouped Bank Selector with Search',
-  args: {
-    name: 'destinationBank',
-    label: 'Bank Tujuan Transfer',
-    options: GROUPED_BANK_OPTIONS,
-    placeholder: 'Pilih Bank Tujuan...',
-    searchable: true,
-    searchPlaceholder: 'Cari nama bank atau proxy...',
-    showCheckmark: true,
-    borderRadius: 12,
-  },
-}
-
-// ── 4. Transfer Method with Bullet Lists ─────────────────────────────────────
-export const TransferMethodSelector: Story = {
-  name: 'Transfer Method with Feature Bullets',
+/** 3. Bullet Point Method Selector with expanded feature points. */
+export const BulletMethodOptions: Story = {
   args: {
     name: 'transferMethod',
-    label: 'Metode Transfer Dana',
-    options: TRANSFER_METHOD_OPTIONS,
-    placeholder: 'Pilih Metode Transfer...',
-    showCheckmark: true,
-    borderRadius: 12,
+    label: 'Metode Pengiriman Dana',
+    placeholder: 'Pilih jalur kliring...',
+    options: BULLET_TRANSFER_OPTIONS,
   },
 }
 
-// ── 5. Searchable Role Selector ──────────────────────────────────────────────
-export const Searchable: Story = {
+/** 4. Grouped Source Accounts with category section headers. */
+export const GroupedOptions: Story = {
   args: {
-    name: 'role',
-    label: 'Role (Searchable Filter)',
-    options: SAMPLE_OPTIONS,
+    name: 'destinationBank',
+    label: 'Rekening Korporat Terdaftar',
+    placeholder: 'Cari rekening bisnis...',
+    options: GROUPED_BANK_OPTIONS,
     searchable: true,
-    searchPlaceholder: 'Search roles...',
   },
 }
 
-// ── 6. Size Variants Matrix in Form ──────────────────────────────────────────
+/** 5. Shaded Prefix Block (e.g. "Rp") integrated seamlessly into the input container. */
+export const WithPrefixBlock: Story = {
+  args: {
+    name: 'nominal',
+    label: 'Nominal Transaksi Cepat',
+    prefixBlock: 'Rp',
+    options: NOMINAL_OPTIONS,
+    borderRadius: '12px',
+  },
+}
+
+/** 6. Shaded Suffix Block (e.g. ".com"). */
+export const WithSuffixBlock: Story = {
+  args: {
+    name: 'domain',
+    label: 'Ekstensi Domain Perusahaan',
+    suffixBlock: '.com',
+    options: [
+      { label: 'biznis.byond', value: 'byond' },
+      { label: 'portal.company', value: 'company' },
+      { label: 'api.enterprise', value: 'enterprise' },
+    ],
+    borderRadius: '12px',
+  },
+}
+
+/** 7. Searchable Combobox with inline filtering. */
+export const SearchableCombobox: Story = {
+  args: {
+    name: 'destinationBank',
+    label: 'Cari Bank Tujuan',
+    placeholder: 'Ketik nama bank...',
+    searchable: true,
+    options: GROUPED_BANK_OPTIONS,
+  },
+}
+
+/** 8. Size variants (Small, Medium, Large). */
 export const SizeVariants: Story = {
-  name: 'Size Variants (Small, Medium, Large)',
   render: () => (
-    <Stack spacing={3} sx={{ maxWidth: 440 }}>
-      <FormSelect name="role" size="small" label="Small Select (40px)" options={SAMPLE_OPTIONS} />
-      <FormSelect name="role" size="medium" label="Medium Select (48px - Default)" options={SAMPLE_OPTIONS} />
-      <FormSelect name="role" size="large" label="Large Select (56px)" options={SAMPLE_OPTIONS} />
-    </Stack>
-  ),
-}
-
-// ── 7. Custom Corner Radii in Form ───────────────────────────────────────────
-export const BorderRadii: Story = {
-  name: 'Custom Corner Radii Matrix',
-  render: () => (
-    <Stack spacing={3} sx={{ maxWidth: 440 }}>
-      <FormSelect name="role" size="small" label="Sharp Enterprise (borderRadius={4})" options={SAMPLE_OPTIONS} borderRadius={4} />
-      <FormSelect name="role" size="small" label="BYOND Standard (borderRadius={12})" options={SAMPLE_OPTIONS} borderRadius={12} />
-      <FormSelect name="role" size="small" label="Soft Curved (borderRadius={20})" options={SAMPLE_OPTIONS} borderRadius={20} />
-      <FormSelect name="role" size="small" label={`Full Pill (borderRadius="999px")`} options={SAMPLE_OPTIONS} borderRadius="999px" />
-    </Stack>
-  ),
-}
-
-// ── 8. Granular slotSx Styling in Form ───────────────────────────────────────
-export const SlotSxTheming: Story = {
-  name: 'Granular slotSx Sub-Slots',
-  render: () => (
-    <Stack spacing={4} sx={{ maxWidth: 480 }}>
-      <FormSelect
-        name="transferMethod"
-        label="Custom Option Row Sub-Slots"
-        options={TRANSFER_METHOD_OPTIONS}
-        borderRadius={12}
-        slotSx={{
-          optionRow: {
-            leftTitle: { fontWeight: 800, color: '#1E293B' },
-            leftSubtitle: { color: '#0284C7', fontStyle: 'italic' },
-            rightTitle: { color: '#B45309', fontWeight: 800 },
-            checkmark: { color: '#EAA827' },
-          },
-        }}
-        helperText="leftTitle: bold 800 · leftSubtitle: italic blue · checkmark: amber"
+    <Stack spacing={3}>
+      <FormSelect<StoryFormValues>
+        name="role"
+        label="Small Select (40px)"
+        size="small"
+        options={SAMPLE_OPTIONS}
       />
-
-      <FormSelect
-        name="destinationBank"
-        label="Custom Popover Shadow & Group Headers"
-        options={GROUPED_BANK_OPTIONS}
-        searchable
-        borderRadius={12}
-        slotSx={{
-          menuPaper: {
-            boxShadow: '0 20px 48px rgba(0, 163, 157, 0.22)',
-            borderColor: '#00A39D',
-            borderWidth: '1.5px',
-          },
-          groupHeader: {
-            color: '#00A39D',
-            fontWeight: 800,
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-          },
-        }}
-        helperText="menuPaper: elevated teal drop shadow · groupHeader: bold uppercase"
+      <FormSelect<StoryFormValues>
+        name="role"
+        label="Medium Select (48px)"
+        size="medium"
+        options={SAMPLE_OPTIONS}
+      />
+      <FormSelect<StoryFormValues>
+        name="role"
+        label="Large Select (56px)"
+        size="large"
+        options={SAMPLE_OPTIONS}
       />
     </Stack>
   ),
 }
 
-// ── 9. Type-Safe Zod Form Validation Story ───────────────────────────────────
-const validationSchema = z.object({
-  paymentSource: z.string().min(1, 'Rekening sumber dana wajib dipilih'),
-  transferType: z.string().min(1, 'Metode transfer wajib ditentukan'),
+const selectValidationSchema = z.object({
+  accountId: z.string().min(1, 'Rekening wajib dipilih'),
+  transferMethod: z.string().min(1, 'Metode transfer wajib dipilih'),
+  nominal: z.string().min(1, 'Nominal wajib ditentukan'),
 })
-type ValidationFormValues = z.infer<typeof validationSchema>
-const { Form, Field } = createTypedForm<ValidationFormValues>()
+type SelectValidationFormValues = z.infer<typeof selectValidationSchema>
+const { Form: SelectForm, Field: SelectField } = createTypedForm<SelectValidationFormValues>()
 
-function ZodValidationFormStory() {
-  const [result, setResult] = useState<ValidationFormValues | null>(null)
+function CompleteFormSelectDemo() {
+  const [result, setResult] = useState<SelectValidationFormValues | null>(null)
 
   return (
-    <Box sx={{ maxWidth: 500 }}>
-      <Form
-        schema={validationSchema}
-        defaultValues={{ paymentSource: '', transferType: '' }}
+    <Box>
+      <SelectForm
+        schema={selectValidationSchema}
+        defaultValues={{ accountId: '', transferMethod: '', nominal: '' }}
         onSubmit={(data) => setResult(data)}
       >
         <Stack spacing={2.5}>
-          <Field.Select
-            name="paymentSource"
-            label="Rekening Sumber (Wajib)"
-            placeholder="Pilih rekening operasional..."
+          <SelectField.Select
+            name="accountId"
+            label="1. Rekening Sumber Dana"
+            placeholder="Pilih rekening debet..."
             options={ACCOUNT_OPTIONS}
           />
 
-          <Field.Select
-            name="transferType"
-            label="Metode Transfer (Wajib)"
-            placeholder="Pilih metode transfer..."
-            options={TRANSFER_METHOD_OPTIONS}
+          <SelectField.Select
+            name="transferMethod"
+            label="2. Jalur Kliring"
+            placeholder="Pilih metode..."
+            options={BULLET_TRANSFER_OPTIONS}
           />
 
-          <Box sx={{ display: 'flex', gap: 1.5, pt: 1 }}>
-            <Button type="submit" variant="contained" sx={{ bgcolor: '#00A39D', color: '#fff' }}>
-              Submit Form
-            </Button>
-            <Button type="button" variant="outlined" onClick={() => setResult(null)}>
-              Reset
-            </Button>
-          </Box>
+          <SelectField.Select
+            name="nominal"
+            label="3. Nominal Transfer"
+            prefixBlock="Rp"
+            options={NOMINAL_OPTIONS}
+          />
 
-          {result && (
-            <Paper elevation={0} sx={{ p: 2, bgcolor: '#F8FAFC', border: '1px solid #00A39D', borderRadius: '8px' }}>
-              <Typography variant="caption" sx={{ fontWeight: 700, color: '#00A39D', display: 'block', mb: 0.5 }}>
-                ✓ Form Payload Valid:
-              </Typography>
-              <Typography variant="caption" sx={{ fontFamily: 'monospace', display: 'block' }}>
-                {JSON.stringify(result, null, 2)}
-              </Typography>
-            </Paper>
-          )}
+          <Button type="submit" variant="contained" sx={{ bgcolor: TEAL_PRIMARY, fontWeight: 700 }}>
+            Konfirmasi Transfer (Submit)
+          </Button>
         </Stack>
-      </Form>
+      </SelectForm>
+
+      {result && (
+        <Paper
+          variant="outlined"
+          sx={{
+            mt: 3,
+            p: 2,
+            bgcolor: '#F0FDFA',
+            borderColor: TEAL_PRIMARY,
+            borderRadius: '12px',
+          }}
+        >
+          <Typography sx={{ fontWeight: 700, color: TEAL_PRIMARY, mb: 0.5 }}>
+            ✓ Data Form Terkirim:
+          </Typography>
+          <pre style={{ margin: 0, fontSize: '0.8125rem', fontFamily: 'monospace' }}>
+            {JSON.stringify(result, null, 2)}
+          </pre>
+        </Paper>
+      )}
     </Box>
   )
 }
 
-export const WithZodValidation: Story = {
-  name: 'React Hook Form + Zod Validation',
-  render: () => <ZodValidationFormStory />,
-}
-
-// ── 10. Composable Children ──────────────────────────────────────────────────
-export const ComposableChildren: Story = {
-  args: {
-    name: 'role',
-    label: 'Custom Option Items',
-    children: [
-      <MenuItem key="fe" value="fe">⚡ Frontend Engineer</MenuItem>,
-      <MenuItem key="be" value="be">🛠️ Backend Engineer</MenuItem>,
-      <MenuItem key="ux" value="ux">🎨 UI/UX Designer</MenuItem>,
-    ],
-  },
+/** 9. Full RHF Form with Zod schema validation and live submission. */
+export const CompleteFormValidation: Story = {
+  render: () => <CompleteFormSelectDemo />,
 }

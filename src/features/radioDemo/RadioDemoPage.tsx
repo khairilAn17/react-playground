@@ -1,17 +1,26 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   Box,
   Typography,
+  Stack,
   Chip,
-  Paper,
-  Divider,
-  Switch,
-  TextField,
+  RadioGroup as MuiRadioGroup,
   FormControlLabel,
+  Radio as MuiRadio,
+  FormControl,
+  FormLabel,
+  Switch,
+  Slider,
+  Paper,
+  Tabs,
+  Tab,
+  Button,
 } from '@mui/material'
 import Grid from '@mui/material/Grid'
-import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked'
-import TuneIcon from '@mui/icons-material/Tune'
+
+import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
+import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined'
+import DataObjectOutlinedIcon from '@mui/icons-material/DataObjectOutlined'
 import FlashOnIcon from '@mui/icons-material/FlashOn'
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
 import ScheduleIcon from '@mui/icons-material/Schedule'
@@ -20,24 +29,35 @@ import SecurityIcon from '@mui/icons-material/Security'
 
 import { PageLayout } from '../../widgets/pageLayout'
 import { Card } from '../../components/card'
-import { RadioGroup, type RadioOption, type RadioVariant, type RadioLayout as LayoutType, type RadioPlacement, type RadioSize } from '../../components/radio'
+import {
+  RadioGroup,
+  type RadioOption,
+  type RadioVariant,
+  type RadioLayout as LayoutType,
+  type RadioPlacement,
+  type RadioSize,
+} from '../../components/radio'
+import { createTypedForm } from '../../components/form'
+import { z } from 'zod'
 
 const TEAL_PRIMARY = '#00A39D'
 const TEXT_MAIN = '#1E293B'
 const TEXT_MUTED = '#64748B'
 
-// ── Sample Options Datasets ──────────────────────────────────────────────────
+// ── Mock Datasets ────────────────────────────────────────────────────────────
 
+// 1. Reference Image Frequency Dataset
 const FREQUENCY_OPTIONS: RadioOption[] = [
   { label: 'Sekali', value: 'once' },
   { label: 'Rutin', value: 'routine' },
 ]
 
+// 2. Rich Banking Methods with Icons, Badges, and Right-Aligned Price
 const TRANSFER_METHOD_OPTIONS: RadioOption[] = [
   {
     label: 'BI-FAST',
     value: 'bifast',
-    description: 'Real-time 24/7, limit transaksi hingga Rp 250.000.000 / hari',
+    description: 'Real-time 24/7, batas transaksi hingga Rp 250.000.000 / hari',
     icon: <FlashOnIcon sx={{ color: TEAL_PRIMARY }} />,
     badge: (
       <Chip
@@ -97,6 +117,7 @@ const TRANSFER_METHOD_OPTIONS: RadioOption[] = [
   },
 ]
 
+// 3. Grid Payroll Execution Options
 const PAYROLL_SCHEDULE_OPTIONS: RadioOption[] = [
   {
     label: 'Same-day Settlement',
@@ -124,344 +145,501 @@ const PAYROLL_SCHEDULE_OPTIONS: RadioOption[] = [
   },
 ]
 
+// ── Typed Form Schema for RHF Demo ───────────────────────────────────────────
+const radioFormSchema = z.object({
+  transferFrequency: z.string().min(1, 'Frekuensi transfer wajib dipilih'),
+  paymentMethod: z.string().min(1, 'Metode pembayaran wajib dipilih'),
+})
+type RadioFormValues = z.infer<typeof radioFormSchema>
+const { Form, Field } = createTypedForm<RadioFormValues>()
+
 export function RadioDemoPage() {
-  // ── Interactive Playground States ──────────────────────────────────────────
+  // ── Interactive Configurator State ─────────────────────────────────────────
+  const [datasetKey, setDatasetKey] = useState<'frequency' | 'banking' | 'payroll'>('frequency')
   const [variant, setVariant] = useState<RadioVariant>('card')
   const [layout, setLayout] = useState<LayoutType>('row')
   const [size, setSize] = useState<RadioSize>('medium')
   const [radioPlacement, setRadioPlacement] = useState<RadioPlacement>('left')
-  const [borderRadius, setBorderRadius] = useState('12px')
-  const [hasError, setHasError] = useState(false)
+  const [borderRadius, setBorderRadius] = useState<number>(12)
+  const [isError, setIsError] = useState(false)
   const [isDisabled, setIsDisabled] = useState(false)
-  const [selectedValue, setSelectedValue] = useState<string>('routine')
+  const [fullWidth, setFullWidth] = useState(true)
+  const [activeTab, setActiveTab] = useState<'preview' | 'json' | 'code'>('preview')
 
-  // Showcase section states
-  const [transferMethod, setTransferMethod] = useState('bifast')
-  const [payrollSchedule, setPayrollSchedule] = useState('sameday')
-  const [frequencyValue, setFrequencyValue] = useState('routine')
+  // Live selected value in sandbox
+  const [sandboxValue, setSandboxValue] = useState<string>('routine')
+
+  // ── Current Dataset Resolver ───────────────────────────────────────────────
+  const currentOptions = useMemo(() => {
+    switch (datasetKey) {
+      case 'banking':
+        return TRANSFER_METHOD_OPTIONS
+      case 'payroll':
+        return PAYROLL_SCHEDULE_OPTIONS
+      default:
+        return FREQUENCY_OPTIONS
+    }
+  }, [datasetKey])
+
+  const selectedOptionObj = useMemo(() => {
+    return currentOptions.find((opt) => String(opt.value) === sandboxValue) || null
+  }, [currentOptions, sandboxValue])
+
+  // ── Generated JSX Code Snippet ─────────────────────────────────────────────
+  const generatedCode = useMemo(() => {
+    const lines: string[] = ['<RadioGroup']
+    lines.push('  label="Pilih Opsi"')
+    if (variant !== 'default') lines.push(`  variant="${variant}"`)
+    if (layout !== 'column') lines.push(`  layout="${layout}"`)
+    if (layout === 'grid') lines.push('  gridColumns={{ xs: 1, sm: 2 }}')
+    if (size !== 'medium') lines.push(`  size="${size}"`)
+    if (variant === 'card' && radioPlacement !== 'left') lines.push(`  radioPlacement="${radioPlacement}"`)
+    if (variant === 'card' && borderRadius !== 12) lines.push(`  borderRadius="${borderRadius}px"`)
+    if (!fullWidth) lines.push('  fullWidth={false}')
+    if (isError) lines.push('  error\n  helperText="Pilihan ini wajib diisi"')
+    if (isDisabled) lines.push('  disabled')
+    lines.push('  options={OPTIONS}')
+    lines.push(`  value={selectedValue}`)
+    lines.push('  onValueChange={(val) => setSelectedValue(val)}')
+    lines.push('/>')
+    return lines.join('\n')
+  }, [variant, layout, size, radioPlacement, borderRadius, fullWidth, isError, isDisabled])
+
+  // ── RHF Demo State ────────────────────────────────────────────────────────
+  const [formSubmitted, setFormSubmitted] = useState<RadioFormValues | null>(null)
+  const [showcaseFrequency, setShowcaseFrequency] = useState('routine')
+  const [showcaseMethod, setShowcaseMethod] = useState('bifast')
+  const [showcasePayroll, setShowcasePayroll] = useState('sameday')
 
   return (
     <PageLayout
-      title="Radio & RadioCard Primitives"
+      maxWidth="lg"
+      bgVariant="transparent"
+      title="Radio & RadioCard Component"
+      subtitle="Universal Layer 1 Single-Choice & Card Selection Primitive"
+      subtitleDescription="Type-safe, accessible radio component system supporting classic inline radios, interactive pill/card selections, rich multi-line options, and responsive grid layouts."
       breadcrumbs={[
-        { label: 'Design System', href: '#' },
-        { label: 'Components', href: '#' },
-        { label: 'Radio & RadioCard' },
+        { label: 'Component Docs', href: '#' },
+        { label: 'Radio & RadioCard Primitive' },
       ]}
+      status={<Chip label="Layer 1 UI Primitive" color="primary" size="small" />}
     >
-      <Box sx={{ maxWidth: 1200, mx: 'auto', pb: 8 }}>
-        {/* ── Header Introduction ──────────────────────────────────────── */}
-        <Box sx={{ mb: 4 }}>
-          <Typography
-            variant="h4"
-            sx={{ fontWeight: 800, color: TEXT_MAIN, mb: 1, letterSpacing: '-0.02em' }}
+      <PageLayout.Content>
+        <Stack spacing={4}>
+          {/* ── SECTION 1: Interactive Prop Configurator Sandbox ── */}
+          <Card
+            title="Interactive Prop Configurator"
+            subtitle="Customize props, switch datasets, and inspect live selected values in real-time"
           >
-            Radio & RadioCard Component System
-          </Typography>
-          <Typography variant="body1" sx={{ color: TEXT_MUTED, maxWidth: 800 }}>
-            Universal, accessible single-choice selector supporting clean inline radios and
-            rich card containers with active teal tint (`#F0FDFA`), customizable indicators,
-            icons, subtitles, badges, and responsive layouts.
-          </Typography>
-        </Box>
+            <Grid container spacing={3}>
+              {/* Controls Column */}
+              <Grid size={{ xs: 12, md: 5 }}>
+                <Box
+                  sx={{
+                    p: 2.5,
+                    bgcolor: '#F8FAFC',
+                    borderRadius: '12px',
+                    border: '1px solid #E2E8F0',
+                  }}
+                >
+                  <Stack spacing={2.5}>
+                    {/* Dataset Selector */}
+                    <FormControl component="fieldset" size="small">
+                      <FormLabel sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
+                        Dataset Source
+                      </FormLabel>
+                      <MuiRadioGroup
+                        row
+                        value={datasetKey}
+                        onChange={(e) => {
+                          const key = e.target.value as 'frequency' | 'banking' | 'payroll'
+                          setDatasetKey(key)
+                          const opts =
+                            key === 'banking'
+                              ? TRANSFER_METHOD_OPTIONS
+                              : key === 'payroll'
+                                ? PAYROLL_SCHEDULE_OPTIONS
+                                : FREQUENCY_OPTIONS
+                          setSandboxValue(String(opts[0].value))
+                        }}
+                      >
+                        <FormControlLabel value="frequency" control={<MuiRadio size="small" />} label="Sekali / Rutin" />
+                        <FormControlLabel value="banking" control={<MuiRadio size="small" />} label="Banking (Rich)" />
+                        <FormControlLabel value="payroll" control={<MuiRadio size="small" />} label="Payroll (Grid)" />
+                      </MuiRadioGroup>
+                    </FormControl>
 
-        {/* ── 1. Reference Image Showcase (Exact 1:1 Implementation) ─────── */}
-        <Card
-          sx={{
-            mb: 4,
-            border: '1.5px solid #00A39D',
-            boxShadow: '0 4px 20px rgba(0, 163, 157, 0.08)',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Box
-                sx={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 1.5,
-                  bgcolor: '#E6FFFA',
-                  color: TEAL_PRIMARY,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <RadioButtonCheckedIcon fontSize="small" />
-              </Box>
-              <Box>
-                <Typography sx={{ fontWeight: 700, color: TEXT_MAIN, fontSize: '1.05rem' }}>
-                  Target Reference Image Implementation
-                </Typography>
-                <Typography sx={{ fontSize: '0.8125rem', color: TEXT_MUTED }}>
-                  Exact replication of "Sekali" (unselected) and "Rutin" (selected with teal border & tint)
-                </Typography>
-              </Box>
+                    {/* Variant Selector */}
+                    <FormControl component="fieldset" size="small">
+                      <FormLabel sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
+                        Variant (`variant`)
+                      </FormLabel>
+                      <MuiRadioGroup
+                        row
+                        value={variant}
+                        onChange={(e) => setVariant(e.target.value as RadioVariant)}
+                      >
+                        <FormControlLabel value="card" control={<MuiRadio size="small" />} label="Card (Pill Container)" />
+                        <FormControlLabel value="default" control={<MuiRadio size="small" />} label="Default (Inline)" />
+                      </MuiRadioGroup>
+                    </FormControl>
+
+                    {/* Layout Selector */}
+                    <FormControl component="fieldset" size="small">
+                      <FormLabel sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
+                        Layout (`layout`)
+                      </FormLabel>
+                      <MuiRadioGroup
+                        row
+                        value={layout}
+                        onChange={(e) => setLayout(e.target.value as LayoutType)}
+                      >
+                        <FormControlLabel value="row" control={<MuiRadio size="small" />} label="Row (Horizontal)" />
+                        <FormControlLabel value="column" control={<MuiRadio size="small" />} label="Column (Stack)" />
+                        <FormControlLabel value="grid" control={<MuiRadio size="small" />} label="Grid (2 Columns)" />
+                      </MuiRadioGroup>
+                    </FormControl>
+
+                    {/* Size Selector */}
+                    <FormControl component="fieldset" size="small">
+                      <FormLabel sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
+                        Size (`size`)
+                      </FormLabel>
+                      <MuiRadioGroup
+                        row
+                        value={size}
+                        onChange={(e) => setSize(e.target.value as RadioSize)}
+                      >
+                        <FormControlLabel value="small" control={<MuiRadio size="small" />} label="Small (44px)" />
+                        <FormControlLabel value="medium" control={<MuiRadio size="small" />} label="Medium (52px)" />
+                        <FormControlLabel value="large" control={<MuiRadio size="small" />} label="Large (64px)" />
+                      </MuiRadioGroup>
+                    </FormControl>
+
+                    {/* Radio Indicator Placement */}
+                    <FormControl component="fieldset" size="small">
+                      <FormLabel sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
+                        Radio Indicator Placement (`radioPlacement`)
+                      </FormLabel>
+                      <MuiRadioGroup
+                        row
+                        value={radioPlacement}
+                        onChange={(e) => setRadioPlacement(e.target.value as RadioPlacement)}
+                      >
+                        <FormControlLabel value="left" control={<MuiRadio size="small" />} label="Left" />
+                        <FormControlLabel value="right" control={<MuiRadio size="small" />} label="Right" />
+                        <FormControlLabel value="none" control={<MuiRadio size="small" />} label="None (Card Button)" />
+                      </MuiRadioGroup>
+                    </FormControl>
+
+                    {/* Border Radius Slider */}
+                    <Box>
+                      <Typography sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
+                        Border Radius: {borderRadius}px
+                      </Typography>
+                      <Slider
+                        value={borderRadius}
+                        min={0}
+                        max={30}
+                        step={2}
+                        onChange={(_, val) => setBorderRadius(val as number)}
+                        sx={{ color: TEAL_PRIMARY }}
+                      />
+                    </Box>
+
+                    {/* State Toggles */}
+                    <Box>
+                      <Typography sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
+                        State Toggles
+                      </Typography>
+                      <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap' }}>
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              size="small"
+                              checked={isError}
+                              onChange={(e) => setIsError(e.target.checked)}
+                              color="error"
+                            />
+                          }
+                          label={<Typography variant="body2">Error</Typography>}
+                        />
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              size="small"
+                              checked={isDisabled}
+                              onChange={(e) => setIsDisabled(e.target.checked)}
+                              color="primary"
+                            />
+                          }
+                          label={<Typography variant="body2">Disabled</Typography>}
+                        />
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              size="small"
+                              checked={fullWidth}
+                              onChange={(e) => setFullWidth(e.target.checked)}
+                              color="primary"
+                            />
+                          }
+                          label={<Typography variant="body2">Full Width</Typography>}
+                        />
+                      </Stack>
+                    </Box>
+                  </Stack>
+                </Box>
+              </Grid>
+
+              {/* Preview & Inspection Column */}
+              <Grid size={{ xs: 12, md: 7 }}>
+                <Box
+                  sx={{
+                    p: 2.5,
+                    bgcolor: '#F8FAFC',
+                    borderRadius: '12px',
+                    border: '1px solid #E2E8F0',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
+                  <Tabs
+                    value={activeTab}
+                    onChange={(_, val) => setActiveTab(val)}
+                    sx={{
+                      minHeight: 38,
+                      mb: 2.5,
+                      '& .MuiTab-root': {
+                        minHeight: 38,
+                        py: 0.5,
+                        textTransform: 'none',
+                        fontWeight: 700,
+                        fontSize: '0.8125rem',
+                      },
+                    }}
+                  >
+                    <Tab value="preview" icon={<CheckCircleOutlinedIcon sx={{ fontSize: 16 }} />} iconPosition="start" label="Live Preview" />
+                    <Tab value="json" icon={<DataObjectOutlinedIcon sx={{ fontSize: 16 }} />} iconPosition="start" label="Selected State (JSON)" />
+                    <Tab value="code" icon={<CodeOutlinedIcon sx={{ fontSize: 16 }} />} iconPosition="start" label="React Code" />
+                  </Tabs>
+
+                  {/* Tab 1: Live Interactive Component Preview */}
+                  {activeTab === 'preview' && (
+                    <Paper
+                      variant="outlined"
+                      sx={{
+                        p: 3,
+                        bgcolor: '#FFFFFF',
+                        borderRadius: '12px',
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <RadioGroup
+                        label="Pilih Frekuensi / Layanan Transaksi"
+                        options={currentOptions}
+                        value={sandboxValue}
+                        onValueChange={(val) => setSandboxValue(String(val))}
+                        variant={variant}
+                        layout={layout}
+                        gridColumns={{ xs: 1, sm: 2 }}
+                        size={size}
+                        radioPlacement={radioPlacement}
+                        borderRadius={`${borderRadius}px`}
+                        fullWidth={fullWidth}
+                        error={isError}
+                        disabled={isDisabled}
+                        helperText={
+                          isError
+                            ? 'Pilihan ini wajib ditentukan untuk melanjutkan transaksi.'
+                            : 'Opsi dapat diubah kembali sewaktu-waktu sesuai kebutuhan transaksi.'
+                        }
+                      />
+                    </Paper>
+                  )}
+
+                  {/* Tab 2: JSON State Inspection */}
+                  {activeTab === 'json' && (
+                    <Paper
+                      variant="outlined"
+                      sx={{
+                        p: 2,
+                        bgcolor: '#0F172A',
+                        color: '#F8FAFC',
+                        borderRadius: '12px',
+                        fontFamily: 'monospace',
+                        fontSize: '0.8125rem',
+                        overflowX: 'auto',
+                        flex: 1,
+                      }}
+                    >
+                      <pre style={{ margin: 0 }}>
+                        {JSON.stringify(
+                          {
+                            selectedValue: sandboxValue,
+                            selectedOption: selectedOptionObj,
+                            config: {
+                              variant,
+                              layout,
+                              size,
+                              radioPlacement,
+                              borderRadius: `${borderRadius}px`,
+                              isError,
+                              isDisabled,
+                              fullWidth,
+                            },
+                          },
+                          null,
+                          2
+                        )}
+                      </pre>
+                    </Paper>
+                  )}
+
+                  {/* Tab 3: Generated Code */}
+                  {activeTab === 'code' && (
+                    <Paper
+                      variant="outlined"
+                      sx={{
+                        p: 2,
+                        bgcolor: '#0F172A',
+                        color: '#38BDF8',
+                        borderRadius: '12px',
+                        fontFamily: 'monospace',
+                        fontSize: '0.8125rem',
+                        overflowX: 'auto',
+                        flex: 1,
+                      }}
+                    >
+                      <pre style={{ margin: 0, color: '#E2E8F0' }}>{generatedCode}</pre>
+                    </Paper>
+                  )}
+                </Box>
+              </Grid>
+            </Grid>
+          </Card>
+
+          {/* ── SECTION 2: Reference Image Replica Showcase ── */}
+          <Card
+            title="Target Reference Image Replica (1:1)"
+            subtitle='Exact visual implementation of the unselected "Sekali" vs. selected "Rutin" card radio group'
+            actions={<Chip label="Design Target" size="small" sx={{ bgcolor: '#E6FFFA', color: TEAL_PRIMARY, fontWeight: 700 }} />}
+          >
+            <Box sx={{ p: 2.5, bgcolor: '#F8FAFC', borderRadius: '12px', border: '1px dashed #CBD5E1' }}>
+              <RadioGroup
+                variant="card"
+                layout="row"
+                size="medium"
+                borderRadius="12px"
+                options={FREQUENCY_OPTIONS}
+                value={showcaseFrequency}
+                onValueChange={(val) => setShowcaseFrequency(String(val))}
+              />
             </Box>
-            <Chip
-              label="Active Component"
-              size="small"
-              sx={{ bgcolor: '#E6FFFA', color: TEAL_PRIMARY, fontWeight: 700 }}
-            />
-          </Box>
+            <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="caption" sx={{ color: TEXT_MUTED }}>
+                Selected value:
+              </Typography>
+              <Chip label={showcaseFrequency} size="small" variant="outlined" sx={{ fontWeight: 700 }} />
+            </Box>
+          </Card>
 
-          <Divider sx={{ mb: 3 }} />
-
-          <Box sx={{ p: 2, bgcolor: '#F8FAFC', borderRadius: 2, border: '1px dashed #CBD5E1' }}>
+          {/* ── SECTION 3: Rich Business Banking Cards ── */}
+          <Card
+            title="Rich Business Banking Options (Multi-Line Cards)"
+            subtitle="Demonstrating leading icons, status tags, descriptive subtitles, and right-aligned fee information"
+          >
             <RadioGroup
+              label="Metode Pengiriman Dana"
               variant="card"
-              layout="row"
+              layout="column"
               size="medium"
-              borderRadius="12px"
-              options={FREQUENCY_OPTIONS}
-              value={frequencyValue}
-              onValueChange={(val) => setFrequencyValue(String(val))}
+              options={TRANSFER_METHOD_OPTIONS}
+              value={showcaseMethod}
+              onValueChange={(val) => setShowcaseMethod(String(val))}
             />
-          </Box>
+          </Card>
 
-          <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="caption" sx={{ color: TEXT_MUTED }}>
-              Selected value:
-            </Typography>
-            <Chip label={frequencyValue} size="small" variant="outlined" sx={{ fontWeight: 700 }} />
-          </Box>
-        </Card>
+          {/* ── SECTION 4: 2-Column Responsive Card Grid ── */}
+          <Card
+            title="2-Column Responsive Card Grid (Payroll Disbursal Scheme)"
+            subtitle="Arranges options in equal responsive grid tiles using standard MUI Grid integration"
+          >
+            <RadioGroup
+              label="Jadwal & Skema Pencairan Gaji Karyawan"
+              variant="card"
+              layout="grid"
+              gridColumns={{ xs: 1, sm: 2 }}
+              options={PAYROLL_SCHEDULE_OPTIONS}
+              value={showcasePayroll}
+              onValueChange={(val) => setShowcasePayroll(String(val))}
+            />
+          </Card>
 
-        {/* ── 2. Interactive Sandbox / Playground ───────────────────────── */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          {/* Controls Panel */}
-          <Grid size={{ xs: 12, md: 5 }}>
-            <Card sx={{ height: '100%' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <TuneIcon sx={{ color: TEAL_PRIMARY }} />
-                <Typography sx={{ fontWeight: 700, color: TEXT_MAIN }}>
-                  Interactive Prop Controls
-                </Typography>
-              </Box>
-              <Divider sx={{ mb: 2.5 }} />
-
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-                {/* Variant */}
-                <Box>
-                  <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: TEXT_MAIN, mb: 0.75 }}>
-                    Variant
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    {(['card', 'default'] as RadioVariant[]).map((v) => (
-                      <Chip
-                        key={v}
-                        label={v}
-                        clickable
-                        onClick={() => setVariant(v)}
-                        sx={{
-                          fontWeight: 700,
-                          bgcolor: variant === v ? TEAL_PRIMARY : '#F1F5F9',
-                          color: variant === v ? '#FFFFFF' : TEXT_MAIN,
-                        }}
-                      />
-                    ))}
-                  </Box>
-                </Box>
-
-                {/* Layout */}
-                <Box>
-                  <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: TEXT_MAIN, mb: 0.75 }}>
-                    Layout
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    {(['row', 'column', 'grid'] as LayoutType[]).map((l) => (
-                      <Chip
-                        key={l}
-                        label={l}
-                        clickable
-                        onClick={() => setLayout(l)}
-                        sx={{
-                          fontWeight: 700,
-                          bgcolor: layout === l ? TEAL_PRIMARY : '#F1F5F9',
-                          color: layout === l ? '#FFFFFF' : TEXT_MAIN,
-                        }}
-                      />
-                    ))}
-                  </Box>
-                </Box>
-
-                {/* Size */}
-                <Box>
-                  <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: TEXT_MAIN, mb: 0.75 }}>
-                    Size
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    {(['small', 'medium', 'large'] as RadioSize[]).map((s) => (
-                      <Chip
-                        key={s}
-                        label={s}
-                        clickable
-                        onClick={() => setSize(s)}
-                        sx={{
-                          fontWeight: 700,
-                          bgcolor: size === s ? TEAL_PRIMARY : '#F1F5F9',
-                          color: size === s ? '#FFFFFF' : TEXT_MAIN,
-                        }}
-                      />
-                    ))}
-                  </Box>
-                </Box>
-
-                {/* Radio Indicator Placement */}
-                <Box>
-                  <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: TEXT_MAIN, mb: 0.75 }}>
-                    Radio Indicator Placement
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    {(['left', 'right', 'none'] as RadioPlacement[]).map((p) => (
-                      <Chip
-                        key={p}
-                        label={p}
-                        clickable
-                        onClick={() => setRadioPlacement(p)}
-                        sx={{
-                          fontWeight: 700,
-                          bgcolor: radioPlacement === p ? TEAL_PRIMARY : '#F1F5F9',
-                          color: radioPlacement === p ? '#FFFFFF' : TEXT_MAIN,
-                        }}
-                      />
-                    ))}
-                  </Box>
-                </Box>
-
-                {/* Border Radius */}
-                <TextField
-                  size="small"
-                  label="Border Radius"
-                  value={borderRadius}
-                  onChange={(e) => setBorderRadius(e.target.value)}
-                  placeholder="12px or 9999px"
-                  fullWidth
+          {/* ── SECTION 5: React Hook Form & Type-Safe Validation ── */}
+          <Card
+            title="React Hook Form Integration (createTypedForm)"
+            subtitle="Type-safe Zod schema validation using Field.Radio with both card and default variants"
+          >
+            <Form
+              schema={radioFormSchema}
+              defaultValues={{
+                transferFrequency: 'routine',
+                paymentMethod: 'bifast',
+              }}
+              onSubmit={(values) => setFormSubmitted(values)}
+            >
+              <Stack spacing={3}>
+                <Field.Radio
+                  name="transferFrequency"
+                  label="1. Frekuensi Pengiriman Dana"
+                  variant="card"
+                  layout="row"
+                  options={FREQUENCY_OPTIONS}
                 />
 
-                {/* Toggles */}
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={hasError}
-                        onChange={(e) => setHasError(e.target.checked)}
-                        color="error"
-                      />
-                    }
-                    label="Error State"
-                  />
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={isDisabled}
-                        onChange={(e) => setIsDisabled(e.target.checked)}
-                        color="primary"
-                      />
-                    }
-                    label="Disabled State"
-                  />
+                <Field.Radio
+                  name="paymentMethod"
+                  label="2. Pilihan Layanan Transfer"
+                  variant="card"
+                  layout="column"
+                  options={TRANSFER_METHOD_OPTIONS}
+                />
+
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <Button type="submit" variant="contained" sx={{ bgcolor: TEAL_PRIMARY, px: 3, fontWeight: 700 }}>
+                    Kirim Transaksi (Submit)
+                  </Button>
                 </Box>
-              </Box>
-            </Card>
-          </Grid>
+              </Stack>
+            </Form>
 
-          {/* Live Preview Panel */}
-          <Grid size={{ xs: 12, md: 7 }}>
-            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <Typography sx={{ fontWeight: 700, color: TEXT_MAIN, mb: 1 }}>
-                Live Component Preview
-              </Typography>
-              <Typography sx={{ fontSize: '0.8125rem', color: TEXT_MUTED, mb: 3 }}>
-                Interactively updates as you toggle the prop controls on the left.
-              </Typography>
-
+            {formSubmitted && (
               <Paper
                 variant="outlined"
                 sx={{
-                  p: 3,
-                  bgcolor: '#FFFFFF',
-                  borderRadius: 2,
-                  flex: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  mt: 3,
+                  p: 2,
+                  bgcolor: '#F0FDFA',
+                  borderColor: TEAL_PRIMARY,
+                  borderRadius: '12px',
                 }}
               >
-                <Box sx={{ width: '100%' }}>
-                  <RadioGroup
-                    label="Pilih Opsi Layanan"
-                    variant={variant}
-                    layout={layout}
-                    size={size}
-                    radioPlacement={radioPlacement}
-                    borderRadius={borderRadius}
-                    error={hasError}
-                    disabled={isDisabled}
-                    helperText={
-                      hasError
-                        ? 'Harap pilih salah satu opsi di atas.'
-                        : 'Pilihan dapat diubah sewaktu-waktu pada menu pengaturan.'
-                    }
-                    options={[
-                      { label: 'Sekali Transaksi', value: 'once', description: 'Eksekusi satu kali segera' },
-                      { label: 'Rutin Terjadwal', value: 'routine', description: 'Otomatis berulang setiap periode' },
-                    ]}
-                    value={selectedValue}
-                    onValueChange={(val) => setSelectedValue(String(val))}
-                  />
-                </Box>
+                <Typography sx={{ fontWeight: 700, color: TEAL_PRIMARY, mb: 0.5 }}>
+                  ✓ Form Berhasil Disubmit!
+                </Typography>
+                <pre style={{ margin: 0, fontSize: '0.8125rem', fontFamily: 'monospace', color: TEXT_MAIN }}>
+                  {JSON.stringify(formSubmitted, null, 2)}
+                </pre>
               </Paper>
-            </Card>
-          </Grid>
-        </Grid>
-
-        {/* ── 3. Rich Business Banking Cards ────────────────────────────── */}
-        <Card sx={{ mb: 4 }}>
-          <Box sx={{ mb: 2 }}>
-            <Typography sx={{ fontWeight: 700, color: TEXT_MAIN, fontSize: '1.05rem' }}>
-              Rich Business Banking Cards (Multi-Line with Badges & Prices)
-            </Typography>
-            <Typography sx={{ fontSize: '0.8125rem', color: TEXT_MUTED }}>
-              Demonstrating leading icons, descriptive subtitles, status chips, and right-aligned fee info.
-            </Typography>
-          </Box>
-          <Divider sx={{ mb: 3 }} />
-
-          <RadioGroup
-            label="Metode Pengiriman Dana"
-            variant="card"
-            layout="column"
-            size="medium"
-            options={TRANSFER_METHOD_OPTIONS}
-            value={transferMethod}
-            onValueChange={(val) => setTransferMethod(String(val))}
-          />
-        </Card>
-
-        {/* ── 4. Responsive 2-Column Card Grid ──────────────────────────── */}
-        <Card>
-          <Box sx={{ mb: 2 }}>
-            <Typography sx={{ fontWeight: 700, color: TEXT_MAIN, fontSize: '1.05rem' }}>
-              2-Column Responsive Card Grid (Payroll Execution Mode)
-            </Typography>
-            <Typography sx={{ fontSize: '0.8125rem', color: TEXT_MUTED }}>
-              {"Arranges options in equal responsive grid tiles (gridColumns={{ xs: 1, sm: 2 }})."}
-            </Typography>
-          </Box>
-          <Divider sx={{ mb: 3 }} />
-
-          <RadioGroup
-            label="Jadwal & Skema Pencairan Gaji"
-            variant="card"
-            layout="grid"
-            gridColumns={{ xs: 1, sm: 2 }}
-            options={PAYROLL_SCHEDULE_OPTIONS}
-            value={payrollSchedule}
-            onValueChange={(val) => setPayrollSchedule(String(val))}
-          />
-        </Card>
-      </Box>
+            )}
+          </Card>
+        </Stack>
+      </PageLayout.Content>
     </PageLayout>
   )
 }
