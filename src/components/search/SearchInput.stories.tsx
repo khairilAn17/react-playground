@@ -32,6 +32,7 @@ export const VisualVariants: Story = {
           <SearchInput
             variant="pill"
             placeholder="Search Something"
+            disableFocusRing={true}
             value={q1}
             onChange={(val) => setQ1(val)}
           />

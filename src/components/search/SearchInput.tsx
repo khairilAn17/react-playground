@@ -14,63 +14,92 @@ const TEAL_PRIMARY = '#00A39D'
 const TEXT_MAIN = '#1E293B'
 const TEXT_MUTED = '#64748B'
 
-function getVariantStyles(variant: SearchVariant): SxProps<Theme> {
+function formatBorderRadius(val?: number | string): string | undefined {
+  if (val === undefined) return undefined
+  return typeof val === 'number' ? `${val}px` : val
+}
+
+function getVariantStyles(
+  variant: SearchVariant,
+  custom?: {
+    borderColor?: string
+    focusBorderColor?: string
+    borderRadius?: number | string
+    focusBoxShadow?: string
+    disableFocusRing?: boolean
+  }
+): SxProps<Theme> {
+  const customRadius = formatBorderRadius(custom?.borderRadius)
+  const isFocusDisabled = custom?.disableFocusRing === true
+  const focusBorder = custom?.focusBorderColor ?? TEAL_PRIMARY
+  const focusShadow = custom?.focusBoxShadow ?? 'none'
+
   switch (variant) {
-    case 'pill':
+    case 'pill': {
+      const idleBorder = custom?.borderColor ?? 'transparent'
       return {
-        borderRadius: '50px',
+        borderRadius: customRadius ?? '50px',
         bgcolor: '#F1F5F9',
-        border: '1px solid transparent',
+        border: '1px solid',
+        borderColor: idleBorder,
         '&:hover': {
           bgcolor: '#E2E8F0',
+          borderColor: custom?.borderColor ?? '#CBD5E1',
         },
         '&:focus-within': {
-          bgcolor: '#FFFFFF',
-          borderColor: TEAL_PRIMARY,
-          boxShadow: `0 0 0 3px rgba(0, 163, 157, 0.12)`,
+          borderColor: isFocusDisabled ? idleBorder : focusBorder,
+          ...(focusShadow !== 'none' && !isFocusDisabled && { boxShadow: focusShadow }),
         },
       }
-    case 'filled':
+    }
+    case 'filled': {
+      const idleBorder = custom?.borderColor ?? '#E2E8F0'
       return {
-        borderRadius: '10px',
+        borderRadius: customRadius ?? '10px',
         bgcolor: '#F8FAFC',
-        border: '1px solid #E2E8F0',
+        border: '1px solid',
+        borderColor: idleBorder,
         '&:hover': {
-          bgcolor: '#F1F5F9',
           borderColor: '#CBD5E1',
         },
         '&:focus-within': {
-          bgcolor: '#FFFFFF',
-          borderColor: TEAL_PRIMARY,
-          boxShadow: `0 0 0 3px rgba(0, 163, 157, 0.12)`,
+          borderColor: isFocusDisabled ? idleBorder : focusBorder,
+          ...(focusShadow !== 'none' && !isFocusDisabled && { boxShadow: focusShadow }),
         },
       }
-    case 'standard':
+    }
+    case 'standard': {
+      const idleBorder = custom?.borderColor ?? '#E2E8F0'
       return {
         borderRadius: 0,
         bgcolor: 'transparent',
-        borderBottom: '1px solid #E2E8F0',
+        borderBottom: '1px solid',
+        borderBottomColor: idleBorder,
         '&:hover': {
           borderBottomColor: '#CBD5E1',
         },
         '&:focus-within': {
-          borderBottomColor: TEAL_PRIMARY,
+          borderBottomColor: isFocusDisabled ? idleBorder : focusBorder,
         },
       }
+    }
     case 'outlined':
-    default:
+    default: {
+      const idleBorder = custom?.borderColor ?? '#CBD5E1'
       return {
-        borderRadius: '10px',
+        borderRadius: customRadius ?? '10px',
         bgcolor: '#FFFFFF',
-        border: '1px solid #CBD5E1',
+        border: '1px solid',
+        borderColor: idleBorder,
         '&:hover': {
           borderColor: '#94A3B8',
         },
         '&:focus-within': {
-          borderColor: TEAL_PRIMARY,
-          boxShadow: `0 0 0 3px rgba(0, 163, 157, 0.12)`,
+          borderColor: isFocusDisabled ? idleBorder : focusBorder,
+          ...(focusShadow !== 'none' && !isFocusDisabled && { boxShadow: focusShadow }),
         },
       }
+    }
   }
 }
 
@@ -110,6 +139,12 @@ function getSizeStyles(size: SearchSize) {
 export const SearchInput = forwardRef(function SearchInput(
   {
     variant = 'outlined',
+    bgcolor,
+    borderColor,
+    focusBorderColor,
+    borderRadius,
+    focusBoxShadow,
+    disableFocusRing = false,
     size = 'medium',
     value,
     defaultValue = '',
@@ -142,7 +177,13 @@ export const SearchInput = forwardRef(function SearchInput(
   const currentValue = isControlled ? value : internalValue
 
   const sizeStyle = getSizeStyles(size)
-  const variantStyle = getVariantStyles(variant)
+  const variantStyle = getVariantStyles(variant, {
+    borderColor,
+    focusBorderColor,
+    borderRadius,
+    focusBoxShadow,
+    disableFocusRing,
+  })
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const nextVal = e.target.value
@@ -190,6 +231,7 @@ export const SearchInput = forwardRef(function SearchInput(
           minHeight: sizeStyle.minHeight,
         },
         variantStyle,
+        ...(bgcolor ? [{ bgcolor }] : []),
         ...(containerSx ? (Array.isArray(containerSx) ? containerSx : [containerSx]) : []),
         ...(slotSx?.container ? (Array.isArray(slotSx.container) ? slotSx.container : [slotSx.container]) : []),
       ]}
@@ -230,6 +272,13 @@ export const SearchInput = forwardRef(function SearchInput(
             '& input': {
               py: 0,
               px: 0,
+              outline: 'none !important',
+              border: 'none !important',
+              boxShadow: 'none !important',
+              '&:focus': {
+                outline: 'none !important',
+                boxShadow: 'none !important',
+              },
               '&::placeholder': {
                 color: '#94A3B8',
                 opacity: 1,
@@ -318,7 +367,7 @@ export const SearchInput = forwardRef(function SearchInput(
         </IconButton>
       )}
 
-
+      {/* ── Optional Custom End Icon / Action Slot ── */}
       {endIcon && !hasValue && !loading && (
         <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
           {endIcon}
