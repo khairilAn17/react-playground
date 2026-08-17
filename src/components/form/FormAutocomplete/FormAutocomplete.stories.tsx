@@ -86,7 +86,7 @@ const NOMINAL_OPTIONS: AutocompleteOption[] = [
 
 // ── Storybook Metadata ────────────────────────────────────────────────────────
 
-const meta: Meta<typeof FormAutocomplete<StoryFormValues>> = {
+const meta: Meta<typeof FormAutocomplete<StoryFormValues, AutocompleteOption, boolean>> = {
   title: 'Components/Form/FormAutocomplete',
   component: FormAutocomplete,
   tags: ['autodocs'],
@@ -111,7 +111,7 @@ const meta: Meta<typeof FormAutocomplete<StoryFormValues>> = {
 }
 
 export default meta
-type Story = StoryObj<typeof FormAutocomplete<StoryFormValues>>
+type Story = StoryObj<typeof FormAutocomplete<StoryFormValues, AutocompleteOption, boolean>>
 
 /** 1. Default Single-Select with search filtering and custom avatar rows. */
 export const DefaultSingleSelect: Story = {

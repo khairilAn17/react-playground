@@ -125,6 +125,49 @@ export const MultilineField: Story = {
   },
 }
 
+/** 8. Indonesian Rupiah with live dots and comma decimals (Rp 1.000.000,00). */
+export const IndonesianCurrencyField: Story = {
+  args: {
+    name: 'nominal',
+    label: 'Nominal Transfer Antar Rekening (Rupiah)',
+    format: 'currency',
+    prefixBlock: 'Rp',
+    placeholder: '0',
+    allowDecimals: true,
+    clearable: true,
+    helperText: 'Otomatis diformat dengan titik (.) ribuan dan koma (,) sen desimal',
+  },
+}
+
+/** 9. Indonesian Rupiah with fixed trailing decimals (,00). */
+export const IndonesianCurrencyFixedCents: Story = {
+  args: {
+    name: 'nominal',
+    label: 'Nominal Faktur Pajak (Fixed ,00)',
+    format: 'currency',
+    prefixBlock: 'Rp',
+    fixedDecimals: true,
+    placeholder: '0,00',
+    clearable: true,
+    helperText: 'Otomatis menampilkan akhiran ,00 secara rapi',
+  },
+}
+
+/** 10. Foreign Currency USD ($ 1,250,000.50). */
+export const USDCurrencyField: Story = {
+  args: {
+    name: 'nominal',
+    label: 'Nominal Valas (USD)',
+    format: 'currency',
+    prefixBlock: '$',
+    thousandSeparator: ',',
+    decimalSeparator: '.',
+    placeholder: '0.00',
+    clearable: true,
+    helperText: 'Diformat menggunakan format standar internasional (koma ribuan, titik desimal)',
+  },
+}
+
 // ── Complete RHF Demo Component ──────────────────────────────────────────────
 
 const formValidationSchema = z.object({

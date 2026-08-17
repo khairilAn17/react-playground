@@ -7,9 +7,9 @@ export type FormAutocompleteSlotSx = AutocompleteSlotSx
 export interface FormAutocompleteProps<
   T extends FieldValues,
   Option = AutocompleteOption,
-  Multiple extends boolean | undefined = false,
-  DisableClearable extends boolean | undefined = false,
-  FreeSolo extends boolean | undefined = false,
+  Multiple extends boolean | undefined = boolean | undefined,
+  DisableClearable extends boolean | undefined = boolean | undefined,
+  FreeSolo extends boolean | undefined = boolean | undefined,
 > extends Omit<
     AutocompleteProps<Option, Multiple, DisableClearable, FreeSolo>,
     'name' | 'value' | 'onChange' | 'onBlur' | 'inputRef'

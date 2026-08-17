@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { FormTextField, type FormTextFieldProps } from './FormTextField'
 import { FormSelect, type FormSelectProps } from './FormSelect'
-import { FormAutocomplete, type FormAutocompleteProps } from './FormAutocomplete'
+import { FormAutocomplete, type FormAutocompleteProps, type AutocompleteOption } from './FormAutocomplete'
 import { FormCheckbox, type FormCheckboxProps } from './FormCheckbox'
 import { FormRadioGroup, type FormRadioGroupProps } from './FormRadioGroup'
 import { FormSlider, type FormSliderProps } from './FormSlider'
@@ -81,8 +81,15 @@ export function createTypedForm<T extends FieldValues>() {
     Select: (props: Omit<FormSelectProps<T>, 'control'>) => (
       <FormSelect<T> {...props} />
     ),
-    Autocomplete: (props: Omit<FormAutocompleteProps<T>, 'control'>) => (
-      <FormAutocomplete<T> {...props} />
+    Autocomplete: <
+      Option = AutocompleteOption,
+      Multiple extends boolean | undefined = boolean | undefined,
+      DisableClearable extends boolean | undefined = boolean | undefined,
+      FreeSolo extends boolean | undefined = boolean | undefined,
+    >(
+      props: Omit<FormAutocompleteProps<T, Option, Multiple, DisableClearable, FreeSolo>, 'control'>
+    ) => (
+      <FormAutocomplete<T, Option, Multiple, DisableClearable, FreeSolo> {...props} />
     ),
     Checkbox: (props: Omit<FormCheckboxProps<T>, 'control'>) => (
       <FormCheckbox<T> {...props} />

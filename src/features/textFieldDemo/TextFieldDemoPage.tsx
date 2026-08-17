@@ -34,6 +34,46 @@ import { z } from 'zod'
 const TEAL_PRIMARY = '#00A39D'
 const TEXT_MAIN = '#1E293B'
 
+// ── Interactive Cents Toggle Sub-Component ────────────────────────────────────
+function InteractiveCentsToggle() {
+  const [showCents, setShowCents] = useState(false)
+  const [amount, setAmount] = useState('1500000')
+
+  return (
+    <Box>
+      <Typography variant="caption" sx={{ fontWeight: 700, color: TEAL_PRIMARY, fontFamily: 'monospace' }}>
+        fixedDecimals + allowDecimals dynamic toggle
+      </Typography>
+      <Typography variant="caption" sx={{ color: '#64748B', display: 'block', mb: 1 }}>
+        Toggling ,00 visibility on demand
+      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+        <Switch
+          size="small"
+          checked={showCents}
+          onChange={(e) => setShowCents(e.target.checked)}
+          sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: TEAL_PRIMARY } }}
+        />
+        <Typography variant="caption" sx={{ color: TEXT_MAIN, fontWeight: 500 }}>
+          {showCents ? 'Sen ,00 ditampilkan' : 'Sen ,00 disembunyikan'}
+        </Typography>
+      </Box>
+      <TextField
+        label="Nominal (Toggle Sen)"
+        format="currency"
+        prefixBlock="Rp"
+        value={amount}
+        onValueChange={setAmount}
+        allowDecimals={showCents}
+        fixedDecimals={showCents}
+        decimalScale={2}
+        clearable
+        helperText={showCents ? 'Format: 1.500.000,00 (sen aktif)' : 'Format: 1.500.000 (tanpa sen)'}
+      />
+    </Box>
+  )
+}
+
 // ── Typed Form Schema for RHF Showcase ───────────────────────────────────────
 const demoFormSchema = z.object({
   fullName: z.string().min(3, 'Nama lengkap minimal 3 karakter'),
@@ -809,7 +849,128 @@ export function TextFieldDemoPage() {
             )}
           </Card>
 
-          {/* ── SECTION 4: Primitive API Reference ── */}
+          {/* ── SECTION 4: Currency & Number Format Showcase ── */}
+          <Card
+            title="Currency & Number Format Showcase"
+            subtitle="Live demos of format='currency' with customizable separators, decimal scale, and fixed/optional cents"
+          >
+            <Grid container spacing={3}>
+              {/* Indonesian Rupiah — No Cents */}
+              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                <Box sx={{ mb: 1 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 700, color: TEAL_PRIMARY, fontFamily: 'monospace' }}>
+                    format="currency" · allowDecimals=false
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#64748B', display: 'block', mb: 1 }}>
+                    Whole Rupiah only (no cents)
+                  </Typography>
+                </Box>
+                <TextField
+                  label="Nominal Transfer (Tanpa Sen)"
+                  format="currency"
+                  prefixBlock="Rp"
+                  allowDecimals={false}
+                  defaultValue="1000000"
+                  clearable
+                  helperText="Hanya angka bulat, tanpa desimal sen"
+                />
+              </Grid>
+
+              {/* Indonesian Rupiah — Optional Cents */}
+              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                <Box sx={{ mb: 1 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 700, color: TEAL_PRIMARY, fontFamily: 'monospace' }}>
+                    format="currency" · allowDecimals=true
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#64748B', display: 'block', mb: 1 }}>
+                    Optional cents (shown only when typed)
+                  </Typography>
+                </Box>
+                <TextField
+                  label="Nominal Transfer Fleksibel"
+                  format="currency"
+                  prefixBlock="Rp"
+                  allowDecimals
+                  fixedDecimals={false}
+                  defaultValue="1000000"
+                  clearable
+                  helperText="Ketik koma (,) untuk tambah desimal sen"
+                />
+              </Grid>
+
+              {/* Indonesian Rupiah — Fixed ,00 on blur */}
+              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                <Box sx={{ mb: 1 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 700, color: TEAL_PRIMARY, fontFamily: 'monospace' }}>
+                    format="currency" · fixedDecimals=true
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#64748B', display: 'block', mb: 1 }}>
+                    Always shows ,00 on blur (formal invoices)
+                  </Typography>
+                </Box>
+                <TextField
+                  label="Nominal Faktur Pajak (Fixed ,00)"
+                  format="currency"
+                  prefixBlock="Rp"
+                  fixedDecimals
+                  defaultValue="2500000"
+                  clearable
+                  helperText="Tampilkan ,00 secara otomatis saat field kehilangan fokus"
+                />
+              </Grid>
+
+              {/* US Dollar */}
+              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                <Box sx={{ mb: 1 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 700, color: TEAL_PRIMARY, fontFamily: 'monospace' }}>
+                    thousandSeparator="," · decimalSeparator="."
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#64748B', display: 'block', mb: 1 }}>
+                    US Dollar format: $ 1,250,000.50
+                  </Typography>
+                </Box>
+                <TextField
+                  label="Nominal Valas (USD)"
+                  format="currency"
+                  prefixBlock="$"
+                  thousandSeparator=","
+                  decimalSeparator="."
+                  defaultValue="1250000.50"
+                  clearable
+                  helperText="Format internasional (koma ribuan, titik desimal)"
+                />
+              </Grid>
+
+              {/* Euro — space as thousand separator */}
+              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                <Box sx={{ mb: 1 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 700, color: TEAL_PRIMARY, fontFamily: 'monospace' }}>
+                    thousandSeparator=" " · decimalSeparator=","
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#64748B', display: 'block', mb: 1 }}>
+                    European format: € 1 250 000,50
+                  </Typography>
+                </Box>
+                <TextField
+                  label="Nominal Valas (EUR)"
+                  format="currency"
+                  prefixBlock="€"
+                  thousandSeparator=" "
+                  decimalSeparator=","
+                  defaultValue="1250000.50"
+                  clearable
+                  helperText="Format Eropa dengan spasi sebagai pemisah ribuan"
+                />
+              </Grid>
+
+              {/* Interactive toggle: show/hide cents */}
+              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                <InteractiveCentsToggle />
+              </Grid>
+            </Grid>
+          </Card>
+
+          {/* ── SECTION 5: Primitive API Reference ── */}
           <Card
             title="Primitive API Reference (TextField)"
             subtitle="Complete TypeScript properties and slotSx tokens for the Layer 1 TextField primitive"
