@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi } from 'vitest'
 import { TextField } from './TextField'
 
@@ -176,4 +177,49 @@ describe('TextField Primitive', () => {
     expect(input.value).toBe('3,500,000.75')
     expect(handleValueChange).toHaveBeenCalledWith('3500000.75')
   })
+
+  it('allows live keystroke editing in international US Dollar format with userEvent', async () => {
+    const user = userEvent.setup()
+    const handleValueChange = vi.fn()
+
+    render(
+      <TextField
+        format="currency"
+        prefixBlock="$"
+        thousandSeparator=","
+        decimalSeparator="."
+        placeholder="0.00"
+        onValueChange={handleValueChange}
+      />
+    )
+
+    const input = screen.getByPlaceholderText('0.00') as HTMLInputElement
+
+    await user.type(input, '1250000.5')
+    expect(input.value).toBe('1,250,000.5')
+    expect(handleValueChange).toHaveBeenLastCalledWith('1250000.5')
+
+    // Add another digit
+    await user.type(input, '9')
+    expect(input.value).toBe('1,250,000.59')
+    expect(handleValueChange).toHaveBeenLastCalledWith('1250000.59')
+  })
+
+  it('enforces type="text" when format="currency" even if type="number" was passed', () => {
+    render(
+      <TextField
+        format="currency"
+        type="number"
+        thousandSeparator=","
+        decimalSeparator="."
+        defaultValue="1250000"
+        placeholder="0"
+      />
+    )
+
+    const input = screen.getByPlaceholderText('0') as HTMLInputElement
+    expect(input.type).toBe('text')
+    expect(input.value).toBe('1,250,000')
+  })
 })
+

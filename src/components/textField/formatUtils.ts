@@ -64,19 +64,38 @@ export function formatNumberValue(
     str = str.slice(1)
   }
 
-  // Normalize standard dot decimal to configured decimalSeparator
   const decSep = decimalSeparator
-  let normalized = str
-  if (decSep !== '.') {
-    normalized = normalized.includes(decSep)
-      ? normalized
-      : normalized.replace('.', decSep)
-  }
+  let integerPart = ''
+  let decimalPart: string | undefined = undefined
 
-  const parts = normalized.split(decSep)
-  let integerPart = parts[0].replace(/\D/g, '')
-  let decimalPart =
-    allowDecimals && parts.length > 1 ? parts[1].replace(/\D/g, '') : undefined
+  // Check if string has explicit configured decimalSeparator
+  if (decSep && str.includes(decSep)) {
+    const parts = str.split(decSep)
+    integerPart = parts[0].replace(/\D/g, '')
+    decimalPart = allowDecimals && parts.length > 1 ? parts[1].replace(/\D/g, '') : undefined
+  } else if (str.includes('.')) {
+    if (decSep === '.') {
+      // Dot is the decimal separator (US/International)
+      const parts = str.split('.')
+      integerPart = parts[0].replace(/\D/g, '')
+      decimalPart = allowDecimals && parts.length > 1 ? parts[1].replace(/\D/g, '') : undefined
+    } else {
+      // Dot is thousandSeparator in configured locale (e.g. Indonesian)
+      // Check if standard JS float string (e.g. from Number or database: '1000.5' or '1000.1234')
+      const isStandardFloat = /^\d+\.\d+$/.test(str)
+      if (isStandardFloat) {
+        const parts = str.split('.')
+        integerPart = parts[0].replace(/\D/g, '')
+        decimalPart = allowDecimals && parts.length > 1 ? parts[1].replace(/\D/g, '') : undefined
+      } else {
+        // Formatted thousand string (e.g. '1.000.000')
+        integerPart = str.replace(/\D/g, '')
+      }
+    }
+  } else {
+    // No decimal separator
+    integerPart = str.replace(/\D/g, '')
+  }
 
   if (!integerPart && decimalPart === undefined) {
     return isNegative ? '-' : ''
@@ -91,7 +110,7 @@ export function formatNumberValue(
   const formattedInteger = thousandSeparator
     ? integerPart.replace(
         /\B(?=(\d{3})+(?!\d))/g,
-        thousandSeparator === '.' ? '.' : thousandSeparator
+        thousandSeparator
       )
     : integerPart
 

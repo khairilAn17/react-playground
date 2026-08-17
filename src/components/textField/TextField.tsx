@@ -1,4 +1,4 @@
-import { forwardRef, useState, useId, useCallback, useMemo } from 'react'
+import { forwardRef, useState, useId, useCallback, useMemo, useRef, useLayoutEffect } from 'react'
 import {
   FormControl,
   InputLabel,
@@ -119,7 +119,8 @@ export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Text
     // Password show/hide state
     const [showPassword, setShowPassword] = useState(false)
     const isPasswordType = type === 'password'
-    const effectiveType = isPasswordType && showPassword ? 'text' : type
+    // Formatted inputs must use type="text" to allow separators and avoid browser numeric constraints
+    const effectiveType = format ? 'text' : isPasswordType && showPassword ? 'text' : type
 
     const isSmall = size === 'small'
     const isLarge = size === 'large'
@@ -130,14 +131,58 @@ export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Text
     const hasSuffixBlock = Boolean(suffixBlock)
     const hasBlocks = hasPrefixBlock || hasSuffixBlock
 
+    const localInputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null)
+    const caretPositionRef = useRef<number | null>(null)
+
+    // Restore caret position after React re-renders with formatted value
+    useLayoutEffect(() => {
+      if (caretPositionRef.current !== null && localInputRef.current) {
+        const inputEl = localInputRef.current
+        if ('setSelectionRange' in inputEl && typeof inputEl.setSelectionRange === 'function') {
+          try {
+            inputEl.setSelectionRange(
+              caretPositionRef.current,
+              caretPositionRef.current
+            )
+          } catch {
+            // Ignore for non-text inputs
+          }
+        }
+        caretPositionRef.current = null
+      }
+    })
+
     // Change handler
     const handleChange = useCallback(
       (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const typedVal = event.target.value
+        const inputElement = event.target
+        const typedVal = inputElement.value
+        const prevCaret = inputElement.selectionStart ?? typedVal.length
 
         let rawVal = typedVal
         if (format === 'currency' || format === 'number') {
+          // Count non-thousandSeparator characters before the caret
+          const textBeforeCaret = typedVal.slice(0, prevCaret)
+          const thousandSep = formatOptions.thousandSeparator ?? '.'
+          const escapedThousand = thousandSep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+          const nonThousandBeforeCaret = textBeforeCaret.replace(new RegExp(escapedThousand, 'g'), '').length
+
           rawVal = parseNumberValue(typedVal, formatOptions)
+
+          // Predict new caret position in the formatted string
+          const nextDisplayVal = formatNumberValue(rawVal, formatOptions)
+          let newCaret = nextDisplayVal.length
+          let nonThousandCount = 0
+          for (let i = 0; i < nextDisplayVal.length; i++) {
+            if (nextDisplayVal[i] !== thousandSep) {
+              nonThousandCount++
+              if (nonThousandCount === nonThousandBeforeCaret) {
+                newCaret = i + 1
+                break
+              }
+            }
+          }
+          caretPositionRef.current = newCaret
         } else if (format === 'custom' && parser) {
           rawVal = parser(typedVal)
         }
@@ -268,10 +313,27 @@ export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Text
       </Box>
     ) : undefined
 
+    const handleSetInputRef = useCallback(
+      (node: HTMLInputElement | HTMLTextAreaElement | null) => {
+        localInputRef.current = node
+        if (typeof inputRef === 'function') {
+          inputRef(node)
+        } else if (inputRef && typeof inputRef === 'object') {
+          ;(inputRef as React.MutableRefObject<HTMLInputElement | HTMLTextAreaElement | null>).current = node
+        }
+        if (typeof ref === 'function') {
+          ref(node)
+        } else if (ref && typeof ref === 'object') {
+          ;(ref as React.MutableRefObject<HTMLInputElement | HTMLTextAreaElement | null>).current = node
+        }
+      },
+      [inputRef, ref]
+    )
+
     const inputComponent = (
       <OutlinedInput
         {...props}
-        inputRef={inputRef || ref}
+        inputRef={handleSetInputRef}
         id={inputId}
         name={name}
         type={effectiveType}
