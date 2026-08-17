@@ -273,7 +273,7 @@ export function Select({
               autoFocus
               placeholder={searchPlaceholder}
               value={searchTerm}
-              onChange={(val) => setSearchTerm(val)}
+              onValueChange={(val) => setSearchTerm(val)}
               onClear={() => setSearchTerm('')}
               variant={searchVariant}
               clearable={searchClearable}
@@ -284,10 +284,12 @@ export function Select({
                   e.stopPropagation()
                 }
               }}
-              containerSx={[
-                ...(searchFieldSx ? (Array.isArray(searchFieldSx) ? searchFieldSx : [searchFieldSx]) : []),
-                ...(slotSx?.searchField ? (Array.isArray(slotSx.searchField) ? slotSx.searchField : [slotSx.searchField]) : []),
-              ]}
+              slotSx={{
+                container: [
+                  ...(searchFieldSx ? (Array.isArray(searchFieldSx) ? searchFieldSx : [searchFieldSx]) : []),
+                  ...(slotSx?.searchField ? (Array.isArray(slotSx.searchField) ? slotSx.searchField : [slotSx.searchField]) : []),
+                ],
+              }}
             />
           </ListSubheader>
         )}

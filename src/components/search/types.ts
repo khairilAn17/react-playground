@@ -8,13 +8,14 @@ export interface SearchInputSlotSx {
   container?: SxProps<Theme>
   input?: SxProps<Theme>
   startIcon?: SxProps<Theme>
+  endIcon?: SxProps<Theme>
   clearButton?: SxProps<Theme>
   shortcut?: SxProps<Theme>
   loadingIndicator?: SxProps<Theme>
 }
 
 export interface SearchInputProps
-  extends Omit<InputBaseProps, 'onChange' | 'size' | 'value' | 'defaultValue'> {
+  extends Omit<InputBaseProps, 'size' | 'startAdornment' | 'endAdornment'> {
   variant?: SearchVariant
   bgcolor?: string
   borderColor?: string
@@ -26,7 +27,8 @@ export interface SearchInputProps
   defaultValue?: string
   loading?: boolean
   loadingIndicator?: ReactNode
-  onChange?: (value: string, event: React.ChangeEvent<HTMLInputElement>) => void
+  /** Convenience callback that receives the plain string value directly. */
+  onValueChange?: (value: string) => void
   onSearch?: (value: string) => void
   onClear?: () => void
   clearable?: boolean
@@ -35,6 +37,6 @@ export interface SearchInputProps
   endIcon?: ReactNode
   shortcut?: string
   fullWidth?: boolean
-  containerSx?: SxProps<Theme>
   slotSx?: SearchInputSlotSx
 }
+

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 import { Box, Typography, Stack } from '@mui/material'
 import { SearchInput } from './SearchInput'
+import { CheckCircle } from '@mui/icons-material'
 
 const meta: Meta<typeof SearchInput> = {
   title: 'Components/Search/SearchInput',
@@ -34,7 +35,7 @@ export const VisualVariants: Story = {
             placeholder="Search Something"
             disableFocusRing={true}
             value={q1}
-            onChange={(val) => setQ1(val)}
+            onValueChange={(val) => setQ1(val)}
           />
         </Box>
 
@@ -47,7 +48,7 @@ export const VisualVariants: Story = {
             variant="outlined"
             placeholder="Search Something"
             value={q2}
-            onChange={(val) => setQ2(val)}
+            onValueChange={(val) => setQ2(val)}
             clearable
           />
         </Box>
@@ -61,7 +62,7 @@ export const VisualVariants: Story = {
             variant="filled"
             placeholder="Search Something"
             value={q3}
-            onChange={(val) => setQ3(val)}
+            onValueChange={(val) => setQ3(val)}
             clearable
           />
         </Box>
@@ -75,7 +76,7 @@ export const VisualVariants: Story = {
             variant="standard"
             placeholder="Search Something"
             value={q4}
-            onChange={(val) => setQ4(val)}
+            onValueChange={(val) => setQ4(val)}
           />
         </Box>
       </Box>
@@ -117,7 +118,7 @@ export const WithKeyboardShortcut: Story = {
           variant="pill"
           placeholder="Type to search..."
           value={text}
-          onChange={(val) => setText(val)}
+          onValueChange={(val) => setText(val)}
           shortcut="⌘K"
           clearable
         />
@@ -141,7 +142,7 @@ export const LoadingStateDemo: Story = {
             variant="outlined"
             placeholder="Searching..."
             value={query}
-            onChange={(val) => setQuery(val)}
+            onValueChange={(val) => setQuery(val)}
             loading={loading}
             clearable
           />
