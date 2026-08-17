@@ -51,6 +51,18 @@ export function Autocomplete<
   endAdornment,
   onChange,
   onValueChange,
+  inputValue,
+  onInputChange,
+  filterOptions,
+  format,
+  thousandSeparator,
+  decimalSeparator,
+  decimalScale,
+  allowDecimals,
+  fixedDecimals,
+  allowNegative,
+  formatter,
+  parser,
   ...props
 }: AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>) {
   const generatedId = useId()
@@ -68,6 +80,9 @@ export function Autocomplete<
     resolvedRenderValueProp,
     resolvedSlotProps,
     handleChange,
+    handleInputChange,
+    effectiveInputValue,
+    effectiveFilterOptions,
   } = useAutocompleteHandlers<T, Multiple, DisableClearable, FreeSolo>({
     size, borderRadius, error, disabled, hasBlocks,
     name, inputRef, placeholder, textFieldProps,
@@ -77,6 +92,10 @@ export function Autocomplete<
     startAdornment, endAdornment,
     slotSx, slotProps,
     onChange, onValueChange,
+    inputValue, onInputChange, filterOptions,
+    format, thousandSeparator, decimalSeparator,
+    decimalScale, allowDecimals, fixedDecimals,
+    allowNegative, formatter, parser,
   })
 
   // ── Shared MuiAutocomplete props ──────────────────────────────────────────
@@ -87,6 +106,9 @@ export function Autocomplete<
     multiple, disabled, fullWidth, options,
     getOptionLabel, isOptionEqualToValue,
     onChange: handleChange,
+    ...(effectiveInputValue !== undefined ? { inputValue: effectiveInputValue } : {}),
+    onInputChange: handleInputChange,
+    ...(effectiveFilterOptions ? { filterOptions: effectiveFilterOptions } : {}),
     popupIcon: <KeyboardArrowDownIcon sx={{ fontSize: isSmall ? 20 : 22 }} />,
     clearIcon: <CloseIcon sx={{ fontSize: isSmall ? 18 : 20 }} />,
     slotProps: resolvedSlotProps,

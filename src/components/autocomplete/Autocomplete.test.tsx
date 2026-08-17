@@ -133,4 +133,42 @@ describe('Autocomplete', () => {
 
     expect(handleValueChange).toHaveBeenCalledWith(OPTIONS[0])
   })
+
+  it('formats input text live as the user types when format="currency"', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <Autocomplete
+        freeSolo
+        format="currency"
+        prefixBlock="Rp"
+        options={OPTIONS}
+      />
+    )
+
+    const input = screen.getByRole('combobox')
+    await user.type(input, '1500000')
+
+    expect(input).toHaveValue('1.500.000')
+  })
+
+  it('supports custom separators for USD currency format live', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <Autocomplete
+        freeSolo
+        format="currency"
+        thousandSeparator=","
+        decimalSeparator="."
+        options={OPTIONS}
+      />
+    )
+
+    const input = screen.getByRole('combobox')
+    await user.type(input, '2500000')
+
+    expect(input).toHaveValue('2,500,000')
+  })
 })
+

@@ -158,4 +158,27 @@ export interface AutocompleteProps<
    * Inline end adornment icon or element (rendered before the popup arrow).
    */
   endAdornment?: ReactNode
+  /**
+   * Automatic number/currency formatting for typed input.
+   * - `'currency'` — formats live with thousand and decimal separators (e.g. `1.000.000`)
+   * - `'number'` — formats numeric input
+   * - `'custom'` — uses custom `formatter` / `parser`
+   */
+  format?: 'currency' | 'number' | 'custom'
+  /** Character used to group thousands (default `.` for Indonesian locale). */
+  thousandSeparator?: string
+  /** Character used for decimal point (default `,` for Indonesian locale). */
+  decimalSeparator?: string
+  /** Maximum number of decimal digits allowed (default `2`). */
+  decimalScale?: number
+  /** Whether decimal entry is permitted (default `true`). */
+  allowDecimals?: boolean
+  /** Whether to format with fixed trailing decimal zeros (e.g. `,00`) on blur (default `false`). */
+  fixedDecimals?: boolean
+  /** Whether negative numbers are allowed (default `false`). */
+  allowNegative?: boolean
+  /** Custom formatter function when `format="custom"`. */
+  formatter?: (value: string | number) => string
+  /** Custom parser function when `format="custom"`. */
+  parser?: (value: string) => string
 }

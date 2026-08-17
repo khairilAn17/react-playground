@@ -38,7 +38,6 @@ import {
   Autocomplete,
   type AutocompleteOption,
   createCurrencyOptions,
-  filterNumericOptions,
 } from '../../components/autocomplete'
 import { createTypedForm } from '../../components/form'
 import { z } from 'zod'
@@ -146,12 +145,12 @@ function NumericFormatShowcase() {
 
           <Autocomplete
             label="Nominal Top-Up"
+            format="currency"
             prefixBlock="Rp"
             placeholder="Pilih nominal..."
             options={NOMINAL_OPTIONS}
             value={singleNominal}
             onValueChange={setSingleNominal}
-            filterOptions={filterNumericOptions({ thousandSeparator: '.' })}
             size="small"
             helperText="Ketik '50' atau '50.000' untuk mencari"
           />
@@ -188,13 +187,13 @@ function NumericFormatShowcase() {
 
           <Autocomplete
             multiple
+            format="currency"
             label="Batch Donasi / Infaq"
             prefixBlock="Rp"
             placeholder="Pilih paket..."
             options={NOMINAL_OPTIONS}
             value={multiNominal}
             onValueChange={setMultiNominal}
-            filterOptions={filterNumericOptions({ thousandSeparator: '.' })}
             checkboxPlacement="right"
             maxVisibleTags={2}
             size="small"
@@ -224,23 +223,23 @@ function NumericFormatShowcase() {
       <Grid size={{ xs: 12, md: 4 }}>
         <Box sx={{ p: 2.5, bgcolor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', height: '100%' }}>
           <Typography variant="subtitle2" sx={{ fontWeight: 700, color: TEXT_MAIN, mb: 0.5 }}>
-            3. FreeSolo Preset + Custom Nominal
+            3. FreeSolo Live Typing Auto-Format
           </Typography>
           <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 2 }}>
-            Pilih dari opsi preset atau input nominal kustom bebas (`freeSolo`).
+            Ketik angka bebas (e.g. <code>1500000</code>), otomatis terformat menjadi <code>1.500.000</code> secara real-time.
           </Typography>
 
           <Autocomplete
             freeSolo
+            format="currency"
             label="Nominal Bebas"
             prefixBlock="Rp"
-            placeholder="Pilih atau ketik bebas..."
+            placeholder="Ketik nominal angka..."
             options={NOMINAL_OPTIONS}
             value={freeSoloNominal}
             onValueChange={setFreeSoloNominal}
-            filterOptions={filterNumericOptions({ thousandSeparator: '.' })}
             size="small"
-            helperText="Mendukung pilihan preset maupun teks kustom"
+            helperText="Otomatis auto-format saat mengetik"
           />
 
           <Paper

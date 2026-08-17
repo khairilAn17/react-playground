@@ -11,7 +11,7 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
 
 import { Autocomplete } from './Autocomplete'
 import type { AutocompleteOption } from './types'
-import { createCurrencyOptions, filterNumericOptions } from './utils'
+import { createCurrencyOptions } from './utils'
 
 // ── Shared Datasets ──────────────────────────────────────────────────────────
 const FRAMEWORK_OPTIONS: AutocompleteOption[] = [
@@ -522,14 +522,14 @@ function NominalCurrencyPrefixBlockComponent() {
 
       <Autocomplete
         freeSolo
+        format="currency"
         prefixBlock="Rp"
         placeholder="50.000"
         options={NOMINAL_OPTIONS}
         value={nominal}
         onValueChange={setNominal}
-        filterOptions={filterNumericOptions({ thousandSeparator: '.' })}
         borderRadius={12}
-        helperText="Pilih dari daftar preset atau ketik nominal (bisa ketik '50' atau '50.000')"
+        helperText="Pilih dari daftar preset atau ketik nominal (otomatis terformat real-time)"
       />
     </Paper>
   )
@@ -559,7 +559,7 @@ function NumericAmountFilterComponent() {
         options={NOMINAL_OPTIONS}
         value={selected}
         onValueChange={setSelected}
-        filterOptions={filterNumericOptions({ thousandSeparator: '.' })}
+        format="currency"
         borderRadius={12}
         helperText={`Nilai tersimpan di form/state: ${selected ? JSON.stringify(selected.value) : 'null'}`}
       />
@@ -570,3 +570,36 @@ export const NumericAmountFilter: Story = {
   name: 'Real-World — Numeric Search & Filter Best Practice',
   render: () => <NumericAmountFilterComponent />,
 }
+
+// ── 16. Live Typing Currency Format ─────────────────────────────────────────
+function LiveTypingCurrencyFormatComponent() {
+  const [value, setValue] = useState<AutocompleteOption | string | null>('1.500.000')
+
+  return (
+    <Paper elevation={0} sx={{ maxWidth: 440, p: 3, borderRadius: '16px', border: '1px solid #E2E8F0', bgcolor: '#FFFFFF' }}>
+      <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.5 }}>
+        Input Nominal dengan Live Auto-Format
+      </Typography>
+      <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 2 }}>
+        Ketik angka bebas (misal <code>2500000</code>), teks input otomatis terformat menjadi <code>2.500.000</code> secara real-time saat mengetik.
+      </Typography>
+
+      <Autocomplete
+        freeSolo
+        format="currency"
+        prefixBlock="Rp"
+        placeholder="Ketik nominal angka..."
+        options={NOMINAL_OPTIONS}
+        value={value}
+        onValueChange={setValue}
+        borderRadius={12}
+        helperText={`Value tersimpan: ${typeof value === 'object' && value ? JSON.stringify(value) : `"${value}"`}`}
+      />
+    </Paper>
+  )
+}
+export const LiveTypingCurrencyFormat: Story = {
+  name: 'Real-World — Live Typing Currency Format (format="currency")',
+  render: () => <LiveTypingCurrencyFormatComponent />,
+}
+

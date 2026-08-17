@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { TextField, Box } from '@mui/material'
 import type { SxProps, Theme, AutocompleteRenderInputParams, AutocompleteValue } from '@mui/material'
 
@@ -17,6 +17,9 @@ import {
   getAutocompleteListboxSx,
 } from '../utils'
 import { extractMuiInputProps } from '../utils/defaults'
+import { formatNumberValue, parseNumberValue } from '../../textField/formatUtils'
+import type { NumberFormatOptions } from '../../textField/formatUtils'
+import { filterNumericOptions } from '../utils/numberFormat'
 
 // ── Param types ───────────────────────────────────────────────────────────────
 
@@ -48,6 +51,18 @@ interface UseAutocompleteHandlersParams<
   slotProps?: AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>['slotProps']
   onChange?: AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>['onChange']
   onValueChange?: AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>['onValueChange']
+  inputValue?: string
+  onInputChange?: AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>['onInputChange']
+  filterOptions?: AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>['filterOptions']
+  format?: 'currency' | 'number' | 'custom'
+  thousandSeparator?: string
+  decimalSeparator?: string
+  decimalScale?: number
+  allowDecimals?: boolean
+  fixedDecimals?: boolean
+  allowNegative?: boolean
+  formatter?: (value: string | number) => string
+  parser?: (value: string) => string
 }
 
 // ── Hook ──────────────────────────────────────────────────────────────────────
@@ -80,8 +95,81 @@ export function useAutocompleteHandlers<
   slotProps,
   onChange,
   onValueChange,
+  inputValue,
+  onInputChange,
+  filterOptions,
+  format,
+  thousandSeparator = '.',
+  decimalSeparator = ',',
+  decimalScale = 2,
+  allowDecimals = true,
+  fixedDecimals = false,
+  allowNegative = false,
+  formatter,
 }: UseAutocompleteHandlersParams<T, Multiple, DisableClearable, FreeSolo>) {
   const isSmall = size === 'small'
+  const [isFocused, setIsFocused] = useState(false)
+  const [internalInputValue, setInternalInputValue] = useState(inputValue ?? '')
+
+  const formatOptions: NumberFormatOptions = useMemo(
+    () => ({
+      thousandSeparator,
+      decimalSeparator,
+      decimalScale,
+      allowDecimals,
+      fixedDecimals: isFocused ? false : fixedDecimals,
+      allowNegative,
+    }),
+    [
+      thousandSeparator,
+      decimalSeparator,
+      decimalScale,
+      allowDecimals,
+      fixedDecimals,
+      isFocused,
+      allowNegative,
+    ]
+  )
+
+  const formatValueString = useCallback(
+    (val: string) => {
+      if (!val) return ''
+      if (format === 'currency' || format === 'number') {
+        const parsed = parseNumberValue(val, formatOptions)
+        return formatNumberValue(parsed, formatOptions)
+      }
+      if (format === 'custom' && formatter) {
+        return formatter(val)
+      }
+      return val
+    },
+    [format, formatOptions, formatter]
+  )
+
+  const isControlledInput = inputValue !== undefined
+  const effectiveInputValue = isControlledInput ? inputValue : (format ? internalInputValue : undefined)
+
+  const handleInputChange = useCallback(
+    (event: React.SyntheticEvent, newInputValue: string, reason: string) => {
+      let resolvedInput = newInputValue
+      if (format && reason === 'input') {
+        resolvedInput = formatValueString(newInputValue)
+      }
+      if (!isControlledInput) {
+        setInternalInputValue(resolvedInput)
+      }
+      onInputChange?.(event, resolvedInput, reason as never)
+    },
+    [format, formatValueString, isControlledInput, onInputChange]
+  )
+
+  const effectiveFilterOptions = useMemo(() => {
+    if (filterOptions) return filterOptions
+    if (format === 'currency' || format === 'number') {
+      return filterNumericOptions(formatOptions)
+    }
+    return undefined
+  }, [filterOptions, format, formatOptions])
 
   // ── Stable slotProps extractions ───────────────────────────────────────────
   const userPaperSlot = useMemo(
@@ -171,11 +259,41 @@ export function useAutocompleteHandlers<
     [renderValue, renderTags, size, maxVisibleTags, tagDisplay, slotSx?.tag, normalizedTagSlotSx, getOptionLabel]
   )
 
+  // ── Focus / Blur handlers ──────────────────────────────────────────────────
+  const handleFocus = useCallback(
+    (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(true)
+      textFieldProps?.onFocus?.(e as never)
+    },
+    [textFieldProps]
+  )
+
+  const handleBlur = useCallback(
+    (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(false)
+      if (format && !isControlledInput && internalInputValue) {
+        const blurredFormatted = formatNumberValue(internalInputValue, {
+          ...formatOptions,
+          fixedDecimals,
+        })
+        setInternalInputValue(blurredFormatted)
+      }
+      textFieldProps?.onBlur?.(e as never)
+    },
+    [format, isControlledInput, internalInputValue, formatOptions, fixedDecimals, textFieldProps]
+  )
+
   // ── Input renderer ─────────────────────────────────────────────────────────
   // When hasBlocks is true the TextField is borderless — the wrapper Box owns
   // the border and focus ring via CSS :focus-within.
   const renderInput = useCallback(
     (params: AutocompleteRenderInputParams) => {
+      const rawParams = params as unknown as {
+        InputProps?: Record<string, unknown>
+        inputProps?: React.InputHTMLAttributes<HTMLInputElement>
+        [key: string]: unknown
+      }
+      const { InputProps: _rawMuiInputProps, inputProps: rawHtmlInputProps, ...restParams } = rawParams
       const muiInputProps = extractMuiInputProps(params)
 
       const inputPropsOverride = {
@@ -208,15 +326,25 @@ export function useAutocompleteHandlers<
         },
       } : {}
 
+      const effectiveHtmlInputProps: React.InputHTMLAttributes<HTMLInputElement> = {
+        ...rawHtmlInputProps,
+        ...(format ? { inputMode: allowDecimals ? 'decimal' : 'numeric' } : {}),
+      }
+
       return (
         <TextField
-          {...params}
+          {...restParams}
           {...textFieldProps}
           name={name}
           inputRef={inputRef}
           placeholder={placeholder}
           error={error}
-          {...({ InputProps: inputPropsOverride } as Record<string, unknown>)}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          {...({
+            inputProps: effectiveHtmlInputProps,
+            InputProps: inputPropsOverride,
+          } as Record<string, unknown>)}
           sx={[
             ...toSxArray(getAutocompleteInputSx({ size, borderRadius, error, disabled })),
             borderlessSx,
@@ -227,7 +355,8 @@ export function useAutocompleteHandlers<
       )
     },
     [hasBlocks, startAdornment, endAdornment, textFieldProps, name, inputRef, placeholder,
-      error, size, borderRadius, disabled, slotSx?.startAdornment, slotSx?.endAdornment, slotSx?.textField]
+      error, size, borderRadius, disabled, slotSx?.startAdornment, slotSx?.endAdornment, slotSx?.textField,
+      handleFocus, handleBlur, format, allowDecimals]
   )
 
   // ── Change handler ─────────────────────────────────────────────────────────
@@ -279,6 +408,10 @@ export function useAutocompleteHandlers<
     resolvedRenderValueProp,
     resolvedSlotProps,
     handleChange,
+    handleInputChange,
+    effectiveInputValue,
+    effectiveFilterOptions,
     isSmall,
   }
 }
+
