@@ -30,10 +30,10 @@ import {
   getAutocompleteListboxSx,
 } from './utils'
 
-// ── Fix 1: Module-level stable defaults ───────────────────────────────────────
-// Defined once at module scope so they are stable references across renders.
-// Inline parameter defaults create new function objects on every render,
-// busting all useCallback caches that list them as dependencies.
+// ── Module-level stable defaults ──────────────────────────────────────────────
+// Defined at module scope so their references are stable across renders.
+// Defining them as inline prop defaults would create new function objects on
+// every render, invalidating every useCallback that lists them as a dependency.
 function defaultGetOptionLabel<T>(option: T): string {
   if (typeof option === 'string') return option
   if (option && typeof option === 'object' && 'label' in option) {
@@ -58,6 +58,24 @@ function defaultIsOptionEqualToValue<T>(option: T, value: T): boolean {
     )
   }
   return false
+}
+
+// ── MUI InputProps escape hatch ───────────────────────────────────────────────
+// MUI's AutocompleteRenderInputParams.InputProps is typed as a union of three
+// InputBase variants (Outlined / Filled / Standard). We need to read its
+// startAdornment / endAdornment to preserve the popup-indicator and tags that
+// MUI injects there. Isolating the cast here keeps it out of component logic.
+type RawMuiInputProps = {
+  startAdornment?: React.ReactNode
+  endAdornment?: React.ReactNode
+  ref?: React.Ref<unknown>
+  className?: string
+  [key: string]: unknown
+}
+
+function extractMuiInputProps(params: AutocompleteRenderInputParams): RawMuiInputProps {
+  const raw = params as unknown as { InputProps?: RawMuiInputProps }
+  return raw.InputProps ?? {}
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -106,9 +124,18 @@ export function Autocomplete<
   const isSmall = size === 'small'
   const isLarge = size === 'large'
 
-  // ── Fix 2: Memoize slotProps.paper and slotProps.listbox extractions ────────
-  // Without useMemo, new object references are created on every render even
-  // when nothing has changed, causing downstream effects to re-fire.
+  // Compute once; used in both the wrapper Box and getAutocompleteInputSx call.
+  const formattedRadius =
+    typeof borderRadius === 'number' ? `${borderRadius}px` : (borderRadius ?? '12px')
+
+  // Whether prefix/suffix blocks are active — drives wrapper vs. normal render.
+  const hasPrefixBlock = Boolean(prefixBlock)
+  const hasSuffixBlock = Boolean(suffixBlock)
+  const hasBlocks = hasPrefixBlock || hasSuffixBlock
+
+  // ── Stable slotProps sub-objects ──────────────────────────────────────────────
+  // Extract paper/listbox overrides into stable references so resolvedSlotProps
+  // doesn't create a new object on every render when slotProps hasn't changed.
   const userPaperSlot = useMemo(
     () =>
       typeof slotProps?.paper === 'object' && slotProps.paper !== null
@@ -125,9 +152,10 @@ export function Autocomplete<
     [slotProps?.listbox]
   )
 
-  // ── Fix 6: Normalize slotSx into stable sub-slot objects once ───────────────
-  // Pass the whole slotSx object as a single dep instead of listing every key
-  // individually across three separate useCallback dep arrays.
+  // ── Normalized slotSx sub-objects ─────────────────────────────────────────────
+  // Each memo uses only the individual slotSx keys it consumes rather than the
+  // whole slotSx object, so the stable reference is maintained when only
+  // unrelated keys change.
   const normalizedOptionSlotSx = useMemo(
     () => ({
       option: slotSx?.option,
@@ -137,8 +165,14 @@ export function Autocomplete<
       optionAvatar: slotSx?.optionAvatar,
       optionIcon: slotSx?.optionIcon,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [slotSx]
+    [
+      slotSx?.option,
+      slotSx?.optionLabel,
+      slotSx?.optionSubtitle,
+      slotSx?.optionCheckbox,
+      slotSx?.optionAvatar,
+      slotSx?.optionIcon,
+    ]
   )
 
   const normalizedTagSlotSx = useMemo(
@@ -149,11 +183,16 @@ export function Autocomplete<
       tagLabel: slotSx?.tagLabel,
       tagOverflow: slotSx?.tagOverflow,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [slotSx]
+    [
+      slotSx?.tagChip,
+      slotSx?.tagAvatar,
+      slotSx?.tagIcon,
+      slotSx?.tagLabel,
+      slotSx?.tagOverflow,
+    ]
   )
 
-  // ── 1. Memoized option renderer ──────────────────────────────────────────────
+  // ── Option renderer ────────────────────────────────────────────────────────────
   const defaultRenderOption = useCallback(
     (
       optionProps: React.HTMLAttributes<HTMLLIElement> & { key: React.Key },
@@ -180,7 +219,7 @@ export function Autocomplete<
     [getOptionLabel, multiple, checkboxPlacement, size, normalizedOptionSlotSx]
   )
 
-  // ── 2. Memoized tag / value renderer (MUI v9 renderValue) ────────────────────
+  // ── Tag / value renderer (MUI v9 renderValue API) ─────────────────────────────
   const resolvedRenderValue = useCallback(
     (
       tagValue: unknown,
@@ -219,113 +258,45 @@ export function Autocomplete<
     ]
   )
 
-  // ── 3. Memoized input renderer ────────────────────────────────────────────────
+  // ── Input renderer ────────────────────────────────────────────────────────────
+  // When prefix/suffix blocks are present the TextField is rendered borderless —
+  // the outer wrapper Box (see JSX below) owns the border, border-radius, and
+  // focus ring via CSS :focus-within. In the normal (no-blocks) path the
+  // TextField behaves exactly as before.
   const renderInputCallback = useCallback(
     (params: AutocompleteRenderInputParams) => {
-      const blockPx = isLarge ? 2 : isSmall ? 1.25 : 1.75
+      const muiInputProps = extractMuiInputProps(params)
 
-      const prefixBlockElement = prefixBlock ? (
-        <Box
-          sx={[
-            (theme: Theme) => ({
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              // The MuiOutlinedInput root has `pl` zeroed below — this block fills from the left edge
-              alignSelf: 'stretch',
-              // Counteract MUI's internal 14px left padding on the adornment wrapper
-              ml: '-14px',
-              mr: 1.5,
-              px: blockPx,
-              bgcolor: '#F1F5F9',
-              borderRight: '1px solid',
-              borderColor: error ? theme.palette.error.main : theme.palette.divider,
-              fontWeight: 700,
-              fontSize: isLarge ? '1rem' : isSmall ? '0.8125rem' : '0.875rem',
-              color: theme.palette.text.primary,
-              userSelect: 'none',
-              flexShrink: 0,
-            }),
-            ...toSxArray(slotSx?.prefixBlock),
-          ]}
-        >
-          {prefixBlock}
-        </Box>
-      ) : null
-
-      const suffixBlockElement = suffixBlock ? (
-        <Box
-          sx={[
-            (theme: Theme) => ({
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              alignSelf: 'stretch',
-              // Counteract MUI's internal 8px right padding on the adornment wrapper
-              mr: '-8px',
-              ml: 1,
-              px: blockPx,
-              bgcolor: '#F1F5F9',
-              borderLeft: '1px solid',
-              borderColor: error ? theme.palette.error.main : theme.palette.divider,
-              fontWeight: 700,
-              fontSize: isLarge ? '1rem' : isSmall ? '0.8125rem' : '0.875rem',
-              color: theme.palette.text.primary,
-              userSelect: 'none',
-              flexShrink: 0,
-            }),
-            ...toSxArray(slotSx?.suffixBlock),
-          ]}
-        >
-          {suffixBlock}
-        </Box>
-      ) : null
-
-      const rawParams = params as unknown as {
-        InputProps?: {
-          startAdornment?: React.ReactNode
-          endAdornment?: React.ReactNode
-          ref?: React.Ref<unknown>
-          className?: string
-          [key: string]: unknown
-        }
-        [key: string]: unknown
-      }
-      const rawInputProps = rawParams.InputProps ?? {}
-
+      // Merge user-supplied inline adornments around MUI's own popup-indicator /
+      // chip adornments. Prefix/suffix blocks live in the wrapper, not here.
       const inputPropsOverride = {
-        ...rawInputProps,
-        startAdornment: (
+        ...muiInputProps,
+        startAdornment: startAdornment ? (
           <>
-            {prefixBlockElement}
-            {startAdornment && (
-              <Box sx={[{ display: 'inline-flex', alignItems: 'center', mr: 0.75 }, ...toSxArray(slotSx?.startAdornment)]}>
-                {startAdornment}
-              </Box>
-            )}
-            {rawInputProps.startAdornment}
+            <Box sx={[{ display: 'inline-flex', alignItems: 'center', mr: 0.75 }, ...toSxArray(slotSx?.startAdornment)]}>
+              {startAdornment}
+            </Box>
+            {muiInputProps.startAdornment}
           </>
-        ),
-        endAdornment: (
+        ) : muiInputProps.startAdornment,
+        endAdornment: endAdornment ? (
           <>
-            {endAdornment && (
-              <Box sx={[{ display: 'inline-flex', alignItems: 'center', ml: 0.75 }, ...toSxArray(slotSx?.endAdornment)]}>
-                {endAdornment}
-              </Box>
-            )}
-            {rawInputProps.endAdornment}
-            {suffixBlockElement}
+            {muiInputProps.endAdornment}
+            <Box sx={[{ display: 'inline-flex', alignItems: 'center', ml: 0.75 }, ...toSxArray(slotSx?.endAdornment)]}>
+              {endAdornment}
+            </Box>
           </>
-        ),
+        ) : muiInputProps.endAdornment,
       }
 
-      // When prefix/suffix blocks are present, zero out the root's left/right padding
-      // so the blocks flush to the container edge (overflow:hidden on the root clips cleanly)
-      const blockOverrideSx: SxProps<Theme> = (prefixBlock || suffixBlock) ? {
+      // Strip the OutlinedInput border when the wrapper Box owns it.
+      const borderlessSx: SxProps<Theme> = hasBlocks ? {
         '& .MuiOutlinedInput-root': {
-          overflow: 'hidden',
-          ...(prefixBlock ? { pl: 0 } : {}),
-          ...(suffixBlock ? { pr: 0 } : {}),
+          borderRadius: 0,
+          '& fieldset': { border: 'none' },
+          '&:hover fieldset': { border: 'none' },
+          '&.Mui-focused fieldset': { border: 'none' },
+          '&.Mui-focused': { boxShadow: 'none' },
         },
       } : {}
 
@@ -337,12 +308,10 @@ export function Autocomplete<
           inputRef={inputRef}
           placeholder={placeholder}
           error={error}
-          {...({
-            InputProps: inputPropsOverride,
-          } as Record<string, unknown>)}
+          {...({ InputProps: inputPropsOverride } as Record<string, unknown>)}
           sx={[
             ...toSxArray(getAutocompleteInputSx({ size, borderRadius, error, disabled })),
-            blockOverrideSx,
+            borderlessSx,
             ...toSxArray(textFieldProps?.sx as SxProps<Theme>),
             ...toSxArray(slotSx?.textField),
           ]}
@@ -350,8 +319,7 @@ export function Autocomplete<
       )
     },
     [
-      prefixBlock,
-      suffixBlock,
+      hasBlocks,
       startAdornment,
       endAdornment,
       textFieldProps,
@@ -362,18 +330,14 @@ export function Autocomplete<
       size,
       borderRadius,
       disabled,
-      isLarge,
-      isSmall,
-      slotSx?.prefixBlock,
-      slotSx?.suffixBlock,
       slotSx?.startAdornment,
       slotSx?.endAdornment,
       slotSx?.textField,
     ]
   )
 
-  // ── 4. Memoized change handler supporting onValueChange ──────────────────────
-  // Fix 3: Narrow `value` to the proper generic type instead of casting to `any`.
+  // ── Change handler ─────────────────────────────────────────────────────────────
+  // Bridges MUI's onChange with the simplified onValueChange helper prop.
   const handleMuiChange = useCallback(
     (
       event: React.SyntheticEvent,
@@ -387,7 +351,7 @@ export function Autocomplete<
     [onValueChange, onChange]
   )
 
-  // ── Memoized resolved slotProps ───────────────────────────────────────────────
+  // ── Resolved slotProps ────────────────────────────────────────────────────────
   const resolvedSlotProps = useMemo(
     () => ({
       ...slotProps,
@@ -411,11 +375,53 @@ export function Autocomplete<
     [slotProps, userPaperSlot, userListboxSlot, borderRadius, size, slotSx?.paper, slotSx?.listbox]
   )
 
-  // Fix 4: Clean ternary instead of conditional spread for renderValue
   const resolvedRenderValueProp =
     multiple || renderValue || renderTags
       ? (resolvedRenderValue as typeof renderValue)
       : undefined
+
+  // ── Shared MuiAutocomplete props ──────────────────────────────────────────────
+  // Extracted once to avoid duplicating the full prop list in the two JSX
+  // branches (with-wrapper vs. without-wrapper) below.
+  type MuiProps = React.ComponentProps<typeof MuiAutocomplete<T, Multiple, DisableClearable, FreeSolo>>
+  const sharedMuiProps: Omit<MuiProps, 'sx'> = {
+    ...(props as unknown as Omit<MuiProps, 'sx'>),
+    id: triggerId,
+    multiple,
+    disabled,
+    fullWidth,
+    options,
+    getOptionLabel,
+    isOptionEqualToValue,
+    onChange: handleMuiChange,
+    popupIcon: <KeyboardArrowDownIcon sx={{ fontSize: isSmall ? 20 : 22 }} />,
+    clearIcon: <CloseIcon sx={{ fontSize: isSmall ? 18 : 20 }} />,
+    slotProps: resolvedSlotProps,
+    renderOption: renderOption ?? defaultRenderOption,
+    renderValue: resolvedRenderValueProp,
+    renderInput: renderInputCallback,
+  }
+
+  // ── Block sidebar styles ──────────────────────────────────────────────────────
+  const blockSidebarSx = (side: 'left' | 'right'): SxProps<Theme> => [
+    (theme: Theme) => ({
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      alignSelf: 'stretch',
+      px: isLarge ? 2 : isSmall ? 1.25 : 1.75,
+      bgcolor: '#F1F5F9',
+      ...(side === 'left'
+        ? { borderRight: '1px solid', borderColor: error ? theme.palette.error.main : theme.palette.divider }
+        : { borderLeft: '1px solid', borderColor: error ? theme.palette.error.main : theme.palette.divider }),
+      fontWeight: 700,
+      fontSize: isLarge ? '1rem' : isSmall ? '0.8125rem' : '0.875rem',
+      color: theme.palette.text.primary,
+      userSelect: 'none',
+      flexShrink: 0,
+    }),
+    ...toSxArray(side === 'left' ? slotSx?.prefixBlock : slotSx?.suffixBlock),
+  ]
 
   return (
     <FormControl
@@ -450,27 +456,48 @@ export function Autocomplete<
         </InputLabel>
       )}
 
-      <MuiAutocomplete<T, Multiple, DisableClearable, FreeSolo>
-        {...(props as unknown as object)}
-        id={triggerId}
-        multiple={multiple}
-        disabled={disabled}
-        fullWidth={fullWidth}
-        options={options}
-        getOptionLabel={getOptionLabel}
-        isOptionEqualToValue={isOptionEqualToValue}
-        onChange={handleMuiChange}
-        popupIcon={<KeyboardArrowDownIcon sx={{ fontSize: isSmall ? 20 : 22 }} />}
-        clearIcon={<CloseIcon sx={{ fontSize: isSmall ? 18 : 20 }} />}
-        slotProps={resolvedSlotProps}
-        renderOption={renderOption ?? defaultRenderOption}
-        renderValue={resolvedRenderValueProp}
-        renderInput={renderInputCallback}
-        sx={[
-          { width: fullWidth ? '100%' : 'auto' },
-          ...toSxArray(slotSx?.root),
-        ]}
-      />
+      {/* When blocks are present: wrapper Box owns the border + focus ring via
+          CSS :focus-within so no JS focus state is required. The TextField
+          inside is rendered borderless (see renderInputCallback above). */}
+      {hasBlocks ? (
+        <Box
+          sx={[
+            (theme: Theme) => ({
+              display: 'flex',
+              alignItems: 'stretch',
+              width: fullWidth ? '100%' : 'auto',
+              minHeight: isLarge ? 56 : isSmall ? 40 : 48,
+              borderRadius: formattedRadius,
+              overflow: 'hidden',
+              border: '1px solid',
+              borderColor: error ? theme.palette.error.main : theme.palette.divider,
+              bgcolor: disabled ? theme.palette.action.disabledBackground : theme.palette.background.paper,
+              transition: theme.transitions.create(['border-color', 'box-shadow']),
+              '&:hover': {
+                borderColor: disabled ? undefined : error ? theme.palette.error.main : theme.palette.primary.main,
+              },
+              '&:focus-within': {
+                borderColor: error ? theme.palette.error.main : theme.palette.primary.main,
+                boxShadow: `0 0 0 3px ${error ? 'rgba(239, 68, 68, 0.15)' : 'rgba(0, 163, 157, 0.15)'}`,
+              },
+            }),
+          ]}
+        >
+          {hasPrefixBlock && <Box sx={blockSidebarSx('left')}>{prefixBlock}</Box>}
+
+          <MuiAutocomplete<T, Multiple, DisableClearable, FreeSolo>
+            {...sharedMuiProps}
+            sx={[{ flex: 1, minWidth: 0 }, ...toSxArray(slotSx?.root)]}
+          />
+
+          {hasSuffixBlock && <Box sx={blockSidebarSx('right')}>{suffixBlock}</Box>}
+        </Box>
+      ) : (
+        <MuiAutocomplete<T, Multiple, DisableClearable, FreeSolo>
+          {...sharedMuiProps}
+          sx={[{ width: fullWidth ? '100%' : 'auto' }, ...toSxArray(slotSx?.root)]}
+        />
+      )}
 
       {helperText && (
         <FormHelperText sx={[{ mx: 0, mt: 0.5 }, ...toSxArray(slotSx?.helperText)]}>
@@ -481,5 +508,6 @@ export function Autocomplete<
   )
 }
 
-// Fix 5: Named displayName for React DevTools identification
+// Named displayName improves component identification in React DevTools and
+// error stack traces for this generic component.
 Autocomplete.displayName = 'Autocomplete'
