@@ -5,6 +5,7 @@ import {
   FormControl,
   InputLabel,
   FormHelperText,
+  Box,
 } from '@mui/material'
 import type {
   SxProps,
@@ -91,6 +92,10 @@ export function Autocomplete<
   checkboxPlacement = 'right',
   maxVisibleTags,
   tagDisplay = 'avatar+label',
+  prefixBlock,
+  suffixBlock,
+  startAdornment,
+  endAdornment,
   onChange,
   onValueChange,
   ...props
@@ -99,6 +104,7 @@ export function Autocomplete<
   const triggerId = id || generatedId
   const labelId = label ? `${triggerId}-label` : undefined
   const isSmall = size === 'small'
+  const isLarge = size === 'large'
 
   // ── Fix 2: Memoize slotProps.paper and slotProps.listbox extractions ────────
   // Without useMemo, new object references are created on every render even
@@ -215,22 +221,155 @@ export function Autocomplete<
 
   // ── 3. Memoized input renderer ────────────────────────────────────────────────
   const renderInputCallback = useCallback(
-    (params: AutocompleteRenderInputParams) => (
-      <TextField
-        {...params}
-        {...textFieldProps}
-        name={name}
-        inputRef={inputRef}
-        placeholder={placeholder}
-        error={error}
-        sx={[
-          ...toSxArray(getAutocompleteInputSx({ size, borderRadius, error, disabled })),
-          ...toSxArray(textFieldProps?.sx as SxProps<Theme>),
-          ...toSxArray(slotSx?.textField),
-        ]}
-      />
-    ),
-    [textFieldProps, name, inputRef, placeholder, error, size, borderRadius, disabled, slotSx?.textField]
+    (params: AutocompleteRenderInputParams) => {
+      const blockPx = isLarge ? 2 : isSmall ? 1.25 : 1.75
+
+      const prefixBlockElement = prefixBlock ? (
+        <Box
+          sx={[
+            (theme: Theme) => ({
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              // The MuiOutlinedInput root has `pl` zeroed below — this block fills from the left edge
+              alignSelf: 'stretch',
+              // Counteract MUI's internal 14px left padding on the adornment wrapper
+              ml: '-14px',
+              mr: 1.5,
+              px: blockPx,
+              bgcolor: '#F1F5F9',
+              borderRight: '1px solid',
+              borderColor: error ? theme.palette.error.main : theme.palette.divider,
+              fontWeight: 700,
+              fontSize: isLarge ? '1rem' : isSmall ? '0.8125rem' : '0.875rem',
+              color: theme.palette.text.primary,
+              userSelect: 'none',
+              flexShrink: 0,
+            }),
+            ...toSxArray(slotSx?.prefixBlock),
+          ]}
+        >
+          {prefixBlock}
+        </Box>
+      ) : null
+
+      const suffixBlockElement = suffixBlock ? (
+        <Box
+          sx={[
+            (theme: Theme) => ({
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              alignSelf: 'stretch',
+              // Counteract MUI's internal 8px right padding on the adornment wrapper
+              mr: '-8px',
+              ml: 1,
+              px: blockPx,
+              bgcolor: '#F1F5F9',
+              borderLeft: '1px solid',
+              borderColor: error ? theme.palette.error.main : theme.palette.divider,
+              fontWeight: 700,
+              fontSize: isLarge ? '1rem' : isSmall ? '0.8125rem' : '0.875rem',
+              color: theme.palette.text.primary,
+              userSelect: 'none',
+              flexShrink: 0,
+            }),
+            ...toSxArray(slotSx?.suffixBlock),
+          ]}
+        >
+          {suffixBlock}
+        </Box>
+      ) : null
+
+      const rawParams = params as unknown as {
+        InputProps?: {
+          startAdornment?: React.ReactNode
+          endAdornment?: React.ReactNode
+          ref?: React.Ref<unknown>
+          className?: string
+          [key: string]: unknown
+        }
+        [key: string]: unknown
+      }
+      const rawInputProps = rawParams.InputProps ?? {}
+
+      const inputPropsOverride = {
+        ...rawInputProps,
+        startAdornment: (
+          <>
+            {prefixBlockElement}
+            {startAdornment && (
+              <Box sx={[{ display: 'inline-flex', alignItems: 'center', mr: 0.75 }, ...toSxArray(slotSx?.startAdornment)]}>
+                {startAdornment}
+              </Box>
+            )}
+            {rawInputProps.startAdornment}
+          </>
+        ),
+        endAdornment: (
+          <>
+            {endAdornment && (
+              <Box sx={[{ display: 'inline-flex', alignItems: 'center', ml: 0.75 }, ...toSxArray(slotSx?.endAdornment)]}>
+                {endAdornment}
+              </Box>
+            )}
+            {rawInputProps.endAdornment}
+            {suffixBlockElement}
+          </>
+        ),
+      }
+
+      // When prefix/suffix blocks are present, zero out the root's left/right padding
+      // so the blocks flush to the container edge (overflow:hidden on the root clips cleanly)
+      const blockOverrideSx: SxProps<Theme> = (prefixBlock || suffixBlock) ? {
+        '& .MuiOutlinedInput-root': {
+          overflow: 'hidden',
+          ...(prefixBlock ? { pl: 0 } : {}),
+          ...(suffixBlock ? { pr: 0 } : {}),
+        },
+      } : {}
+
+      return (
+        <TextField
+          {...params}
+          {...textFieldProps}
+          name={name}
+          inputRef={inputRef}
+          placeholder={placeholder}
+          error={error}
+          {...({
+            InputProps: inputPropsOverride,
+          } as Record<string, unknown>)}
+          sx={[
+            ...toSxArray(getAutocompleteInputSx({ size, borderRadius, error, disabled })),
+            blockOverrideSx,
+            ...toSxArray(textFieldProps?.sx as SxProps<Theme>),
+            ...toSxArray(slotSx?.textField),
+          ]}
+        />
+      )
+    },
+    [
+      prefixBlock,
+      suffixBlock,
+      startAdornment,
+      endAdornment,
+      textFieldProps,
+      name,
+      inputRef,
+      placeholder,
+      error,
+      size,
+      borderRadius,
+      disabled,
+      isLarge,
+      isSmall,
+      slotSx?.prefixBlock,
+      slotSx?.suffixBlock,
+      slotSx?.startAdornment,
+      slotSx?.endAdornment,
+      slotSx?.textField,
+    ]
   )
 
   // ── 4. Memoized change handler supporting onValueChange ──────────────────────

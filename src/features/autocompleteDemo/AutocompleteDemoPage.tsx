@@ -29,6 +29,8 @@ import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
 import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined'
 import DataObjectOutlinedIcon from '@mui/icons-material/DataObjectOutlined'
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
+import SearchIcon from '@mui/icons-material/Search'
+import PaidOutlinedIcon from '@mui/icons-material/PaidOutlined'
 
 import { PageLayout } from '../../widgets/pageLayout'
 import { Card } from '../../components/card'
@@ -96,6 +98,16 @@ const BANK_OPTIONS: AutocompleteOption[] = [
   { value: '7200000004', label: 'PT Global Solusindo', subtitle: 'Rekening 8830000004 • Rp 920.000.000', icon: <AccountBalanceIcon sx={{ color: '#64748B' }} /> },
 ]
 
+const NOMINAL_OPTIONS: AutocompleteOption[] = [
+  { value: '10.000', label: '10.000', subtitle: 'Sepuluh Ribu Rupiah' },
+  { value: '25.000', label: '25.000', subtitle: 'Dua Puluh Lima Ribu Rupiah' },
+  { value: '50.000', label: '50.000', subtitle: 'Lima Puluh Ribu Rupiah' },
+  { value: '100.000', label: '100.000', subtitle: 'Seratus Ribu Rupiah' },
+  { value: '250.000', label: '250.000', subtitle: 'Dua Ratus Lima Puluh Ribu Rupiah' },
+  { value: '500.000', label: '500.000', subtitle: 'Lima Ratus Ribu Rupiah' },
+  { value: '1.000.000', label: '1.000.000', subtitle: 'Satu Juta Rupiah' },
+]
+
 // ── Typed Form Schema for RHF Demo ───────────────────────────────────────────
 const miniFormSchema = z.object({
   category: z.string().min(1, 'Kategori wajib dipilih'),
@@ -105,13 +117,18 @@ const { Form, Field } = createTypedForm<MiniFormValues>()
 
 export function AutocompleteDemoPage() {
   // ── Interactive Sandbox State ──────────────────────────────────────────────
-  const [datasetKey, setDatasetKey] = useState<'infaq' | 'tech' | 'bank'>('infaq')
+  const [datasetKey, setDatasetKey] = useState<'infaq' | 'tech' | 'bank' | 'nominal'>('infaq')
   const [size, setSize] = useState<'small' | 'medium' | 'large'>('medium')
   const [isMultiple, setIsMultiple] = useState(true)
+  const [isFreeSolo, setIsFreeSolo] = useState(false)
+  const [isDisableClearable, setIsDisableClearable] = useState(false)
   const [checkboxPlacement, setCheckboxPlacement] = useState<'right' | 'left' | 'none'>('right')
   const [maxVisibleTags, setMaxVisibleTags] = useState<number>(2)
   const [tagDisplay, setTagDisplay] = useState<'avatar+label' | 'label'>('avatar+label')
   const [tagTheme, setTagTheme] = useState<'default' | 'amber' | 'indigo'>('default')
+  const [prefixBlockVal, setPrefixBlockVal] = useState<'none' | 'Rp' | '$' | 'https://'>('none')
+  const [suffixBlockVal, setSuffixBlockVal] = useState<'none' | 'IDR' | '.com' | '/bln'>('none')
+  const [startAdornmentVal, setStartAdornmentVal] = useState<'none' | 'search' | 'money'>('none')
   const [borderRadius, setBorderRadius] = useState<number>(12)
   const [isError, setIsError] = useState(false)
   const [isDisabled, setIsDisabled] = useState(false)
@@ -124,14 +141,16 @@ export function AutocompleteDemoPage() {
         return TECH_OPTIONS
       case 'bank':
         return BANK_OPTIONS
+      case 'nominal':
+        return NOMINAL_OPTIONS
       default:
         return INFAQ_OPTIONS
     }
   }, [datasetKey])
 
   // ── Sandbox Live Values ────────────────────────────────────────────────────
-  const [sandboxSingle, setSandboxSingle] = useState<AutocompleteOption | null>(INFAQ_OPTIONS[0])
-  const [sandboxMulti, setSandboxMulti] = useState<AutocompleteOption[]>([
+  const [sandboxSingle, setSandboxSingle] = useState<AutocompleteOption | string | null>(INFAQ_OPTIONS[0])
+  const [sandboxMulti, setSandboxMulti] = useState<(AutocompleteOption | string)[]>([
     INFAQ_OPTIONS[0],
     INFAQ_OPTIONS[1],
     INFAQ_OPTIONS[3],
@@ -170,8 +189,13 @@ export function AutocompleteDemoPage() {
   const generatedCode = useMemo(() => {
     const lines: string[] = ['<Autocomplete']
     if (isMultiple) lines.push('  multiple')
+    if (isFreeSolo) lines.push('  freeSolo')
+    if (isDisableClearable) lines.push('  disableClearable')
     if (size !== 'medium') lines.push(`  size="${size}"`)
     if (borderRadius !== 12) lines.push(`  borderRadius={${borderRadius}}`)
+    if (prefixBlockVal !== 'none') lines.push(`  prefixBlock="${prefixBlockVal}"`)
+    if (suffixBlockVal !== 'none') lines.push(`  suffixBlock="${suffixBlockVal}"`)
+    if (startAdornmentVal !== 'none') lines.push(`  startAdornment={<${startAdornmentVal === 'search' ? 'SearchIcon' : 'PaidOutlinedIcon'} />}`)
     if (isMultiple && checkboxPlacement !== 'right') {
       lines.push(`  checkboxPlacement=${checkboxPlacement === 'none' ? '{false}' : `"${checkboxPlacement}"`}`)
     }
@@ -187,7 +211,22 @@ export function AutocompleteDemoPage() {
     lines.push(`  onValueChange={${isMultiple ? 'setSelectedItems' : 'setSelectedItem'}}`)
     lines.push('/>')
     return lines.join('\n')
-  }, [isMultiple, size, borderRadius, checkboxPlacement, maxVisibleTags, tagDisplay, isError, isDisabled, tagTheme])
+  }, [
+    isMultiple,
+    isFreeSolo,
+    isDisableClearable,
+    size,
+    borderRadius,
+    prefixBlockVal,
+    suffixBlockVal,
+    startAdornmentVal,
+    checkboxPlacement,
+    maxVisibleTags,
+    tagDisplay,
+    isError,
+    isDisabled,
+    tagTheme,
+  ])
 
   // ── RHF Mini Form State ───────────────────────────────────────────────────
   const [formSubmitted, setFormSubmitted] = useState<MiniFormValues | null>(null)
@@ -233,16 +272,28 @@ export function AutocompleteDemoPage() {
                         row
                         value={datasetKey}
                         onChange={(e) => {
-                          const key = e.target.value as 'infaq' | 'tech' | 'bank'
+                          const key = e.target.value as 'infaq' | 'tech' | 'bank' | 'nominal'
                           setDatasetKey(key)
-                          const opts = key === 'tech' ? TECH_OPTIONS : key === 'bank' ? BANK_OPTIONS : INFAQ_OPTIONS
+                          const opts =
+                            key === 'tech'
+                              ? TECH_OPTIONS
+                              : key === 'bank'
+                              ? BANK_OPTIONS
+                              : key === 'nominal'
+                              ? NOMINAL_OPTIONS
+                              : INFAQ_OPTIONS
                           setSandboxSingle(opts[0])
                           setSandboxMulti([opts[0], opts[1]])
+                          if (key === 'nominal') {
+                            setPrefixBlockVal('Rp')
+                            setIsFreeSolo(true)
+                          }
                         }}
                       >
                         <FormControlLabel value="infaq" control={<Radio size="small" />} label="Infaq (Icons)" />
                         <FormControlLabel value="tech" control={<Radio size="small" />} label="Tech (Avatars)" />
                         <FormControlLabel value="bank" control={<Radio size="small" />} label="Bank Accounts" />
+                        <FormControlLabel value="nominal" control={<Radio size="small" />} label="Nominal (Rp)" />
                       </RadioGroup>
                     </FormControl>
 
@@ -262,22 +313,106 @@ export function AutocompleteDemoPage() {
                       </RadioGroup>
                     </FormControl>
 
-                    {/* Mode Toggle */}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Box>
-                        <Typography variant="body2" sx={{ fontWeight: 700, color: TEXT_MAIN }}>
-                          Multi-Select (`multiple`)
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: TEXT_MUTED }}>
-                          Toggle between single and multiple chips
-                        </Typography>
+                    {/* Mode Toggles */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 700, color: TEXT_MAIN }}>
+                            Multi-Select (`multiple`)
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: TEXT_MUTED }}>
+                            Toggle between single and multiple chips
+                          </Typography>
+                        </Box>
+                        <Switch
+                          checked={isMultiple}
+                          onChange={(e) => setIsMultiple(e.target.checked)}
+                          color="primary"
+                        />
                       </Box>
-                      <Switch
-                        checked={isMultiple}
-                        onChange={(e) => setIsMultiple(e.target.checked)}
-                        color="primary"
-                      />
+
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 700, color: TEXT_MAIN }}>
+                            FreeSolo (`freeSolo`)
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: TEXT_MUTED }}>
+                            Allow custom arbitrary user input
+                          </Typography>
+                        </Box>
+                        <Switch
+                          checked={isFreeSolo}
+                          onChange={(e) => setIsFreeSolo(e.target.checked)}
+                          color="primary"
+                        />
+                      </Box>
+
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 700, color: TEXT_MAIN }}>
+                            Disable Clearable (`disableClearable`)
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: TEXT_MUTED }}>
+                            Hides the clear button indicator
+                          </Typography>
+                        </Box>
+                        <Switch
+                          checked={isDisableClearable}
+                          onChange={(e) => setIsDisableClearable(e.target.checked)}
+                          color="primary"
+                        />
+                      </Box>
                     </Box>
+
+                    {/* Prefix Block Selector */}
+                    <FormControl component="fieldset" size="small">
+                      <FormLabel sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
+                        Prefix Block (`prefixBlock`)
+                      </FormLabel>
+                      <RadioGroup
+                        row
+                        value={prefixBlockVal}
+                        onChange={(e) => setPrefixBlockVal(e.target.value as 'none' | 'Rp' | '$' | 'https://')}
+                      >
+                        <FormControlLabel value="none" control={<Radio size="small" />} label="None" />
+                        <FormControlLabel value="Rp" control={<Radio size="small" />} label="Rp (Shaded)" />
+                        <FormControlLabel value="$" control={<Radio size="small" />} label="$" />
+                        <FormControlLabel value="https://" control={<Radio size="small" />} label="https://" />
+                      </RadioGroup>
+                    </FormControl>
+
+                    {/* Suffix Block Selector */}
+                    <FormControl component="fieldset" size="small">
+                      <FormLabel sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
+                        Suffix Block (`suffixBlock`)
+                      </FormLabel>
+                      <RadioGroup
+                        row
+                        value={suffixBlockVal}
+                        onChange={(e) => setSuffixBlockVal(e.target.value as 'none' | 'IDR' | '.com' | '/bln')}
+                      >
+                        <FormControlLabel value="none" control={<Radio size="small" />} label="None" />
+                        <FormControlLabel value="IDR" control={<Radio size="small" />} label="IDR" />
+                        <FormControlLabel value=".com" control={<Radio size="small" />} label=".com" />
+                        <FormControlLabel value="/bln" control={<Radio size="small" />} label="/ bln" />
+                      </RadioGroup>
+                    </FormControl>
+
+                    {/* Start Adornment Selector */}
+                    <FormControl component="fieldset" size="small">
+                      <FormLabel sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
+                        Inline Start Adornment (`startAdornment`)
+                      </FormLabel>
+                      <RadioGroup
+                        row
+                        value={startAdornmentVal}
+                        onChange={(e) => setStartAdornmentVal(e.target.value as 'none' | 'search' | 'money')}
+                      >
+                        <FormControlLabel value="none" control={<Radio size="small" />} label="None" />
+                        <FormControlLabel value="search" control={<Radio size="small" />} label="Search Icon" />
+                        <FormControlLabel value="money" control={<Radio size="small" />} label="Paid Icon" />
+                      </RadioGroup>
+                    </FormControl>
 
                     {/* Checkbox Placement */}
                     {isMultiple && (
@@ -414,6 +549,8 @@ export function AutocompleteDemoPage() {
                     {isMultiple ? (
                       <Autocomplete
                         multiple
+                        freeSolo={isFreeSolo}
+                        disableClearable={isDisableClearable}
                         size={size}
                         label="Selected Items (Multi-Select)"
                         placeholder={sandboxMulti.length === 0 ? 'Pilih satu atau lebih opsi...' : ''}
@@ -424,6 +561,15 @@ export function AutocompleteDemoPage() {
                         maxVisibleTags={maxVisibleTags}
                         tagDisplay={tagDisplay}
                         borderRadius={borderRadius}
+                        prefixBlock={prefixBlockVal === 'none' ? undefined : prefixBlockVal}
+                        suffixBlock={suffixBlockVal === 'none' ? undefined : suffixBlockVal}
+                        startAdornment={
+                          startAdornmentVal === 'none' ? undefined : startAdornmentVal === 'search' ? (
+                            <SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
+                          ) : (
+                            <PaidOutlinedIcon sx={{ color: TEAL_PRIMARY, fontSize: 20 }} />
+                          )
+                        }
                         error={isError}
                         disabled={isDisabled}
                         slotSx={{
@@ -437,6 +583,8 @@ export function AutocompleteDemoPage() {
                       />
                     ) : (
                       <Autocomplete
+                        freeSolo={isFreeSolo}
+                        disableClearable={isDisableClearable}
                         size={size}
                         label="Selected Item (Single Select)"
                         placeholder="Pilih salah satu opsi..."
@@ -444,13 +592,22 @@ export function AutocompleteDemoPage() {
                         value={sandboxSingle}
                         onValueChange={setSandboxSingle}
                         borderRadius={borderRadius}
+                        prefixBlock={prefixBlockVal === 'none' ? undefined : prefixBlockVal}
+                        suffixBlock={suffixBlockVal === 'none' ? undefined : suffixBlockVal}
+                        startAdornment={
+                          startAdornmentVal === 'none' ? undefined : startAdornmentVal === 'search' ? (
+                            <SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
+                          ) : (
+                            <PaidOutlinedIcon sx={{ color: TEAL_PRIMARY, fontSize: 20 }} />
+                          )
+                        }
                         error={isError}
                         disabled={isDisabled}
                         helperText={
                           isError
                             ? 'Wajib memilih minimal satu opsi'
                             : sandboxSingle
-                              ? `✓ Terpilih: ${sandboxSingle.label}`
+                              ? `✓ Terpilih: ${typeof sandboxSingle === 'string' ? sandboxSingle : sandboxSingle.label}`
                               : 'Ketik atau klik untuk memilih'
                         }
                       />
@@ -496,43 +653,49 @@ export function AutocompleteDemoPage() {
                         {isMultiple ? (
                           sandboxMulti.length > 0 ? (
                             <Stack spacing={1}>
-                              {sandboxMulti.map((item, idx) => (
-                                <Box
-                                  key={String(item.value)}
-                                  sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    p: 1,
-                                    bgcolor: '#FFFFFF',
-                                    borderRadius: '6px',
-                                    border: '1px solid #E2E8F0',
-                                  }}
-                                >
-                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                    <Chip label={`#${idx + 1}`} size="small" sx={{ height: 20, fontSize: '0.6875rem', fontWeight: 700 }} />
-                                    <Typography variant="body2" sx={{ fontWeight: 700, color: TEXT_MAIN }}>
-                                      {item.label}
-                                    </Typography>
-                                    {item.subtitle && (
-                                      <Typography variant="caption" sx={{ color: TEXT_MUTED }}>
-                                        ({String(item.subtitle)})
-                                      </Typography>
-                                    )}
-                                  </Box>
-                                  <Chip
-                                    label={`value: "${item.value}"`}
-                                    size="small"
+                              {sandboxMulti.map((item, idx) => {
+                                const itemLabel = typeof item === 'string' ? item : item.label
+                                const itemValue = typeof item === 'string' ? item : item.value
+                                const itemSubtitle = typeof item === 'string' ? undefined : item.subtitle
+
+                                return (
+                                  <Box
+                                    key={String(itemValue)}
                                     sx={{
-                                      height: 20,
-                                      fontSize: '0.6875rem',
-                                      fontFamily: 'monospace',
-                                      bgcolor: 'rgba(0, 163, 157, 0.08)',
-                                      color: TEAL_PRIMARY,
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'space-between',
+                                      p: 1,
+                                      bgcolor: '#FFFFFF',
+                                      borderRadius: '6px',
+                                      border: '1px solid #E2E8F0',
                                     }}
-                                  />
-                                </Box>
-                              ))}
+                                  >
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                      <Chip label={`#${idx + 1}`} size="small" sx={{ height: 20, fontSize: '0.6875rem', fontWeight: 700 }} />
+                                      <Typography variant="body2" sx={{ fontWeight: 700, color: TEXT_MAIN }}>
+                                        {itemLabel}
+                                      </Typography>
+                                      {itemSubtitle && (
+                                        <Typography variant="caption" sx={{ color: TEXT_MUTED }}>
+                                          ({String(itemSubtitle)})
+                                        </Typography>
+                                      )}
+                                    </Box>
+                                    <Chip
+                                      label={`value: "${itemValue}"`}
+                                      size="small"
+                                      sx={{
+                                        height: 20,
+                                        fontSize: '0.6875rem',
+                                        fontFamily: 'monospace',
+                                        bgcolor: 'rgba(0, 163, 157, 0.08)',
+                                        color: TEAL_PRIMARY,
+                                      }}
+                                    />
+                                  </Box>
+                                )
+                              })}
                             </Stack>
                           ) : (
                             <Typography variant="caption" sx={{ color: TEXT_MUTED, fontStyle: 'italic' }}>
@@ -553,16 +716,16 @@ export function AutocompleteDemoPage() {
                           >
                             <Box>
                               <Typography variant="body2" sx={{ fontWeight: 700, color: TEXT_MAIN }}>
-                                {sandboxSingle.label}
+                                {typeof sandboxSingle === 'string' ? sandboxSingle : sandboxSingle.label}
                               </Typography>
-                              {sandboxSingle.subtitle && (
+                              {typeof sandboxSingle !== 'string' && sandboxSingle.subtitle && (
                                 <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block' }}>
                                   {String(sandboxSingle.subtitle)}
                                 </Typography>
                               )}
                             </Box>
                             <Chip
-                              label={`value: "${sandboxSingle.value}"`}
+                              label={`value: "${typeof sandboxSingle === 'string' ? sandboxSingle : sandboxSingle.value}"`}
                               size="small"
                               sx={{
                                 height: 22,
@@ -709,6 +872,56 @@ export function AutocompleteDemoPage() {
                     />
                   </Box>
                 </Stack>
+              </Card>
+            </Grid>
+
+            {/* Real-World Use Case 3: Nominal Currency with Prefix Block (Rp) */}
+            <Grid size={{ xs: 12 }}>
+              <Card
+                title="Nominal Donasi & Currency Picker (Prefix Block 'Rp')"
+                subtitle="Full-height shaded prefix addon block with freeSolo typing and preset nominal options"
+              >
+                <Grid container spacing={3}>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Box>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: TEXT_MAIN, mb: 0.5 }}>
+                        1. Nominal Currency with Prefix Block (`prefixBlock=&quot;Rp&quot;` &amp; `freeSolo`)
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 1.5 }}>
+                        Displays a solid shaded left block with &quot;Rp&quot;. Supports selecting preset nominal options or typing a custom amount.
+                      </Typography>
+                      <Autocomplete
+                        freeSolo
+                        prefixBlock="Rp"
+                        placeholder="50.000"
+                        options={NOMINAL_OPTIONS}
+                        defaultValue={NOMINAL_OPTIONS[2]}
+                        borderRadius={12}
+                        helperText="Pilih nominal preset (50.000, 100.000, 250.000) atau ketik bebas"
+                      />
+                    </Box>
+                  </Grid>
+
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Box>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: TEXT_MAIN, mb: 0.5 }}>
+                        2. Suffix Domain / Currency Block (`suffixBlock=&quot;IDR&quot;`)
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 1.5 }}>
+                        Right-side shaded block attached flush to the dropdown border.
+                      </Typography>
+                      <Autocomplete
+                        freeSolo
+                        suffixBlock="IDR"
+                        placeholder="1.000.000"
+                        options={NOMINAL_OPTIONS}
+                        defaultValue={NOMINAL_OPTIONS[6]}
+                        borderRadius={12}
+                        helperText="Suffix block attaches flush against the right edge"
+                      />
+                    </Box>
+                  </Grid>
+                </Grid>
               </Card>
             </Grid>
           </Grid>
@@ -1182,6 +1395,18 @@ export function AutocompleteDemoPage() {
                   type: 'SxProps<Theme>',
                   def: 'undefined',
                   desc: 'Styles the +N overflow <Chip> badge independently. Apply different colors, fontWeight, or border from regular chips.',
+                },
+                {
+                  prop: 'prefixBlock',
+                  type: 'ReactNode',
+                  def: 'undefined',
+                  desc: 'Full-height shaded prefix block rendered flush against the left edge (e.g. "Rp", "$").',
+                },
+                {
+                  prop: 'suffixBlock',
+                  type: 'ReactNode',
+                  def: 'undefined',
+                  desc: 'Full-height shaded suffix block rendered flush against the right edge (e.g. "IDR", ".com").',
                 },
                 {
                   prop: 'slotSx.paper',

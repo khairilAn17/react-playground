@@ -60,6 +60,14 @@ export interface AutocompleteSlotSx {
   tagOverflow?: SxProps<Theme>
   /** Styles the `<FormHelperText>` below the field. */
   helperText?: SxProps<Theme>
+  /** Styles the left shaded prefix block container (e.g. "Rp", "$"). */
+  prefixBlock?: SxProps<Theme>
+  /** Styles the right shaded suffix block container (e.g. ".com", "/bln"). */
+  suffixBlock?: SxProps<Theme>
+  /** Styles the start adornment wrapper. */
+  startAdornment?: SxProps<Theme>
+  /** Styles the end adornment wrapper. */
+  endAdornment?: SxProps<Theme>
 }
 
 export type AutocompleteRenderGetTagProps = (params: { index: number }) => {
@@ -133,4 +141,21 @@ export interface AutocompleteProps<
    * - `'label'` — shows only the label text
    */
   tagDisplay?: 'avatar+label' | 'label'
+  /**
+   * Shaded block element rendered flush against the left edge (e.g. `"Rp"`, `"$"`).
+   * Spans the full height of the input with a light gray background and divider.
+   */
+  prefixBlock?: ReactNode
+  /**
+   * Shaded block element rendered flush against the right edge (e.g. `".com"`, `"/bln"`).
+   */
+  suffixBlock?: ReactNode
+  /**
+   * Inline start adornment icon or element (rendered before text/chips without solid block).
+   */
+  startAdornment?: ReactNode
+  /**
+   * Inline end adornment icon or element (rendered before the popup arrow).
+   */
+  endAdornment?: ReactNode
 }

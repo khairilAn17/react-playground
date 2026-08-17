@@ -68,6 +68,10 @@ export interface SelectSlotSx {
   searchField?: SxProps<Theme>
   helperText?: SxProps<Theme>
   loadingMore?: SxProps<Theme>
+  prefixBlock?: SxProps<Theme>
+  suffixBlock?: SxProps<Theme>
+  startAdornment?: SxProps<Theme>
+  endAdornment?: SxProps<Theme>
 }
 
 export interface SelectChangeEvent {
@@ -190,4 +194,20 @@ export interface SelectProps {
 
   slotSx?: SelectSlotSx
   children?: ReactNode
+  /**
+   * Shaded block element rendered flush against the left edge (e.g. `"Rp"`, `"$"`).
+   */
+  prefixBlock?: ReactNode
+  /**
+   * Shaded block element rendered flush against the right edge (e.g. `".com"`, `"/bln"`).
+   */
+  suffixBlock?: ReactNode
+  /**
+   * Inline start adornment element (before trigger content).
+   */
+  startAdornment?: ReactNode
+  /**
+   * Inline end adornment element (before arrow indicator).
+   */
+  endAdornment?: ReactNode
 }

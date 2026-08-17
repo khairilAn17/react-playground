@@ -79,6 +79,10 @@ export function Select(props: SelectProps) {
     onClose,
     renderValue,
     searchInputProps,
+    prefixBlock,
+    suffixBlock,
+    startAdornment,
+    endAdornment,
   } = props
 
   const generatedId = useId()
@@ -171,17 +175,24 @@ export function Select(props: SelectProps) {
     ...toSxArray(slotSx?.menuItem),
   ]
 
+  const hasPrefixBlock = Boolean(prefixBlock)
+  const hasSuffixBlock = Boolean(suffixBlock)
+  const triggerPx = isLarge ? 2.25 : isSmall ? 1.5 : 2
+  const triggerPy = isLarge ? 1.5 : isSmall ? 0.75 : 1
+
   const triggerSx: SxProps<Theme> = [
     (theme: Theme) => ({
       display: 'flex',
-      alignItems: 'center',
+      alignItems: 'stretch',
       justifyContent: 'space-between',
-      gap: 1,
       width: '100%',
       minHeight: isLarge ? 56 : isSmall ? 40 : 48,
-      px: isLarge ? 2.25 : isSmall ? 1.5 : 2,
-      py: isLarge ? 1.5 : isSmall ? 0.75 : 1,
+      // When prefix/suffix blocks are present, remove horizontal padding — the blocks handle their own edges
+      pl: hasPrefixBlock ? 0 : triggerPx,
+      pr: hasSuffixBlock ? 0 : triggerPx,
+      py: hasPrefixBlock || hasSuffixBlock ? 0 : triggerPy,
       borderRadius: effectiveBorderRadius ?? '12px',
+      overflow: 'hidden',
       border: '1px solid',
       borderColor: error ? theme.palette.error.main : open ? theme.palette.primary.main : theme.palette.divider,
       bgcolor: disabled ? theme.palette.action.disabledBackground : theme.palette.background.paper,
@@ -280,10 +291,80 @@ export function Select(props: SelectProps) {
         }}
         sx={triggerSx}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 0, overflow: 'hidden' }}>
-          {renderTriggerContent()}
+        {prefixBlock && (
+          <Box
+            sx={[
+              (theme: Theme) => ({
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignSelf: 'stretch',
+                px: isLarge ? 2 : isSmall ? 1.25 : 1.75,
+                bgcolor: '#F1F5F9',
+                borderRight: '1px solid',
+                borderColor: error ? theme.palette.error.main : theme.palette.divider,
+                fontWeight: 700,
+                fontSize: isLarge ? '1rem' : isSmall ? '0.8125rem' : '0.875rem',
+                color: theme.palette.text.primary,
+                userSelect: 'none',
+                flexShrink: 0,
+              }),
+              ...toSxArray(slotSx?.prefixBlock),
+            ]}
+          >
+            {prefixBlock}
+          </Box>
+        )}
+        {/* Central content area — has its own padding when blocks are present */}
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center',
+          flex: 1,
+          minWidth: 0,
+          overflow: 'hidden',
+          gap: 1,
+          px: (hasPrefixBlock || hasSuffixBlock) ? (isLarge ? 2 : isSmall ? 1.25 : 1.75) : 0,
+          py: (hasPrefixBlock || hasSuffixBlock) ? (isLarge ? 1.5 : isSmall ? 0.75 : 1) : 0,
+        }}>
+          {startAdornment && (
+            <Box sx={[{ display: 'inline-flex', alignItems: 'center' }, ...toSxArray(slotSx?.startAdornment)]}>
+              {startAdornment}
+            </Box>
+          )}
+          <Box sx={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 0, overflow: 'hidden' }}>
+            {renderTriggerContent()}
+          </Box>
+          {endAdornment && (
+            <Box sx={[{ display: 'inline-flex', alignItems: 'center' }, ...toSxArray(slotSx?.endAdornment)]}>
+              {endAdornment}
+            </Box>
+          )}
+          <KeyboardArrowDownIcon sx={{ color: 'action.active', flexShrink: 0, transition: 'transform 0.2s ease', transform: open ? 'rotate(180deg)' : 'none' }} />
         </Box>
-        <KeyboardArrowDownIcon sx={{ color: 'action.active', flexShrink: 0, transition: 'transform 0.2s ease', transform: open ? 'rotate(180deg)' : 'none' }} />
+        {suffixBlock && (
+          <Box
+            sx={[
+              (theme: Theme) => ({
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                alignSelf: 'stretch',
+                px: isLarge ? 2 : isSmall ? 1.25 : 1.75,
+                bgcolor: '#F1F5F9',
+                borderLeft: '1px solid',
+                borderColor: error ? theme.palette.error.main : theme.palette.divider,
+                fontWeight: 700,
+                fontSize: isLarge ? '1rem' : isSmall ? '0.8125rem' : '0.875rem',
+                color: theme.palette.text.primary,
+                userSelect: 'none',
+                flexShrink: 0,
+              }),
+              ...toSxArray(slotSx?.suffixBlock),
+            ]}
+          >
+            {suffixBlock}
+          </Box>
+        )}
       </Box>
 
       {/* Hidden input for form integration / inputRef */}

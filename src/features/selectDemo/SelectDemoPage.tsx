@@ -99,6 +99,17 @@ const TRANSFER_METHOD_OPTIONS: SelectOption[] = [
   },
 ]
 
+// 1.5. Nominal Currency Options (Prefix Block "Rp")
+const NOMINAL_OPTIONS: SelectOption[] = [
+  { value: '10.000', label: '10.000', leftSubtitle: 'Sepuluh Ribu Rupiah' },
+  { value: '25.000', label: '25.000', leftSubtitle: 'Dua Puluh Lima Ribu Rupiah' },
+  { value: '50.000', label: '50.000', leftSubtitle: 'Lima Puluh Ribu Rupiah' },
+  { value: '100.000', label: '100.000', leftSubtitle: 'Seratus Ribu Rupiah' },
+  { value: '250.000', label: '250.000', leftSubtitle: 'Dua Ratus Lima Puluh Ribu Rupiah' },
+  { value: '500.000', label: '500.000', leftSubtitle: 'Lima Ratus Ribu Rupiah' },
+  { value: '1.000.000', label: '1.000.000', leftSubtitle: 'Satu Juta Rupiah' },
+]
+
 // 2. Grouped Corporate & Source Accounts
 const GROUPED_BANK_OPTIONS: SelectOption[] = [
   // Group 1: Rekening Utama
@@ -169,10 +180,12 @@ const { Form, Field } = createTypedForm<SelectFormValues>()
 
 export function SelectDemoPage() {
   // ── Interactive Sandbox State ──────────────────────────────────────────────
-  const [datasetKey, setDatasetKey] = useState<'transfer' | 'bank' | 'currency'>('transfer')
+  const [datasetKey, setDatasetKey] = useState<'transfer' | 'bank' | 'currency' | 'nominal'>('transfer')
   const [size, setSize] = useState<'small' | 'medium' | 'large'>('medium')
   const [searchable, setSearchable] = useState(true)
   const [showCheckmark, setShowCheckmark] = useState(true)
+  const [prefixBlockVal, setPrefixBlockVal] = useState<'none' | 'Rp' | '$' | 'IDR'>('none')
+  const [suffixBlockVal, setSuffixBlockVal] = useState<'none' | 'IDR' | '.com' | '/bln'>('none')
   const [borderRadius, setBorderRadius] = useState<number>(12)
   const [isError, setIsError] = useState(false)
   const [isDisabled, setIsDisabled] = useState(false)
@@ -228,6 +241,8 @@ export function SelectDemoPage() {
         return GROUPED_BANK_OPTIONS
       case 'currency':
         return COUNTRY_OPTIONS
+      case 'nominal':
+        return NOMINAL_OPTIONS
       default:
         return TRANSFER_METHOD_OPTIONS
     }
@@ -242,6 +257,8 @@ export function SelectDemoPage() {
     const lines: string[] = ['<Select']
     if (size !== 'medium') lines.push(`  size="${size}"`)
     if (borderRadius !== 12) lines.push(`  borderRadius={${borderRadius}}`)
+    if (prefixBlockVal !== 'none') lines.push(`  prefixBlock="${prefixBlockVal}"`)
+    if (suffixBlockVal !== 'none') lines.push(`  suffixBlock="${suffixBlockVal}"`)
     if (searchable) lines.push('  searchable')
     if (!showCheckmark) lines.push('  showCheckmark={false}')
     if (isError) lines.push('  error')
@@ -251,7 +268,7 @@ export function SelectDemoPage() {
     lines.push('  onChange={(e) => setSelectedValue(e.target.value)}')
     lines.push('/>')
     return lines.join('\n')
-  }, [size, borderRadius, searchable, showCheckmark, isError, isDisabled])
+  }, [size, borderRadius, prefixBlockVal, suffixBlockVal, searchable, showCheckmark, isError, isDisabled])
 
   // ── RHF Form State ────────────────────────────────────────────────────────
   const [formSubmitted, setFormSubmitted] = useState<SelectFormValues | null>(null)
@@ -311,6 +328,7 @@ export function SelectDemoPage() {
                         <FormControlLabel value="transfer" control={<Radio size="small" />} label="Transfer (Bullets)" />
                         <FormControlLabel value="bank" control={<Radio size="small" />} label="Bank (Grouped)" />
                         <FormControlLabel value="currency" control={<Radio size="small" />} label="Currency" />
+                        <FormControlLabel value="nominal" control={<Radio size="small" />} label="Nominal (Rp)" />
                       </RadioGroup>
                     </FormControl>
 
@@ -327,6 +345,40 @@ export function SelectDemoPage() {
                         <FormControlLabel value="small" control={<Radio size="small" />} label="Small (40px)" />
                         <FormControlLabel value="medium" control={<Radio size="small" />} label="Medium (48px)" />
                         <FormControlLabel value="large" control={<Radio size="small" />} label="Large (56px)" />
+                      </RadioGroup>
+                    </FormControl>
+
+                    {/* Prefix Block Selector */}
+                    <FormControl component="fieldset" size="small">
+                      <FormLabel sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
+                        Prefix Block (`prefixBlock`)
+                      </FormLabel>
+                      <RadioGroup
+                        row
+                        value={prefixBlockVal}
+                        onChange={(e) => setPrefixBlockVal(e.target.value as 'none' | 'Rp' | '$' | 'IDR')}
+                      >
+                        <FormControlLabel value="none" control={<Radio size="small" />} label="None" />
+                        <FormControlLabel value="Rp" control={<Radio size="small" />} label="Rp (Shaded)" />
+                        <FormControlLabel value="$" control={<Radio size="small" />} label="$" />
+                        <FormControlLabel value="IDR" control={<Radio size="small" />} label="IDR" />
+                      </RadioGroup>
+                    </FormControl>
+
+                    {/* Suffix Block Selector */}
+                    <FormControl component="fieldset" size="small">
+                      <FormLabel sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
+                        Suffix Block (`suffixBlock`)
+                      </FormLabel>
+                      <RadioGroup
+                        row
+                        value={suffixBlockVal}
+                        onChange={(e) => setSuffixBlockVal(e.target.value as 'none' | 'IDR' | '.com' | '/bln')}
+                      >
+                        <FormControlLabel value="none" control={<Radio size="small" />} label="None" />
+                        <FormControlLabel value="IDR" control={<Radio size="small" />} label="IDR" />
+                        <FormControlLabel value=".com" control={<Radio size="small" />} label=".com" />
+                        <FormControlLabel value="/bln" control={<Radio size="small" />} label="/ bln" />
                       </RadioGroup>
                     </FormControl>
 
@@ -426,6 +478,8 @@ export function SelectDemoPage() {
                       options={currentOptions}
                       value={sandboxValue}
                       onChange={(e: SelectChangeEvent) => setSandboxValue(e.target.value)}
+                      prefixBlock={prefixBlockVal === 'none' ? undefined : prefixBlockVal}
+                      suffixBlock={suffixBlockVal === 'none' ? undefined : suffixBlockVal}
                       searchable={searchable}
                       searchPlaceholder="Cari opsi atau ketik kata kunci..."
                       showCheckmark={showCheckmark}
@@ -671,6 +725,54 @@ export function SelectDemoPage() {
                     />
                   </Box>
                 </Stack>
+              </Card>
+            </Grid>
+
+            {/* Real-World Use Case 3: Nominal Currency with Prefix Block (Rp) */}
+            <Grid size={{ xs: 12 }}>
+              <Card
+                title="Nominal Donasi & Currency Selector (Prefix Block 'Rp')"
+                subtitle="Full-height shaded prefix addon block with preset nominal options and custom right suffix"
+              >
+                <Grid container spacing={3}>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Box>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: TEXT_MAIN, mb: 0.5 }}>
+                        1. Nominal Currency with Prefix Block (`prefixBlock=&quot;Rp&quot;`)
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 1.5 }}>
+                        Displays a solid shaded left block with &quot;Rp&quot; and nominal currency options (e.g. 50.000).
+                      </Typography>
+                      <Select
+                        prefixBlock="Rp"
+                        placeholder="50.000"
+                        options={NOMINAL_OPTIONS}
+                        defaultValue="50.000"
+                        borderRadius={12}
+                        helperText="Pilih nominal donasi dari daftar preset"
+                      />
+                    </Box>
+                  </Grid>
+
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Box>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: TEXT_MAIN, mb: 0.5 }}>
+                        2. Suffix Domain / Currency Block (`suffixBlock=&quot;IDR&quot;`)
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 1.5 }}>
+                        Right-side shaded block attached flush to the dropdown border.
+                      </Typography>
+                      <Select
+                        suffixBlock="IDR"
+                        placeholder="1.000.000"
+                        options={NOMINAL_OPTIONS}
+                        defaultValue="1.000.000"
+                        borderRadius={12}
+                        helperText="Suffix block attaches flush against the right edge"
+                      />
+                    </Box>
+                  </Grid>
+                </Grid>
               </Card>
             </Grid>
           </Grid>

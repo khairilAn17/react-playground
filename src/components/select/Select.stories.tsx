@@ -621,3 +621,44 @@ export const SlotSxOptionRowSubSlots: Story = {
     </Stack>
   ),
 }
+
+// ── 14. Real-World Nominal Currency with Prefix Block ('Rp') ────────────────
+const NOMINAL_SELECT_OPTIONS: SelectOption[] = [
+  { value: '10.000', label: '10.000', leftSubtitle: 'Sepuluh Ribu Rupiah' },
+  { value: '25.000', label: '25.000', leftSubtitle: 'Dua Puluh Lima Ribu Rupiah' },
+  { value: '50.000', label: '50.000', leftSubtitle: 'Lima Puluh Ribu Rupiah' },
+  { value: '100.000', label: '100.000', leftSubtitle: 'Seratus Ribu Rupiah' },
+  { value: '250.000', label: '250.000', leftSubtitle: 'Dua Ratus Lima Puluh Ribu Rupiah' },
+  { value: '500.000', label: '500.000', leftSubtitle: 'Lima Ratus Ribu Rupiah' },
+  { value: '1.000.000', label: '1.000.000', leftSubtitle: 'Satu Juta Rupiah' },
+]
+
+function PrefixBlockNominalCurrencyStory() {
+  const [nominal, setNominal] = useState<string | number>('50.000')
+
+  return (
+    <Box sx={{ maxWidth: 440, p: 3, bgcolor: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+      <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.5 }}>
+        Nominal Donasi / Infaq
+      </Typography>
+      <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 2 }}>
+        Pilih nominal transfer / donasi dari daftar preset
+      </Typography>
+
+      <Select
+        prefixBlock="Rp"
+        value={nominal}
+        onChange={(e) => setNominal(e.target.value)}
+        options={NOMINAL_SELECT_OPTIONS}
+        borderRadius={12}
+        helperText="Pilih dari daftar nominal yang tersedia"
+      />
+    </Box>
+  )
+}
+
+export const PrefixBlockNominalCurrency: Story = {
+  name: 'Real-World — Nominal Currency with Prefix Block (Rp)',
+  render: () => <PrefixBlockNominalCurrencyStory />,
+}
+
