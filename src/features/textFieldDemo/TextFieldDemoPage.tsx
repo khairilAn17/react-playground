@@ -47,16 +47,20 @@ const { Form, Field } = createTypedForm<DemoFormValues>()
 
 export function TextFieldDemoPage() {
   // ── Sandbox Controls State ─────────────────────────────────────────────────
-  const [preset, setPreset] = useState<'label' | 'value' | 'idpel' | 'doa' | 'rp' | 'domain'>('label')
+  const [preset, setPreset] = useState<'label' | 'value' | 'idpel' | 'doa' | 'rp' | 'number' | 'domain'>('label')
   const [size, setSize] = useState<TextFieldSize>('medium')
   const [borderRadius, setBorderRadius] = useState<number>(12)
   const [prefixBlockVal, setPrefixBlockVal] = useState<'none' | 'Rp' | '$' | '+62'>('none')
   const [suffixBlockVal, setSuffixBlockVal] = useState<'none' | '.com' | '/bln' | 'IDR'>('none')
   const [startAdornmentVal, setStartAdornmentVal] = useState<'none' | 'search' | 'email' | 'lock'>('none')
+  const [inputType, setInputType] = useState<'text' | 'password' | 'number'>('text')
   const [clearable, setClearable] = useState(false)
   const [showPasswordToggle, setShowPasswordToggle] = useState(false)
   const [showCount, setShowCount] = useState(false)
   const [maxLength, setMaxLength] = useState<number | undefined>(undefined)
+  const [minVal, setMinVal] = useState<number | undefined>(undefined)
+  const [maxVal, setMaxVal] = useState<number | undefined>(undefined)
+  const [stepVal, setStepVal] = useState<number | undefined>(undefined)
   const [isError, setIsError] = useState(false)
   const [isDisabled, setIsDisabled] = useState(false)
   const [isMultiline, setIsMultiline] = useState(false)
@@ -69,13 +73,14 @@ export function TextFieldDemoPage() {
   const [sandboxPlaceholder, setSandboxPlaceholder] = useState('Label')
 
   // Apply preset configuration
-  const handleSelectPreset = (key: 'label' | 'value' | 'idpel' | 'doa' | 'rp' | 'domain') => {
+  const handleSelectPreset = (key: 'label' | 'value' | 'idpel' | 'doa' | 'rp' | 'number' | 'domain') => {
     setPreset(key)
     switch (key) {
       case 'label':
         setSandboxLabel('')
         setSandboxPlaceholder('Label')
         setSandboxValue('')
+        setInputType('text')
         setPrefixBlockVal('none')
         setSuffixBlockVal('none')
         setShowCount(false)
@@ -85,6 +90,7 @@ export function TextFieldDemoPage() {
         setSandboxLabel('')
         setSandboxPlaceholder('Label')
         setSandboxValue('Value')
+        setInputType('text')
         setPrefixBlockVal('none')
         setSuffixBlockVal('none')
         setShowCount(false)
@@ -94,6 +100,7 @@ export function TextFieldDemoPage() {
         setSandboxLabel('')
         setSandboxPlaceholder('Nomor IDPEL')
         setSandboxValue('87654321908')
+        setInputType('text')
         setPrefixBlockVal('none')
         setSuffixBlockVal('none')
         setShowCount(false)
@@ -103,6 +110,7 @@ export function TextFieldDemoPage() {
         setSandboxLabel('')
         setSandboxPlaceholder('Tulis Doa')
         setSandboxValue('Semoga berkah ya')
+        setInputType('text')
         setPrefixBlockVal('none')
         setSuffixBlockVal('none')
         setShowCount(true)
@@ -113,8 +121,23 @@ export function TextFieldDemoPage() {
         setSandboxLabel('')
         setSandboxPlaceholder('Dari')
         setSandboxValue('')
+        setInputType('text')
         setPrefixBlockVal('Rp')
         setSuffixBlockVal('none')
+        setShowCount(false)
+        setIsError(false)
+        break
+      case 'number':
+        setSandboxLabel('Nominal Transfer (type="number")')
+        setSandboxPlaceholder('0')
+        setSandboxValue('250000')
+        setInputType('number')
+        setPrefixBlockVal('Rp')
+        setSuffixBlockVal('none')
+        setMinVal(10000)
+        setMaxVal(50000000)
+        setStepVal(10000)
+        setClearable(true)
         setShowCount(false)
         setIsError(false)
         break
@@ -122,6 +145,7 @@ export function TextFieldDemoPage() {
         setSandboxLabel('')
         setSandboxPlaceholder('perusahaan')
         setSandboxValue('')
+        setInputType('text')
         setPrefixBlockVal('none')
         setSuffixBlockVal('.com')
         setShowCount(false)
@@ -216,7 +240,7 @@ export function TextFieldDemoPage() {
                         value={preset}
                         onChange={(e) =>
                           handleSelectPreset(
-                            e.target.value as 'label' | 'value' | 'idpel' | 'doa' | 'rp' | 'domain'
+                            e.target.value as 'label' | 'value' | 'idpel' | 'doa' | 'rp' | 'number' | 'domain'
                           )
                         }
                       >
@@ -225,7 +249,8 @@ export function TextFieldDemoPage() {
                         <FormControlLabel value="idpel" control={<MuiRadio size="small" />} label="3. Error (IDPEL)" />
                         <FormControlLabel value="doa" control={<MuiRadio size="small" />} label="4. Counter (15/75)" />
                         <FormControlLabel value="rp" control={<MuiRadio size="small" />} label="5. Prefix Rp" />
-                        <FormControlLabel value="domain" control={<MuiRadio size="small" />} label="6. Suffix .com" />
+                        <FormControlLabel value="number" control={<MuiRadio size="small" />} label="6. Number (Rp)" />
+                        <FormControlLabel value="domain" control={<MuiRadio size="small" />} label="7. Suffix .com" />
                       </MuiRadioGroup>
                     </FormControl>
 
@@ -477,10 +502,13 @@ export function TextFieldDemoPage() {
                           ) : undefined
                         }
                         clearable={clearable}
-                        type={showPasswordToggle ? 'password' : 'text'}
+                        type={showPasswordToggle ? 'password' : inputType}
                         showPasswordToggle={showPasswordToggle}
                         showCount={showCount}
                         maxLength={showCount ? (maxLength ?? 75) : undefined}
+                        min={minVal}
+                        max={maxVal}
+                        step={stepVal}
                         multiline={isMultiline}
                         rows={isMultiline ? 3 : undefined}
                         error={isError}
@@ -489,7 +517,9 @@ export function TextFieldDemoPage() {
                         helperText={
                           isError
                             ? 'No. Meter/IDPEL tidak terdaftar'
-                            : 'Silakan isi kolom ini sesuai identitas yang valid'
+                            : inputType === 'number'
+                              ? 'Batas minimal transfer Rp 10.000, maksimal Rp 50.000.000'
+                              : 'Silakan isi kolom ini sesuai identitas yang valid'
                         }
                       />
                     </Paper>
@@ -785,6 +815,42 @@ export function TextFieldDemoPage() {
                   type: 'boolean',
                   def: 'false',
                   desc: 'Displays a quick clear "X" icon button when text is present.',
+                },
+                {
+                  prop: 'type',
+                  type: "'text' | 'password' | 'number' | 'email' | 'tel' | 'url'",
+                  def: "'text'",
+                  desc: 'Input HTML type. type="number" removes browser spin buttons and prevents accidental scroll modification by default.',
+                },
+                {
+                  prop: 'min',
+                  type: 'number',
+                  def: 'undefined',
+                  desc: 'Minimum numerical value allowed when type="number".',
+                },
+                {
+                  prop: 'max',
+                  type: 'number',
+                  def: 'undefined',
+                  desc: 'Maximum numerical value allowed when type="number".',
+                },
+                {
+                  prop: 'step',
+                  type: "number | 'any'",
+                  def: 'undefined',
+                  desc: 'Stepper interval increment for numerical fields (e.g. 1000 or 0.01).',
+                },
+                {
+                  prop: 'hideSpinButtons',
+                  type: 'boolean',
+                  def: 'true',
+                  desc: 'Hides native browser up/down stepper arrows for a clean fintech input.',
+                },
+                {
+                  prop: 'allowScrollWheel',
+                  type: 'boolean',
+                  def: 'false',
+                  desc: 'Controls whether mouse wheel scrolling increments/decrements number inputs when focused.',
                 },
                 {
                   prop: 'showPasswordToggle',

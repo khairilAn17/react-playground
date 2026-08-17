@@ -109,4 +109,29 @@ describe('TextField Primitive', () => {
     fireEvent.click(hideBtn)
     expect(input.type).toBe('password')
   })
+
+  it('handles type="number" with min, max, step, and scroll blur protection', () => {
+    render(
+      <TextField
+        type="number"
+        defaultValue={50000}
+        min={10000}
+        max={100000}
+        step={1000}
+        placeholder="Nominal"
+      />
+    )
+
+    const input = screen.getByPlaceholderText('Nominal') as HTMLInputElement
+    expect(input.type).toBe('number')
+    expect(input.value).toBe('50000')
+    expect(input.min).toBe('10000')
+    expect(input.max).toBe('100000')
+    expect(input.step).toBe('1000')
+
+    // Wheel event triggers blur protection
+    const blurSpy = vi.spyOn(input, 'blur')
+    fireEvent.wheel(input)
+    expect(blurSpy).toHaveBeenCalled()
+  })
 })

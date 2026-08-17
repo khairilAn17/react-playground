@@ -15,17 +15,31 @@ export function getTextFieldInputSx({
   error = false,
   disabled = false,
   hasBlocks = false,
+  hideSpinButtons = true,
 }: {
   size?: TextFieldSize
   borderRadius?: number | string
   error?: boolean
   disabled?: boolean
   hasBlocks?: boolean
+  hideSpinButtons?: boolean
 }): SxItem {
   const isSmall = size === 'small'
   const isLarge = size === 'large'
   const formattedRadius =
     typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius
+
+  const spinButtonStyles = hideSpinButtons
+    ? {
+        '& input[type=number]': {
+          MozAppearance: 'textfield',
+          '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
+            WebkitAppearance: 'none',
+            margin: 0,
+          },
+        },
+      }
+    : {}
 
   if (hasBlocks) {
     return (theme: Theme) => ({
@@ -34,6 +48,7 @@ export function getTextFieldInputSx({
       fontSize: isLarge ? '1rem' : isSmall ? '0.8125rem' : '0.875rem',
       fontWeight: 500,
       color: theme.palette.text.primary,
+      ...spinButtonStyles,
       '& .MuiOutlinedInput-notchedOutline': {
         border: 'none',
       },
@@ -61,6 +76,7 @@ export function getTextFieldInputSx({
     fontWeight: 500,
     color: theme.palette.text.primary,
     transition: theme.transitions.create(['border-color', 'box-shadow', 'background-color']),
+    ...spinButtonStyles,
 
     '& .MuiOutlinedInput-notchedOutline': {
       borderColor: error ? theme.palette.error.main : '#E2E8F0',

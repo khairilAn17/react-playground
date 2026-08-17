@@ -67,6 +67,16 @@ export interface TextFieldProps
   showCount?: boolean
   /** Maximum number of characters allowed. */
   maxLength?: number
+  /** Minimum numerical value when type="number". */
+  min?: number
+  /** Maximum numerical value when type="number". */
+  max?: number
+  /** Stepper interval when type="number" (e.g. 1, 0.01, 1000). */
+  step?: number | 'any'
+  /** Hide native browser spin buttons for type="number". @default true */
+  hideSpinButtons?: boolean
+  /** Allow mouse wheel scrolling to increment/decrement numbers when focused. @default false */
+  allowScrollWheel?: boolean
   /** Whether the field is in an error state. @default false */
   error?: boolean
   /** Whether the field is disabled. @default false */

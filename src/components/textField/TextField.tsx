@@ -36,6 +36,11 @@ export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Text
       showPasswordToggle = false,
       showCount = false,
       maxLength,
+      min,
+      max,
+      step,
+      hideSpinButtons = true,
+      allowScrollWheel = false,
       error = false,
       disabled = false,
       readOnly = false,
@@ -231,8 +236,16 @@ export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Text
         maxRows={maxRows}
         inputProps={{
           maxLength,
+          min,
+          max,
+          step,
           'aria-describedby': helperText ? helperId : undefined,
           ...props.inputProps,
+        }}
+        onWheel={(e) => {
+          if (effectiveType === 'number' && !allowScrollWheel) {
+            ;(e.target as HTMLElement).blur()
+          }
         }}
         startAdornment={startAdornmentElement}
         endAdornment={renderEndAdornments()}
@@ -244,6 +257,7 @@ export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Text
               error,
               disabled,
               hasBlocks,
+              hideSpinButtons,
             })
           ),
           ...toSxArray(slotSx?.input),

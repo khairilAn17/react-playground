@@ -125,7 +125,22 @@ export const MultilineTextarea: Story = {
   },
 }
 
-/** 11. Small, Medium, Large size comparison. */
+/** 11. Number Input with hidden spin buttons and currency prefix. */
+export const NumberInput: Story = {
+  args: {
+    label: 'Nominal Transfer (Numeric Only)',
+    type: 'number',
+    prefixBlock: 'Rp',
+    defaultValue: 250000,
+    min: 10000,
+    max: 50000000,
+    step: 10000,
+    clearable: true,
+    helperText: 'Batas minimal transfer Rp 10.000, maksimal Rp 50.000.000',
+  },
+}
+
+/** 12. Small, Medium, Large size comparison. */
 export const SizeVariants: Story = {
   render: () => (
     <Stack spacing={2.5}>

@@ -50,6 +50,11 @@ export function FormTextField<T extends FieldValues>({
   showPasswordToggle = false,
   showCount = false,
   maxLength,
+  min,
+  max,
+  step,
+  hideSpinButtons = true,
+  allowScrollWheel = false,
   disabled = false,
   readOnly = false,
   required = false,
@@ -103,6 +108,11 @@ export function FormTextField<T extends FieldValues>({
           showPasswordToggle={showPasswordToggle}
           showCount={showCount}
           maxLength={maxLength}
+          min={min}
+          max={max}
+          step={step}
+          hideSpinButtons={hideSpinButtons}
+          allowScrollWheel={allowScrollWheel}
           disabled={disabled}
           readOnly={readOnly}
           required={required}
