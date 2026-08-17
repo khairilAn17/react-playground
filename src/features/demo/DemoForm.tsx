@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { debounce } from 'lodash-es'
 import {
   Box,
   Chip,
@@ -135,6 +136,71 @@ const DEFAULT_VALUES: DemoFormValues = {
 export function DemoForm() {
   const [submittedData, setSubmittedData] = useState<DemoFormValues | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // ── Server-side Search + Debounce State for Demo ──
+  const [serverOptions, setServerOptions] = useState<SelectOption[]>([])
+  const [searchLoading, setSearchLoading] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [serverPage, setServerPage] = useState(1)
+  const [hasMoreServer, setHasMoreServer] = useState(false)
+  const [serverQuery, setServerQuery] = useState('')
+
+  const fetchServerApi = async (query: string, pageNum: number) => {
+    const pageSize = 3
+    const allMocks: SelectOption[] = [
+      { value: 'srv-1', leftTitle: 'PT Indofood Sukses Makmur', leftSubtitle: '1020000001', rightTitle: 'Rp 1.500.000.000,00', avatar: 'IF', avatarBg: '#00A39D' },
+      { value: 'srv-2', leftTitle: 'PT Telkom Indonesia', leftSubtitle: '1020000002', rightTitle: 'Rp 3.200.000.000,00', avatar: 'TL', avatarBg: '#0284C7' },
+      { value: 'srv-3', leftTitle: 'PT Astra International', leftSubtitle: '1020000003', rightTitle: 'Rp 890.000.000,00', avatar: 'AI', avatarBg: '#EAA827' },
+      { value: 'srv-4', leftTitle: 'PT Unilever Indonesia', leftSubtitle: '1020000004', rightTitle: 'Rp 450.000.000,00', avatar: 'UL', avatarBg: '#64748B' },
+      { value: 'srv-5', leftTitle: 'PT Bank Central Asia', leftSubtitle: '1020000005', rightTitle: 'Rp 12.500.000.000,00', avatar: 'CA', avatarBg: '#00A39D' },
+      { value: 'srv-6', leftTitle: 'PT GoTo Gojek Tokopedia', leftSubtitle: '1020000006', rightTitle: 'Rp 2.100.000.000,00', avatar: 'GT', avatarBg: '#0284C7' },
+    ]
+
+    await new Promise((resolve) => setTimeout(resolve, 400))
+    const lower = query.toLowerCase()
+    const filtered = allMocks.filter(
+      (o) =>
+        !query ||
+        String(o.leftTitle).toLowerCase().includes(lower) ||
+        String(o.leftSubtitle).toLowerCase().includes(lower)
+    )
+    const start = (pageNum - 1) * pageSize
+    const items = filtered.slice(start, start + pageSize)
+    const moreExist = start + pageSize < filtered.length
+    return { items, moreExist }
+  }
+
+  const debouncedServerSearch = useMemo(
+    () =>
+      debounce(async (query: string) => {
+        setSearchLoading(true)
+        setServerQuery(query)
+        setServerPage(1)
+        const { items, moreExist } = await fetchServerApi(query, 1)
+        setServerOptions(items)
+        setHasMoreServer(moreExist)
+        setSearchLoading(false)
+      }, 300),
+    []
+  )
+
+  useEffect(() => {
+    debouncedServerSearch('')
+    return () => {
+      debouncedServerSearch.cancel()
+    }
+  }, [debouncedServerSearch])
+
+  const handleServerLoadMore = async () => {
+    if (loadingMore || !hasMoreServer) return
+    setLoadingMore(true)
+    const nextPage = serverPage + 1
+    const { items, moreExist } = await fetchServerApi(serverQuery, nextPage)
+    setServerOptions((prev) => [...prev, ...items])
+    setServerPage(nextPage)
+    setHasMoreServer(moreExist)
+    setLoadingMore(false)
+  }
 
   const handleSubmit = async (data: DemoFormValues) => {
     setIsSubmitting(true)
@@ -295,6 +361,26 @@ export function DemoForm() {
                   onSearchChange={(search) => console.log({ search })}
                   searchPlaceholder="Filter metode transfer..."
                   borderRadius={12}
+                />
+
+                {/* 7.4 Field.Select with Server-Side Search (300ms Debounce + Infinite Scroll) */}
+                <Field.Select
+                  name="role2"
+                  label="Server-Side Async Search (Debounced 300ms)"
+                  placeholder="Pilih Perusahaan via Server API..."
+                  options={serverOptions}
+                  searchable
+                  searchMode="server"
+                  searchLoading={searchLoading}
+                  searchPlaceholder="Ketik nama perusahaan (Debounced 300ms)..."
+                  onSearchChange={debouncedServerSearch}
+                  hasMore={hasMoreServer}
+                  loadingMore={loadingMore}
+                  onLoadMore={handleServerLoadMore}
+                  borderRadius={12}
+                  selectSx={{
+                    height: '64px',
+                  }}
                 />
 
                 {/* 8. Field.Radio */}

@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Box, Typography } from '@mui/material'
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
+import { debounce } from 'lodash-es'
 import { Select } from './Select'
 import type { SelectOption } from './types'
 
@@ -383,4 +384,105 @@ export const InfiniteScrollApiDemo: Story = {
     )
   },
 }
+
+export const ServerSearchDebouncedDemo: Story = {
+  render: () => {
+    const [value, setValue] = useState('')
+    const [options, setOptions] = useState<SelectOption[]>([])
+    const [searchLoading, setSearchLoading] = useState(false)
+    const [loadingMore, setLoadingMore] = useState(false)
+    const [page, setPage] = useState(1)
+    const [hasMore, setHasMore] = useState(false)
+    const [currentQuery, setCurrentQuery] = useState('')
+
+    // Simulated backend API with 400ms latency
+    const fetchApi = async (query: string, pageNum: number) => {
+      const pageSize = 4
+      const allMocks: SelectOption[] = [
+        { value: 'acc-1', leftTitle: 'PT Digital Commerce', leftSubtitle: '8830000001', rightTitle: 'Rp 850.000.000,00', avatar: 'DC', avatarBg: '#00A39D' },
+        { value: 'acc-2', leftTitle: 'CV Surya Technology', leftSubtitle: '8830000002', rightTitle: 'Rp 120.000.000,00', avatar: 'ST', avatarBg: '#0284C7' },
+        { value: 'acc-3', leftTitle: 'PT Maju Bersama', leftSubtitle: '8830000003', rightTitle: 'Rp 45.000.000,00', avatar: 'MB', avatarBg: '#EAA827' },
+        { value: 'acc-4', leftTitle: 'PT Global Solusindo', leftSubtitle: '8830000004', rightTitle: 'Rp 920.000.000,00', avatar: 'GS', avatarBg: '#64748B' },
+        { value: 'acc-5', leftTitle: 'CV Prima Utama', leftSubtitle: '8830000005', rightTitle: 'Rp 210.000.000,00', avatar: 'PU', avatarBg: '#00A39D' },
+        { value: 'acc-6', leftTitle: 'PT Indah Karya', leftSubtitle: '8830000006', rightTitle: 'Rp 75.000.000,00', avatar: 'IK', avatarBg: '#0284C7' },
+        { value: 'acc-7', leftTitle: 'PT Delta Logistics', leftSubtitle: '8830000007', rightTitle: 'Rp 340.000.000,00', avatar: 'DL', avatarBg: '#EAA827' },
+        { value: 'acc-8', leftTitle: 'PT Nusantara Agro', leftSubtitle: '8830000008', rightTitle: 'Rp 530.000.000,00', avatar: 'NA', avatarBg: '#64748B' },
+      ]
+
+      await new Promise((resolve) => setTimeout(resolve, 400))
+      const lower = query.toLowerCase()
+      const filtered = allMocks.filter(
+        (o) =>
+          !query ||
+          String(o.leftTitle).toLowerCase().includes(lower) ||
+          String(o.leftSubtitle).toLowerCase().includes(lower)
+      )
+      const start = (pageNum - 1) * pageSize
+      const items = filtered.slice(start, start + pageSize)
+      const moreExist = start + pageSize < filtered.length
+      return { items, moreExist }
+    }
+
+    // Debounced search handler (300ms delay)
+    const debouncedSearch = useMemo(
+      () =>
+        debounce(async (query: string) => {
+          setSearchLoading(true)
+          setCurrentQuery(query)
+          setPage(1)
+          const { items, moreExist } = await fetchApi(query, 1)
+          setOptions(items)
+          setHasMore(moreExist)
+          setSearchLoading(false)
+        }, 300),
+      []
+    )
+
+    // Load initial options
+    useState(() => {
+      debouncedSearch('')
+    })
+
+    const handleLoadMore = async () => {
+      if (loadingMore || !hasMore) return
+      setLoadingMore(true)
+      const nextPage = page + 1
+      const { items, moreExist } = await fetchApi(currentQuery, nextPage)
+      setOptions((prev) => [...prev, ...items])
+      setPage(nextPage)
+      setHasMore(moreExist)
+      setLoadingMore(false)
+    }
+
+    return (
+      <Box sx={{ maxWidth: 480, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
+            Server-Side Search with Debounce (300ms) & Infinite Scroll
+          </Typography>
+          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 2 }}>
+            Keystrokes are debounced before querying the server API. In-memory filter is bypassed via <code>searchMode="server"</code>.
+          </Typography>
+        </Box>
+
+        <Select
+          label="Server-Side Account Search"
+          value={value}
+          onChange={(e) => setValue(e.target.value as string)}
+          options={options}
+          placeholder="Cari rekening dari server..."
+          searchable
+          searchMode="server"
+          searchLoading={searchLoading}
+          searchPlaceholder="Ketik nama perusahaan (debounced 300ms)..."
+          onSearchChange={debouncedSearch}
+          hasMore={hasMore}
+          loadingMore={loadingMore}
+          onLoadMore={handleLoadMore}
+        />
+      </Box>
+    )
+  },
+}
+
 
