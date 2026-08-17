@@ -21,6 +21,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import ListAltIcon from '@mui/icons-material/ListAlt'
 import LabelOutlinedIcon from '@mui/icons-material/LabelOutlined'
+import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked'
 
 import { AppShell } from './components/appShell'
 import { Sidebar } from './components/sidebar'
@@ -32,6 +33,7 @@ import { SearchDemoPage } from './features/searchDemo/SearchDemoPage'
 import { AutocompleteDemoPage } from './features/autocompleteDemo'
 import { SelectDemoPage } from './features/selectDemo'
 import { LabelDemoPage } from './features/labelDemo'
+import { RadioDemoPage } from './features/radioDemo'
 import { BusinessBankingDashboard } from './features/businessBankingDemo/BusinessBankingDashboard'
 import { PayrollPage } from './features/businessBankingDemo/PayrollPage'
 import { ManajemenAkunPage } from './features/businessBankingDemo/ManajemenAkunPage'
@@ -127,6 +129,12 @@ function App() {
 
                 <Sidebar.Section title="Component Docs" divider>
                   <Sidebar.Item
+                    itemKey="radio-primitive"
+                    icon={<RadioButtonCheckedIcon />}
+                    label="Radio & Card Primitive"
+                    badge={<Chip label="New" size="small" sx={{ height: 18, fontSize: '0.7rem', bgcolor: '#00A39D', color: 'white', fontWeight: 700 }} />}
+                  />
+                  <Sidebar.Item
                     itemKey="label-primitive"
                     icon={<LabelOutlinedIcon />}
                     label="Label Primitive"
@@ -177,6 +185,7 @@ function App() {
           {activeKey === 'manajemen-akun' && <ManajemenAkunPage onBack={() => setActiveKey('business-banking')} />}
           {activeKey === 'single-form' && <DemoForm />}
           {activeKey === 'wizard-form' && <MultiStepForm />}
+          {activeKey === 'radio-primitive' && <RadioDemoPage />}
           {activeKey === 'label-primitive' && <LabelDemoPage />}
           {activeKey === 'select-primitive' && <SelectDemoPage />}
           {activeKey === 'autocomplete-primitive' && <AutocompleteDemoPage />}

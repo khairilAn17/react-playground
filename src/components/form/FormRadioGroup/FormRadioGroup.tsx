@@ -2,23 +2,23 @@ import type { ReactNode } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import type { FieldValues, Path, Control } from 'react-hook-form'
 import {
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  FormHelperText,
-} from '@mui/material'
-import type { RadioGroupProps } from '@mui/material'
+  RadioGroup as PrimitiveRadioGroup,
+  type RadioGroupProps as PrimitiveRadioGroupProps,
+  type RadioOption,
+  type RadioVariant,
+  type RadioLayout,
+  type RadioPlacement,
+  type RadioSize,
+  type RadioSlotSx,
+} from '../../radio'
 
-export interface RadioOption {
-  label: ReactNode
-  value: string | number | boolean
-  disabled?: boolean
-}
+export type { RadioOption, RadioVariant, RadioLayout, RadioPlacement, RadioSize, RadioSlotSx }
 
 export interface FormRadioGroupProps<T extends FieldValues>
-  extends Omit<RadioGroupProps, 'name' | 'value'> {
+  extends Omit<
+    PrimitiveRadioGroupProps,
+    'name' | 'value' | 'defaultValue' | 'onChange' | 'ref' | 'inputRef'
+  > {
   /**
    * The field name — must be a valid key of your form schema type.
    * Fully type-safe via Path<T>.
@@ -36,10 +36,46 @@ export interface FormRadioGroupProps<T extends FieldValues>
   options: RadioOption[]
 
   /**
-   * Display radio buttons horizontally.
+   * Visual variant: 'default' or 'card'.
+   * @default 'default'
+   */
+  variant?: RadioVariant
+
+  /**
+   * Arrangement layout: 'row', 'column', or 'grid'.
+   * @default 'column'
+   */
+  layout?: RadioLayout
+
+  /**
+   * Number of columns when `layout="grid"`.
+   * @default 2
+   */
+  gridColumns?: number | { xs?: number; sm?: number; md?: number; lg?: number; xl?: number }
+
+  /**
+   * Position of the radio indicator inside cards.
+   * @default 'left'
+   */
+  radioPlacement?: RadioPlacement
+
+  /**
+   * Display radio buttons horizontally (convenience alias for layout="row").
    * @default false
    */
   row?: boolean
+
+  /**
+   * Size token.
+   * @default 'medium'
+   */
+  size?: RadioSize
+
+  /**
+   * Border radius for card options.
+   * @default '12px'
+   */
+  borderRadius?: number | string
 
   /**
    * Disable the entire radio group.
@@ -52,6 +88,11 @@ export interface FormRadioGroupProps<T extends FieldValues>
   helperText?: ReactNode
 
   /**
+   * Fine-grained sx styling slots.
+   */
+  slotSx?: RadioSlotSx
+
+  /**
    * Optional. Pass `control` explicitly when used outside a FormProvider.
    */
   control?: Control<T>
@@ -60,16 +101,24 @@ export interface FormRadioGroupProps<T extends FieldValues>
 /**
  * FormRadioGroup
  *
- * A type-safe, reusable MUI RadioGroup wrapper for React Hook Form.
+ * A type-safe, reusable RadioGroup component integrated with React Hook Form,
+ * backed by the BYOND BIZNIS Radio primitive.
  */
 export function FormRadioGroup<T extends FieldValues>({
   name,
   label,
   options,
+  variant = 'default',
+  layout,
   row = false,
+  gridColumns,
+  radioPlacement = 'left',
+  size = 'medium',
+  borderRadius = '12px',
   control,
   helperText,
   sx,
+  slotSx,
   disabled,
   ...props
 }: FormRadioGroupProps<T>) {
@@ -84,41 +133,37 @@ export function FormRadioGroup<T extends FieldValues>({
     )
   }
 
-  const labelId = `${String(name)}-radio-label`
+  // Resolve effective layout ('row' boolean flag maps to layout="row" for backward compatibility)
+  const resolvedLayout: RadioLayout = layout ?? (row ? 'row' : 'column')
 
   return (
     <Controller
       name={name}
       control={resolvedControl}
       render={({
-        field: { value, onChange, onBlur, ref },
+        field: { value, onChange, ref },
         fieldState: { error },
       }) => (
-        <FormControl error={!!error} sx={sx} disabled={disabled}>
-          {label && <FormLabel id={labelId}>{label}</FormLabel>}
-          <RadioGroup
-            {...props}
-            aria-labelledby={label ? labelId : undefined}
-            name={name}
-            value={value ?? ''}
-            onChange={onChange}
-            onBlur={onBlur}
-            row={row}
-          >
-            {options.map((opt) => (
-              <FormControlLabel
-                key={String(opt.value)}
-                value={opt.value}
-                control={<Radio slotProps={{ input: { ref } }} />}
-                label={opt.label}
-                disabled={disabled || opt.disabled}
-              />
-            ))}
-          </RadioGroup>
-          {(error?.message || helperText) && (
-            <FormHelperText>{error?.message ?? helperText}</FormHelperText>
-          )}
-        </FormControl>
+        <PrimitiveRadioGroup
+          {...props}
+          name={name}
+          label={label}
+          options={options}
+          value={value ?? ''}
+          onChange={(_, nextVal) => onChange(nextVal)}
+          variant={variant}
+          layout={resolvedLayout}
+          gridColumns={gridColumns}
+          radioPlacement={radioPlacement}
+          size={size}
+          borderRadius={borderRadius}
+          disabled={disabled}
+          error={!!error}
+          helperText={error?.message ?? helperText}
+          slotSx={slotSx}
+          inputRef={ref}
+          sx={sx}
+        />
       )}
     />
   )
