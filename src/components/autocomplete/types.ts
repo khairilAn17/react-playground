@@ -1,7 +1,6 @@
-import type { ReactNode, Ref } from 'react'
+import type { Key, ReactNode, Ref } from 'react'
 import type {
   AutocompleteProps as MuiAutocompleteProps,
-  AutocompleteRenderGetTagProps,
   SxProps,
   Theme,
   TextFieldProps,
@@ -31,6 +30,11 @@ export interface AutocompleteSlotSx {
   helperText?: SxProps<Theme>
 }
 
+export type AutocompleteRenderGetTagProps = (params: { index: number }) => {
+  key?: Key
+  [key: string]: unknown
+}
+
 export interface AutocompleteProps<
   T = AutocompleteOption,
   Multiple extends boolean | undefined = false,
@@ -38,7 +42,7 @@ export interface AutocompleteProps<
   FreeSolo extends boolean | undefined = false,
 > extends Omit<
     MuiAutocompleteProps<T, Multiple, DisableClearable, FreeSolo>,
-    'renderInput' | 'size' | 'renderTags'
+    'renderInput' | 'size' | 'renderTags' | 'renderValue'
   > {
   id?: string
   name?: string
@@ -51,5 +55,34 @@ export interface AutocompleteProps<
   inputRef?: Ref<HTMLInputElement>
   textFieldProps?: Partial<Omit<TextFieldProps, 'error' | 'helperText' | 'label' | 'placeholder' | 'size'>>
   slotSx?: AutocompleteSlotSx
+  /**
+   * Custom tags renderer for multiple selection.
+   */
   renderTags?: (value: T[], getTagProps: AutocompleteRenderGetTagProps) => ReactNode
+  /**
+   * Custom value renderer (MUI v9 renderValue).
+   */
+  renderValue?: (
+    value: unknown,
+    getItemProps: AutocompleteRenderGetTagProps,
+    ownerState: unknown
+  ) => ReactNode
+  /**
+   * Show a checkbox in each dropdown option row (only applies when `multiple` is true).
+   * - `'right'` (default) — checkbox placed at the trailing end of each row (matches design screenshot)
+   * - `'left'` — checkbox placed before the avatar/icon
+   * - `false` — no checkbox shown
+   */
+  checkboxPlacement?: 'left' | 'right' | false
+  /**
+   * Maximum number of selected value chips to display in the input before collapsing
+   * the rest into a "+N more" overflow chip. Defaults to `undefined` (show all).
+   */
+  maxVisibleTags?: number
+  /**
+   * Controls what is rendered inside each selected value chip.
+   * - `'avatar+label'` (default) — shows the option's avatar / icon alongside the label
+   * - `'label'` — shows only the label text
+   */
+  tagDisplay?: 'avatar+label' | 'label'
 }

@@ -7,6 +7,12 @@ import {
   Button,
   Stack,
 } from '@mui/material'
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism'
+import NatureIcon from '@mui/icons-material/Nature'
+import FavoriteIcon from '@mui/icons-material/Favorite'
+import SchoolIcon from '@mui/icons-material/School'
+import MosqueIcon from '@mui/icons-material/Mosque'
+import SelfImprovementIcon from '@mui/icons-material/SelfImprovement'
 import Grid from '@mui/material/Grid'
 
 import { createTypedForm } from '../../components/form'
@@ -16,6 +22,7 @@ import type { RadioOption } from '../../components/form/FormRadioGroup'
 import type { SelectOption } from '../../components/form/FormSelect'
 import { Card } from '../../components/card'
 import { PageLayout } from '../../widgets/pageLayout'
+import { Autocomplete } from '../../components/autocomplete'
 
 const FRAMEWORK_OPTIONS: AutocompleteOption[] = [
   { label: 'React', value: 'react', subtitle: 'Component-based UI library', avatar: 'RC', avatarBg: '#00A39D' },
@@ -24,6 +31,15 @@ const FRAMEWORK_OPTIONS: AutocompleteOption[] = [
   { label: 'Svelte', value: 'svelte', subtitle: 'Cybernetically enhanced web apps', avatar: 'SV', avatarBg: '#FF3E00' },
   { label: 'Angular', value: 'angular', subtitle: 'Enterprise-scale platform', avatar: 'NG', avatarBg: '#DD0031' },
   { label: 'SolidJS', value: 'solid', subtitle: 'Simple and performant reactivity', avatar: 'SO', avatarBg: '#2C4F7C' },
+]
+
+const INFAQ_OPTIONS: AutocompleteOption[] = [
+  { value: 'yatim', label: 'Anak Yatim', subtitle: 'Kebutuhan pokok & santunan rutin anak yatim', icon: <VolunteerActivismIcon sx={{ color: '#1E6BE6' }} /> },
+  { value: 'lingkungan', label: 'Lingkungan', subtitle: 'Pelestarian alam dan lingkungan hidup', icon: <NatureIcon sx={{ color: '#3D8B37' }} /> },
+  { value: 'kemanusiaan', label: 'Kemanusiaan', subtitle: 'Bantuan darurat korban bencana alam', icon: <FavoriteIcon sx={{ color: '#B0245C' }} /> },
+  { value: 'pendidikan', label: 'Pendidikan', subtitle: 'Bantuan pendidikan anak yatim dan dhuafa', icon: <SchoolIcon sx={{ color: '#EAA827' }} /> },
+  { value: 'masjid', label: 'Rumah Ibadah', subtitle: 'Renovasi dan pembangunan masjid pelosok', icon: <MosqueIcon sx={{ color: '#00A39D' }} /> },
+  { value: 'ekonomi', label: 'Pemberdayaan Umat', subtitle: 'Program kemandirian ekonomi masyarakat', icon: <SelfImprovementIcon sx={{ color: '#7B5EA7' }} /> },
 ]
 
 const PLAN_OPTIONS: RadioOption[] = [
@@ -136,6 +152,10 @@ const DEFAULT_VALUES: DemoFormValues = {
 export function DemoForm() {
   const [submittedData, setSubmittedData] = useState<DemoFormValues | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // ── Standalone Autocomplete Demo State ──
+  const [singleValue, setSingleValue] = useState<AutocompleteOption | null>(null)
+  const [multiValues, setMultiValues] = useState<AutocompleteOption[]>([])
 
   // ── Server-side Search + Debounce State for Demo ──
   const [serverOptions, setServerOptions] = useState<SelectOption[]>([])
@@ -275,10 +295,12 @@ export function DemoForm() {
                   disableFuture
                 />
 
-                {/* 5. Field.Autocomplete */}
+                {/* 5. Field.Autocomplete (FormAutocomplete via createTypedForm) */}
                 <Field.Autocomplete
                   name="framework"
-                  label="Favorite Framework"
+                  label="Favorite Framework (FormAutocomplete + RHF)"
+                  placeholder="Search frameworks..."
+                  helperText="Value is synced with React Hook Form state"
                   options={FRAMEWORK_OPTIONS}
                 />
 
@@ -412,6 +434,81 @@ export function DemoForm() {
                 />
 
               </Grid>
+            </Stack>
+          </Card>
+
+          {/* Standalone Autocomplete Primitive Showcase */}
+          <Card
+            title="Autocomplete UI Primitive"
+            subtitle="Standalone component — not connected to React Hook Form. Demonstrates checkbox options, rich chips, and tag overflow."
+          >
+            <Stack spacing={4}>
+
+              {/* 1. Single Select with icon options + right-side checkbox */}
+              <Box>
+                <Autocomplete
+                  label="Single Select — Kategori Infaq (checkboxPlacement: 'right')"
+                  placeholder="Filter Berdasarkan Kategori..."
+                  options={INFAQ_OPTIONS}
+                  value={singleValue}
+                  onChange={(_, v) => setSingleValue(v as AutocompleteOption | null)}
+                  helperText={singleValue ? `✓ Dipilih: ${singleValue.label}` : 'Belum ada kategori dipilih'}
+                />
+              </Box>
+
+              {/* 2. Multi-Select + checkbox + avatar chips + maxVisibleTags overflow */}
+              <Box>
+                <Autocomplete
+                  multiple
+                  label="Multi-Select — Kategori Infaq (maxVisibleTags: 2, checkboxPlacement: 'right')"
+                  placeholder={multiValues.length === 0 ? 'Pilih Kategori...' : ''}
+                  options={INFAQ_OPTIONS}
+                  value={multiValues}
+                  onChange={(_, v) => setMultiValues(v as AutocompleteOption[])}
+                  checkboxPlacement="right"
+                  maxVisibleTags={2}
+                  tagDisplay="avatar+label"
+                  helperText={`${multiValues.length} kategori dipilih — chip ke-3+ tersembunyi sebagai +N overflow`}
+                />
+              </Box>
+
+              {/* 3. Multi-Select + left checkbox + avatar chips — Tech Stack */}
+              <Box>
+                <Autocomplete
+                  multiple
+                  label="Multi-Select — Tech Stack (checkboxPlacement: 'left', tagDisplay: 'avatar+label')"
+                  placeholder={multiValues.length === 0 ? 'Add technologies...' : ''}
+                  options={FRAMEWORK_OPTIONS}
+                  checkboxPlacement="left"
+                  tagDisplay="avatar+label"
+                  helperText="Checkbox on the left; each chip shows the avatar initials badge"
+                />
+              </Box>
+
+              {/* 4. tagDisplay: 'label' — plain chips, no icon */}
+              <Box>
+                <Autocomplete
+                  multiple
+                  label="Multi-Select — tagDisplay: 'label' (plain chips, no avatar)"
+                  placeholder="Add technologies..."
+                  options={FRAMEWORK_OPTIONS}
+                  tagDisplay="label"
+                  helperText="Set tagDisplay='label' to suppress icon/avatar inside chips"
+                />
+              </Box>
+
+              {/* 5. No checkbox — clean filter dropdown */}
+              <Box>
+                <Autocomplete
+                  size="large"
+                  label="Single Select — checkboxPlacement: false (Size: large)"
+                  placeholder="Choose a framework..."
+                  options={FRAMEWORK_OPTIONS}
+                  checkboxPlacement={false}
+                  helperText="No checkbox in dropdown — classic single-select filter pattern"
+                />
+              </Box>
+
             </Stack>
           </Card>
 

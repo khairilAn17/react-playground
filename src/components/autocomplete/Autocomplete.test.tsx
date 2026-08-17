@@ -95,4 +95,39 @@ describe('Autocomplete', () => {
 
     expect(screen.getByText('This field is required')).toBeInTheDocument()
   })
+
+  it('renders maxVisibleTags with overflow chip', () => {
+    render(
+      <Autocomplete
+        multiple
+        label="Frameworks"
+        options={OPTIONS}
+        value={[OPTIONS[0], OPTIONS[1], OPTIONS[2]]}
+        maxVisibleTags={2}
+      />
+    )
+
+    expect(screen.getByText('React')).toBeInTheDocument()
+    expect(screen.getByText('Vue')).toBeInTheDocument()
+    expect(screen.queryByText('Svelte')).not.toBeInTheDocument()
+    expect(screen.getByText('+1')).toBeInTheDocument()
+  })
+
+  it('renders checkbox in options when multiple is true', async () => {
+    const user = userEvent.setup()
+    render(
+      <Autocomplete
+        multiple
+        label="Frameworks"
+        options={OPTIONS}
+        checkboxPlacement="right"
+      />
+    )
+
+    const input = screen.getByRole('combobox')
+    await user.click(input)
+
+    const checkboxes = screen.getAllByRole('checkbox')
+    expect(checkboxes.length).toBeGreaterThan(0)
+  })
 })

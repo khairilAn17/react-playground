@@ -1,20 +1,28 @@
-import { useId } from 'react'
+import { useId, useCallback } from 'react'
 import {
   Autocomplete as MuiAutocomplete,
   TextField,
   FormControl,
   InputLabel,
   FormHelperText,
-  Box,
-  Typography,
-  Avatar,
 } from '@mui/material'
-import type { SxProps, Theme } from '@mui/material'
+import type { SxProps, Theme, AutocompleteRenderInputParams } from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import CloseIcon from '@mui/icons-material/Close'
 
 import { toSxArray } from '../select/utils'
-import type { AutocompleteProps, AutocompleteOption } from './types'
+import type {
+  AutocompleteProps,
+  AutocompleteOption,
+  AutocompleteRenderGetTagProps,
+} from './types'
+import { AutocompleteOptionRow } from './AutocompleteOptionRow'
+import { renderDefaultTags } from './AutocompleteTag'
+import {
+  getAutocompleteInputSx,
+  getAutocompletePaperSx,
+  getAutocompleteListboxSx,
+} from './utils'
 
 export function Autocomplete<
   T = AutocompleteOption,
@@ -62,25 +70,121 @@ export function Autocomplete<
   },
   renderOption,
   renderTags,
+  renderValue,
   slotProps,
   multiple = false as Multiple,
+  checkboxPlacement = 'right',
+  maxVisibleTags,
+  tagDisplay = 'avatar+label',
   ...props
 }: AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>) {
   const generatedId = useId()
   const triggerId = id || generatedId
   const labelId = label ? `${triggerId}-label` : undefined
-
   const isSmall = size === 'small'
-  const isLarge = size === 'large'
 
-  const minHeight = isLarge ? 56 : isSmall ? 40 : 48
-  const paddingX = isLarge ? 2 : isSmall ? 1.25 : 1.75
-  const paddingY = isLarge ? 1.25 : isSmall ? 0.5 : 0.875
-  const formattedRadius = typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius
+  const userPaperSlot =
+    typeof slotProps?.paper === 'object' && slotProps?.paper !== null
+      ? (slotProps.paper as Record<string, unknown>)
+      : {}
+  const userListboxSlot =
+    typeof slotProps?.listbox === 'object' && slotProps?.listbox !== null
+      ? (slotProps.listbox as Record<string, unknown>)
+      : {}
 
-  const userChipSlot = typeof slotProps?.chip === 'object' && slotProps?.chip !== null ? (slotProps.chip as Record<string, unknown>) : {}
-  const userPaperSlot = typeof slotProps?.paper === 'object' && slotProps?.paper !== null ? (slotProps.paper as Record<string, unknown>) : {}
-  const userListboxSlot = typeof slotProps?.listbox === 'object' && slotProps?.listbox !== null ? (slotProps.listbox as Record<string, unknown>) : {}
+  // ── 1. Memoized option renderer ──────────────────────────────────────────
+  const defaultRenderOption = useCallback(
+    (
+      optionProps: React.HTMLAttributes<HTMLLIElement> & { key: React.Key },
+      option: T,
+      state: { selected: boolean }
+    ) => {
+      const { key, ...restOptionProps } = optionProps
+      const opt = option as unknown as AutocompleteOption
+
+      return (
+        <AutocompleteOptionRow
+          key={key}
+          option={opt}
+          label={getOptionLabel(option)}
+          selected={state.selected}
+          multiple={Boolean(multiple)}
+          checkboxPlacement={checkboxPlacement}
+          size={size}
+          optionSx={slotSx?.option}
+          {...restOptionProps}
+        />
+      )
+    },
+    [getOptionLabel, multiple, checkboxPlacement, size, slotSx?.option]
+  )
+
+  // ── 2. Memoized tag / value renderer (MUI v9 renderValue) ────────────────
+  const resolvedRenderValue = useCallback(
+    (
+      tagValue: unknown,
+      getItemProps: AutocompleteRenderGetTagProps,
+      ownerState: unknown
+    ) => {
+      if (renderValue) {
+        return renderValue(tagValue, getItemProps, ownerState)
+      }
+      if (renderTags && Array.isArray(tagValue)) {
+        return renderTags(tagValue as T[], getItemProps)
+      }
+      if (Array.isArray(tagValue)) {
+        return renderDefaultTags({
+          tagValue: tagValue as T[],
+          getTagProps: getItemProps,
+          size,
+          maxVisibleTags,
+          tagDisplay,
+          tagSx: slotSx?.tag,
+          getOptionLabel,
+        })
+      }
+      return null
+    },
+    [
+      renderValue,
+      renderTags,
+      size,
+      maxVisibleTags,
+      tagDisplay,
+      slotSx?.tag,
+      getOptionLabel,
+    ]
+  )
+
+  // ── 3. Memoized input renderer ───────────────────────────────────────────
+  const renderInputCallback = useCallback(
+    (params: AutocompleteRenderInputParams) => (
+      <TextField
+        {...params}
+        {...textFieldProps}
+        name={name}
+        inputRef={inputRef}
+        placeholder={placeholder}
+        error={error}
+        sx={[
+          ...toSxArray(getAutocompleteInputSx({ size, borderRadius, error, disabled })),
+          ...toSxArray(textFieldProps?.sx as SxProps<Theme>),
+          ...toSxArray(slotSx?.textField),
+        ]}
+      />
+    ),
+    [
+      textFieldProps,
+      name,
+      inputRef,
+      placeholder,
+      error,
+      size,
+      borderRadius,
+      disabled,
+      slotSx?.textField,
+    ]
+  )
 
   return (
     <FormControl
@@ -116,7 +220,7 @@ export function Autocomplete<
       )}
 
       <MuiAutocomplete<T, Multiple, DisableClearable, FreeSolo>
-        {...props}
+        {...(props as unknown as object)}
         id={triggerId}
         multiple={multiple}
         disabled={disabled}
@@ -128,38 +232,10 @@ export function Autocomplete<
         clearIcon={<CloseIcon sx={{ fontSize: isSmall ? 18 : 20 }} />}
         slotProps={{
           ...slotProps,
-          chip: {
-            ...userChipSlot,
-            size: isSmall ? 'small' : 'medium',
-            sx: [
-              {
-                borderRadius: '8px',
-                bgcolor: 'rgba(0, 163, 157, 0.1)',
-                color: '#00A39D',
-                fontWeight: 600,
-                border: '1px solid rgba(0, 163, 157, 0.2)',
-                '& .MuiChip-deleteIcon': {
-                  color: '#00A39D',
-                  fontSize: 16,
-                  '&:hover': {
-                    color: '#007A76',
-                  },
-                },
-              },
-              ...toSxArray(userChipSlot.sx as SxProps<Theme>),
-              ...toSxArray(slotSx?.tag),
-            ],
-          },
           paper: {
             ...userPaperSlot,
             sx: [
-              (theme: Theme) => ({
-                borderRadius: formattedRadius,
-                mt: 1,
-                boxShadow: '0px 10px 25px rgba(0, 0, 0, 0.08)',
-                border: `1px solid ${theme.palette.divider}`,
-                maxHeight: 320,
-              }),
+              ...toSxArray(getAutocompletePaperSx(borderRadius)),
               ...toSxArray(userPaperSlot.sx as SxProps<Theme>),
               ...toSxArray(slotSx?.paper),
             ],
@@ -167,173 +243,17 @@ export function Autocomplete<
           listbox: {
             ...userListboxSlot,
             sx: [
-              {
-                p: 0.75,
-                '& .MuiAutocomplete-option': {
-                  borderRadius: '8px',
-                  my: 0.25,
-                  py: isSmall ? 0.75 : 1,
-                  px: 1.5,
-                  fontSize: isSmall ? '0.8125rem' : '0.875rem',
-                  fontWeight: 500,
-                  color: 'text.primary',
-                  transition: 'background-color 0.15s ease',
-                  '&[aria-selected="true"]': {
-                    bgcolor: 'rgba(0, 163, 157, 0.08) !important',
-                    color: '#00A39D',
-                    fontWeight: 600,
-                  },
-                  '&.Mui-focused': {
-                    bgcolor: 'rgba(0, 163, 157, 0.04)',
-                  },
-                  '&:hover': {
-                    bgcolor: 'rgba(0, 163, 157, 0.06)',
-                  },
-                },
-              },
+              ...toSxArray(getAutocompleteListboxSx(size)),
               ...toSxArray(userListboxSlot.sx as SxProps<Theme>),
               ...toSxArray(slotSx?.listbox),
             ],
           },
         }}
-        renderOption={
-          renderOption ??
-          ((optionProps, option, { selected }) => {
-            const { key, ...restProps } = optionProps
-            const opt = option as unknown as AutocompleteOption
-
-            return (
-              <Box
-                key={key}
-                component="li"
-                {...restProps}
-                sx={[
-                  {
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: 1.5,
-                    width: '100%',
-                  },
-                  ...toSxArray(slotSx?.option),
-                ]}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0, flex: 1 }}>
-                  {opt.avatar ? (
-                    typeof opt.avatar === 'string' ? (
-                      <Avatar
-                        src={opt.avatar.startsWith('http') || opt.avatar.startsWith('/') ? opt.avatar : undefined}
-                        sx={{
-                          width: isSmall ? 24 : 30,
-                          height: isSmall ? 24 : 30,
-                          fontSize: isSmall ? '0.75rem' : '0.8125rem',
-                          bgcolor: opt.avatarBg || '#00A39D',
-                          color: '#FFFFFF',
-                          fontWeight: 600,
-                        }}
-                      >
-                        {!opt.avatar.startsWith('http') && !opt.avatar.startsWith('/') ? opt.avatar : undefined}
-                      </Avatar>
-                    ) : (
-                      opt.avatar
-                    )
-                  ) : opt.icon ? (
-                    <Box sx={{ color: selected ? '#00A39D' : 'text.secondary', display: 'flex', alignItems: 'center' }}>
-                      {opt.icon}
-                    </Box>
-                  ) : null}
-
-                  <Box sx={{ minWidth: 0, flex: 1 }}>
-                    <Typography
-                      variant="body2"
-                      noWrap
-                      sx={{
-                        fontWeight: selected ? 600 : 500,
-                        color: selected ? '#00A39D' : 'text.primary',
-                        fontSize: isSmall ? '0.8125rem' : '0.875rem',
-                      }}
-                    >
-                      {getOptionLabel(option)}
-                    </Typography>
-                    {opt.subtitle && (
-                      <Typography
-                        variant="caption"
-                        noWrap
-                        sx={{
-                          color: 'text.secondary',
-                          fontSize: isSmall ? '0.6875rem' : '0.75rem',
-                          display: 'block',
-                        }}
-                      >
-                        {opt.subtitle}
-                      </Typography>
-                    )}
-                  </Box>
-                </Box>
-              </Box>
-            )
-          })
-        }
-        {...(renderTags !== undefined ? { renderTags } : {})}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            {...textFieldProps}
-            name={name}
-            inputRef={inputRef}
-            placeholder={placeholder}
-            error={error}
-            sx={[
-              (theme: Theme) => ({
-                '& .MuiOutlinedInput-root': {
-                  minHeight,
-                  px: paddingX,
-                  py: paddingY,
-                  borderRadius: formattedRadius,
-                  bgcolor: disabled
-                    ? theme.palette.action.disabledBackground
-                    : theme.palette.background.paper,
-                  transition: theme.transitions.create(['border-color', 'box-shadow']),
-                  '& fieldset': {
-                    borderColor: error ? theme.palette.error.main : theme.palette.divider,
-                  },
-                  '&:hover fieldset': {
-                    borderColor: disabled
-                      ? undefined
-                      : error
-                        ? theme.palette.error.main
-                        : theme.palette.primary.main,
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: error ? theme.palette.error.main : theme.palette.primary.main,
-                    borderWidth: '1.5px',
-                  },
-                  '&.Mui-focused': {
-                    boxShadow: `0 0 0 3px ${
-                      error ? 'rgba(239, 68, 68, 0.15)' : 'rgba(0, 163, 157, 0.15)'
-                    }`,
-                  },
-                  '& .MuiAutocomplete-popupIndicator': {
-                    color: 'action.active',
-                    transition: 'transform 0.2s ease',
-                  },
-                  '& .MuiAutocomplete-popupIndicatorOpen': {
-                    transform: 'rotate(180deg)',
-                  },
-                  '& .MuiAutocomplete-clearIndicator': {
-                    color: 'action.active',
-                  },
-                  '& .MuiAutocomplete-input': {
-                    py: 0.25,
-                    fontSize: isLarge ? '1rem' : isSmall ? '0.8125rem' : '0.875rem',
-                  },
-                },
-              }),
-              ...toSxArray(textFieldProps?.sx as SxProps<Theme>),
-              ...toSxArray(slotSx?.textField),
-            ]}
-          />
-        )}
+        renderOption={renderOption ?? defaultRenderOption}
+        {...(multiple || renderValue || renderTags
+          ? { renderValue: resolvedRenderValue as typeof renderValue }
+          : {})}
+        renderInput={renderInputCallback}
         sx={[
           { width: fullWidth ? '100%' : 'auto' },
           ...toSxArray(slotSx?.root),
@@ -342,10 +262,7 @@ export function Autocomplete<
 
       {helperText && (
         <FormHelperText
-          sx={[
-            { mx: 0, mt: 0.5 },
-            ...toSxArray(slotSx?.helperText),
-          ]}
+          sx={[{ mx: 0, mt: 0.5 }, ...toSxArray(slotSx?.helperText)]}
         >
           {helperText}
         </FormHelperText>
