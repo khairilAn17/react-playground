@@ -184,7 +184,6 @@ export function SelectOptionRow({
         ...combinedRootSx,
       ]}
     >
-      {/* ── Left Column: Avatar + Title/Subtitle + Bullet List ── */}
       <Box sx={{ display: 'flex', alignItems: shouldRenderBullets ? 'flex-start' : 'center', gap: size === 'large' ? 2 : 1.5, minWidth: 0, flex: 1 }}>
         {(() => {
           const rawAvatar = option.avatar
@@ -276,7 +275,6 @@ export function SelectOptionRow({
             </Typography>
           )}
 
-          {/* ── Bullet List Sub-Component ── */}
           {shouldRenderBullets && (
             <SelectOptionBulletList
               bullets={bullets}
@@ -290,7 +288,6 @@ export function SelectOptionRow({
         </Box>
       </Box>
 
-      {/* ── Right Column: rightTitle / rightSubtitle + Checkmark ── */}
       <Box sx={{ display: 'flex', alignItems: shouldRenderBullets ? 'flex-start' : 'center', gap: 1.5, flexShrink: 0, ml: 'auto', mt: shouldRenderBullets ? 0.25 : 0 }}>
         {(rightTitle || rightSubtitle) && (
           <Box sx={{ textAlign: 'right' }}>
@@ -352,7 +349,6 @@ export function SelectOptionRow({
           </Box>
         )}
 
-        {/* ── Far Right Checkmark Indicator ── */}
         {isMenu && isSelected && showCheckmark && (
           <CheckIcon
             sx={[
