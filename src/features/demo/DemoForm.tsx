@@ -18,12 +18,12 @@ import { Card } from '../../components/card'
 import { PageLayout } from '../../widgets/pageLayout'
 
 const FRAMEWORK_OPTIONS: AutocompleteOption[] = [
-  { label: 'React', value: 'react' },
-  { label: 'Vue.js', value: 'vue' },
-  { label: 'Next.js', value: 'nextjs' },
-  { label: 'Svelte', value: 'svelte' },
-  { label: 'Angular', value: 'angular' },
-  { label: 'SolidJS', value: 'solid' },
+  { label: 'React', value: 'react', subtitle: 'Component-based UI library', avatar: 'RC', avatarBg: '#00A39D' },
+  { label: 'Vue.js', value: 'vue', subtitle: 'Progressive JavaScript framework', avatar: 'VU', avatarBg: '#42B883' },
+  { label: 'Next.js', value: 'nextjs', subtitle: 'The React framework for the Web', avatar: 'NX', avatarBg: '#1E293B' },
+  { label: 'Svelte', value: 'svelte', subtitle: 'Cybernetically enhanced web apps', avatar: 'SV', avatarBg: '#FF3E00' },
+  { label: 'Angular', value: 'angular', subtitle: 'Enterprise-scale platform', avatar: 'NG', avatarBg: '#DD0031' },
+  { label: 'SolidJS', value: 'solid', subtitle: 'Simple and performant reactivity', avatar: 'SO', avatarBg: '#2C4F7C' },
 ]
 
 const PLAN_OPTIONS: RadioOption[] = [

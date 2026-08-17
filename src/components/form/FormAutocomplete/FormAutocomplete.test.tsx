@@ -5,6 +5,7 @@ import { TestFormWrapper } from '../../../test/test-utils'
 
 interface TestFormValues {
   framework: string
+  tags?: string[]
 }
 
 const OPTIONS = [
@@ -41,6 +42,37 @@ describe('FormAutocomplete', () => {
     )
 
     expect(screen.getByText('Choose your tech stack')).toBeInTheDocument()
+  })
+
+  it('renders initial value correctly', () => {
+    render(
+      <TestFormWrapper<TestFormValues> defaultValues={{ framework: 'react' }}>
+        <FormAutocomplete<TestFormValues>
+          name="framework"
+          label="Framework"
+          options={OPTIONS}
+        />
+      </TestFormWrapper>
+    )
+
+    const input = screen.getByRole('combobox') as HTMLInputElement
+    expect(input.value).toBe('React')
+  })
+
+  it('renders multi-select chips when multiple is true', () => {
+    render(
+      <TestFormWrapper<TestFormValues> defaultValues={{ framework: '', tags: ['react', 'vue'] }}>
+        <FormAutocomplete<TestFormValues, typeof OPTIONS[0], true>
+          multiple
+          name="tags"
+          label="Tags"
+          options={OPTIONS}
+        />
+      </TestFormWrapper>
+    )
+
+    expect(screen.getByText('React')).toBeInTheDocument()
+    expect(screen.getByText('Vue')).toBeInTheDocument()
   })
 
   it('throws error when rendered outside FormProvider without control', () => {

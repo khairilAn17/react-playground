@@ -1,81 +1,25 @@
-import type { ReactNode } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
-import type { FieldValues, Path, Control } from 'react-hook-form'
-import { Autocomplete, TextField } from '@mui/material'
-import type { AutocompleteProps, TextFieldProps } from '@mui/material'
+import type { FieldValues } from 'react-hook-form'
+import { Autocomplete } from '../../autocomplete'
+import type { AutocompleteOption } from '../../autocomplete'
+import type { FormAutocompleteProps } from './types'
 
-export interface AutocompleteOption {
-  label: string
-  value: string | number
-}
+export type { AutocompleteOption, FormAutocompleteProps, FormAutocompleteSlotSx } from './types'
 
-export interface FormAutocompleteProps<
+export function FormAutocomplete<
   T extends FieldValues,
   Option = AutocompleteOption,
   Multiple extends boolean | undefined = false,
   DisableClearable extends boolean | undefined = false,
   FreeSolo extends boolean | undefined = false,
-> extends Omit<
-    AutocompleteProps<Option, Multiple, DisableClearable, FreeSolo>,
-    'name' | 'renderInput' | 'options' | 'value' | 'onChange'
-  > {
-  /**
-   * The field name — must be a valid key of your form schema type.
-   * Fully type-safe via Path<T>.
-   */
-  name: Path<T>
-
-  /**
-   * Label for the underlying TextField.
-   */
-  label: string
-
-  /**
-   * List of available options.
-   */
-  options: Option[]
-
-  /**
-   * Helper text for the TextField.
-   */
-  helperText?: ReactNode
-
-  /**
-   * Optional custom getOptionLabel resolver.
-   */
-  getOptionLabel?: (option: Option | string) => string
-
-  /**
-   * Optional. Pass `control` explicitly when used outside a FormProvider.
-   */
-  control?: Control<T>
-
-  /**
-   * Additional props for the inner TextField component.
-   */
-  textFieldProps?: Omit<TextFieldProps, 'label' | 'error' | 'helperText'>
-}
-
-/**
- * FormAutocomplete
- *
- * A type-safe, reusable MUI Autocomplete wrapper for React Hook Form.
- */
-export function FormAutocomplete<
-  T extends FieldValues,
-  Option extends AutocompleteOption = AutocompleteOption,
 >({
   name,
-  label,
-  options,
   control,
+  options,
   helperText,
-  getOptionLabel = (opt) => (typeof opt === 'string' ? opt : opt.label),
-  textFieldProps,
-  disabled,
-  fullWidth = true,
+  multiple,
   ...props
-}: FormAutocompleteProps<T, Option>) {
+}: FormAutocompleteProps<T, Option, Multiple, DisableClearable, FreeSolo>) {
   const formContext = useFormContext<T>()
   const resolvedControl = control ?? formContext?.control
 
@@ -92,33 +36,65 @@ export function FormAutocomplete<
       name={name}
       control={resolvedControl}
       render={({ field: { value, onChange, onBlur, ref }, fieldState: { error } }) => {
-        const selectedOption =
-          options.find((opt) => opt.value === value) ?? (value ? { label: String(value), value } : null)
+        // Resolve Option object(s) from form value
+        let resolvedValue: unknown = null
+
+        if (multiple && Array.isArray(value)) {
+          resolvedValue = value.map((v) => {
+            if (typeof v === 'object' && v !== null) return v
+            const found = options.find((opt: unknown) => {
+              if (opt && typeof opt === 'object' && 'value' in opt) {
+                return (opt as AutocompleteOption).value === v
+              }
+              return opt === v
+            })
+            return found ?? { label: String(v), value: v }
+          })
+        } else if (!multiple && value !== undefined && value !== null && value !== '') {
+          if (typeof value === 'object' && value !== null) {
+            resolvedValue = value
+          } else {
+            const found = options.find((opt: unknown) => {
+              if (opt && typeof opt === 'object' && 'value' in opt) {
+                return (opt as AutocompleteOption).value === value
+              }
+              return opt === value
+            })
+            resolvedValue = found ?? { label: String(value), value }
+          }
+        } else {
+          resolvedValue = multiple ? [] : null
+        }
 
         return (
-          <Autocomplete
-            {...props}
+          <Autocomplete<Option, Multiple, DisableClearable, FreeSolo>
+            {...(props as unknown as FormAutocompleteProps<T, Option, Multiple, DisableClearable, FreeSolo>)}
+            multiple={multiple}
             options={options}
-            disabled={disabled}
-            fullWidth={fullWidth}
-            value={selectedOption as Option | null}
-            getOptionLabel={getOptionLabel}
-            isOptionEqualToValue={(opt, val) => opt.value === val.value}
+            value={resolvedValue as any}
             onChange={(_, newValue) => {
-              const val = newValue as Option | null
-              onChange(val ? val.value : null)
+              if (multiple && Array.isArray(newValue)) {
+                const primitiveValues = newValue.map((item) => {
+                  if (item && typeof item === 'object' && 'value' in item) {
+                    return (item as unknown as AutocompleteOption).value
+                  }
+                  return item
+                })
+                onChange(primitiveValues)
+              } else if (!multiple && newValue) {
+                if (typeof newValue === 'object' && newValue !== null && 'value' in newValue) {
+                  onChange((newValue as unknown as AutocompleteOption).value)
+                } else {
+                  onChange(newValue)
+                }
+              } else {
+                onChange(multiple ? [] : null)
+              }
             }}
             onBlur={onBlur}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                {...textFieldProps}
-                inputRef={ref}
-                label={label}
-                error={!!error}
-                helperText={error?.message ?? helperText}
-              />
-            )}
+            inputRef={ref}
+            error={!!error}
+            helperText={error?.message ?? helperText}
           />
         )
       }}

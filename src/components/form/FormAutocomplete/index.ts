@@ -1,2 +1,6 @@
 export { FormAutocomplete } from './FormAutocomplete'
-export type { AutocompleteOption, FormAutocompleteProps } from './FormAutocomplete'
+export type {
+  FormAutocompleteProps,
+  AutocompleteOption,
+  FormAutocompleteSlotSx,
+} from './types'
