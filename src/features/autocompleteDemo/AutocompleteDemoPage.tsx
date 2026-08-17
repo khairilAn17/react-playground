@@ -34,7 +34,12 @@ import PaidOutlinedIcon from '@mui/icons-material/PaidOutlined'
 
 import { PageLayout } from '../../widgets/pageLayout'
 import { Card } from '../../components/card'
-import { Autocomplete, type AutocompleteOption } from '../../components/autocomplete'
+import {
+  Autocomplete,
+  type AutocompleteOption,
+  createCurrencyOptions,
+  filterNumericOptions,
+} from '../../components/autocomplete'
 import { createTypedForm } from '../../components/form'
 import { z } from 'zod'
 
@@ -98,15 +103,170 @@ const BANK_OPTIONS: AutocompleteOption[] = [
   { value: '7200000004', label: 'PT Global Solusindo', subtitle: 'Rekening 8830000004 • Rp 920.000.000', icon: <AccountBalanceIcon sx={{ color: '#64748B' }} /> },
 ]
 
-const NOMINAL_OPTIONS: AutocompleteOption[] = [
-  { value: '10.000', label: '10.000', subtitle: 'Sepuluh Ribu Rupiah' },
-  { value: '25.000', label: '25.000', subtitle: 'Dua Puluh Lima Ribu Rupiah' },
-  { value: '50.000', label: '50.000', subtitle: 'Lima Puluh Ribu Rupiah' },
-  { value: '100.000', label: '100.000', subtitle: 'Seratus Ribu Rupiah' },
-  { value: '250.000', label: '250.000', subtitle: 'Dua Ratus Lima Puluh Ribu Rupiah' },
-  { value: '500.000', label: '500.000', subtitle: 'Lima Ratus Ribu Rupiah' },
-  { value: '1.000.000', label: '1.000.000', subtitle: 'Satu Juta Rupiah' },
-]
+const NOMINAL_OPTIONS: AutocompleteOption[] = createCurrencyOptions(
+  [10000, 25000, 50000, 100000, 250000, 500000, 1000000],
+  {
+    thousandSeparator: '.',
+    getSubtitle: (raw) => {
+      const words: Record<number, string> = {
+        10000: 'Sepuluh Ribu Rupiah',
+        25000: 'Dua Puluh Lima Ribu Rupiah',
+        50000: 'Lima Puluh Ribu Rupiah',
+        100000: 'Seratus Ribu Rupiah',
+        250000: 'Dua Ratus Lima Puluh Ribu Rupiah',
+        500000: 'Lima Ratus Ribu Rupiah',
+        1000000: 'Satu Juta Rupiah',
+      }
+      return words[raw] ?? `Nominal Rp ${raw}`
+    },
+  }
+)
+
+// ── Sub-component: Numeric & Currency Best Practice Showcase ────────────────
+function NumericFormatShowcase() {
+  const [singleNominal, setSingleNominal] = useState<AutocompleteOption | null>(NOMINAL_OPTIONS[2]) // 50.000
+  const [multiNominal, setMultiNominal] = useState<AutocompleteOption[]>([NOMINAL_OPTIONS[1], NOMINAL_OPTIONS[3]]) // 25.000 + 100.000
+  const [freeSoloNominal, setFreeSoloNominal] = useState<AutocompleteOption | string | null>('75.000')
+
+  const totalSum = useMemo(() => {
+    return multiNominal.reduce((acc, opt) => acc + (typeof opt.value === 'number' ? opt.value : 0), 0)
+  }, [multiNominal])
+
+  return (
+    <Grid container spacing={3}>
+      {/* 1. Pre-defined Amount Picker */}
+      <Grid size={{ xs: 12, md: 4 }}>
+        <Box sx={{ p: 2.5, bgcolor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', height: '100%' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700, color: TEXT_MAIN, mb: 0.5 }}>
+            1. Amount Preset Picker (`createCurrencyOptions`)
+          </Typography>
+          <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 2 }}>
+            Data menyimpan angka mentah (`number`), label terformat rapi (`string`).
+          </Typography>
+
+          <Autocomplete
+            label="Nominal Top-Up"
+            prefixBlock="Rp"
+            placeholder="Pilih nominal..."
+            options={NOMINAL_OPTIONS}
+            value={singleNominal}
+            onValueChange={setSingleNominal}
+            filterOptions={filterNumericOptions({ thousandSeparator: '.' })}
+            size="small"
+            helperText="Ketik '50' atau '50.000' untuk mencari"
+          />
+
+          <Paper
+            elevation={0}
+            sx={{
+              mt: 2,
+              p: 1.5,
+              bgcolor: '#F8FAFC',
+              border: '1px dashed #CBD5E1',
+              borderRadius: '8px',
+            }}
+          >
+            <Typography variant="caption" sx={{ fontWeight: 700, color: TEAL_PRIMARY, display: 'block' }}>
+              State Output:
+            </Typography>
+            <Typography variant="caption" sx={{ fontFamily: 'monospace', color: TEXT_MAIN }}>
+              value: {singleNominal ? JSON.stringify(singleNominal.value) : 'null'} (type: {typeof singleNominal?.value})
+            </Typography>
+          </Paper>
+        </Box>
+      </Grid>
+
+      {/* 2. Multi-Select Preset with Live Sum Calculation */}
+      <Grid size={{ xs: 12, md: 4 }}>
+        <Box sx={{ p: 2.5, bgcolor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', height: '100%' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700, color: TEXT_MAIN, mb: 0.5 }}>
+            2. Multi-Nominal Batch (`totalSum`)
+          </Typography>
+          <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 2 }}>
+            Kalkulasi instan dari `option.value` yang berupa numeric amount mentah.
+          </Typography>
+
+          <Autocomplete
+            multiple
+            label="Batch Donasi / Infaq"
+            prefixBlock="Rp"
+            placeholder="Pilih paket..."
+            options={NOMINAL_OPTIONS}
+            value={multiNominal}
+            onValueChange={setMultiNominal}
+            filterOptions={filterNumericOptions({ thousandSeparator: '.' })}
+            checkboxPlacement="right"
+            maxVisibleTags={2}
+            size="small"
+          />
+
+          <Paper
+            elevation={0}
+            sx={{
+              mt: 2,
+              p: 1.5,
+              bgcolor: 'rgba(0, 163, 157, 0.06)',
+              border: `1px solid ${TEAL_PRIMARY}`,
+              borderRadius: '8px',
+            }}
+          >
+            <Typography variant="caption" sx={{ fontWeight: 700, color: TEAL_PRIMARY, display: 'block' }}>
+              Total Donasi Terkalkulasi:
+            </Typography>
+            <Typography variant="body2" sx={{ fontWeight: 800, color: TEXT_MAIN }}>
+              Rp {totalSum.toLocaleString('id-ID')}
+            </Typography>
+          </Paper>
+        </Box>
+      </Grid>
+
+      {/* 3. FreeSolo with Numeric Suggestions */}
+      <Grid size={{ xs: 12, md: 4 }}>
+        <Box sx={{ p: 2.5, bgcolor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', height: '100%' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700, color: TEXT_MAIN, mb: 0.5 }}>
+            3. FreeSolo Preset + Custom Nominal
+          </Typography>
+          <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 2 }}>
+            Pilih dari opsi preset atau input nominal kustom bebas (`freeSolo`).
+          </Typography>
+
+          <Autocomplete
+            freeSolo
+            label="Nominal Bebas"
+            prefixBlock="Rp"
+            placeholder="Pilih atau ketik bebas..."
+            options={NOMINAL_OPTIONS}
+            value={freeSoloNominal}
+            onValueChange={setFreeSoloNominal}
+            filterOptions={filterNumericOptions({ thousandSeparator: '.' })}
+            size="small"
+            helperText="Mendukung pilihan preset maupun teks kustom"
+          />
+
+          <Paper
+            elevation={0}
+            sx={{
+              mt: 2,
+              p: 1.5,
+              bgcolor: '#F8FAFC',
+              border: '1px dashed #CBD5E1',
+              borderRadius: '8px',
+            }}
+          >
+            <Typography variant="caption" sx={{ fontWeight: 700, color: TEAL_PRIMARY, display: 'block' }}>
+              Selected / Typed Value:
+            </Typography>
+            <Typography variant="caption" sx={{ fontFamily: 'monospace', color: TEXT_MAIN }}>
+              {typeof freeSoloNominal === 'object' && freeSoloNominal !== null
+                ? `Preset ${JSON.stringify(freeSoloNominal.label)} (raw: ${freeSoloNominal.value})`
+                : `Custom: "${freeSoloNominal}"`}
+            </Typography>
+          </Paper>
+        </Box>
+      </Grid>
+    </Grid>
+  )
+}
 
 // ── Typed Form Schema for RHF Demo ───────────────────────────────────────────
 const miniFormSchema = z.object({
@@ -1203,7 +1363,15 @@ export function AutocompleteDemoPage() {
             </Grid>
           </Card>
 
-          {/* ── SECTION 5: React Hook Form (RHF) + Zod Integration ── */}
+          {/* ── SECTION 5: Currency & Number Format Best Practice ── */}
+          <Card
+            title="Currency & Number Format Best Practice"
+            subtitle="Pre-defined amount presets, dual-mode search filter (raw digits & formatted string), and multi-selection sum"
+          >
+            <NumericFormatShowcase />
+          </Card>
+
+          {/* ── SECTION 6: React Hook Form (RHF) + Zod Integration ── */}
           <Card
             title="React Hook Form + Zod Integration"
             subtitle="Type-safe form connector using Field.Autocomplete via createTypedForm"
@@ -1281,7 +1449,7 @@ export function AutocompleteDemoPage() {
             </Form>
           </Card>
 
-          {/* ── SECTION 5: Architecture & Prop Reference Matrix ── */}
+          {/* ── SECTION 7: Architecture & Prop Reference Matrix ── */}
           <Card
             title="Layer 1 Primitive API Reference"
             subtitle="Full breakdown of custom props supported by the Autocomplete component"

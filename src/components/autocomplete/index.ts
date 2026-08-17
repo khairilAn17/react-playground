@@ -15,4 +15,9 @@ export {
   getAutocompleteListboxSx,
   getChipBaseSx,
   getOverflowChipSx,
+  createCurrencyOptions,
+  createNumberOptions,
+  filterNumericOptions,
+  formatOptionLabel,
 } from './utils'
+export type { NumberFormatOptions } from './utils'

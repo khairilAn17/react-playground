@@ -11,6 +11,7 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
 
 import { Autocomplete } from './Autocomplete'
 import type { AutocompleteOption } from './types'
+import { createCurrencyOptions, filterNumericOptions } from './utils'
 
 // ── Shared Datasets ──────────────────────────────────────────────────────────
 const FRAMEWORK_OPTIONS: AutocompleteOption[] = [
@@ -488,18 +489,27 @@ function BankAccountSelectComponent() {
 export const BankAccountSelect: Story = { render: () => <BankAccountSelectComponent /> }
 
 // ── 14. Nominal Currency with Prefix Block (Real-World) ───────────────────
-const NOMINAL_OPTIONS: AutocompleteOption[] = [
-  { value: '10.000', label: '10.000', subtitle: 'Sepuluh Ribu Rupiah' },
-  { value: '25.000', label: '25.000', subtitle: 'Dua Puluh Lima Ribu Rupiah' },
-  { value: '50.000', label: '50.000', subtitle: 'Lima Puluh Ribu Rupiah' },
-  { value: '100.000', label: '100.000', subtitle: 'Seratus Ribu Rupiah' },
-  { value: '250.000', label: '250.000', subtitle: 'Dua Ratus Lima Puluh Ribu Rupiah' },
-  { value: '500.000', label: '500.000', subtitle: 'Lima Ratus Ribu Rupiah' },
-  { value: '1.000.000', label: '1.000.000', subtitle: 'Satu Juta Rupiah' },
-]
+const NOMINAL_OPTIONS: AutocompleteOption[] = createCurrencyOptions(
+  [10000, 25000, 50000, 100000, 250000, 500000, 1000000],
+  {
+    thousandSeparator: '.',
+    getSubtitle: (raw) => {
+      const words: Record<number, string> = {
+        10000: 'Sepuluh Ribu Rupiah',
+        25000: 'Dua Puluh Lima Ribu Rupiah',
+        50000: 'Lima Puluh Ribu Rupiah',
+        100000: 'Seratus Ribu Rupiah',
+        250000: 'Dua Ratus Lima Puluh Ribu Rupiah',
+        500000: 'Lima Ratus Ribu Rupiah',
+        1000000: 'Satu Juta Rupiah',
+      }
+      return words[raw] ?? `Nominal Rp ${raw}`
+    },
+  }
+)
 
 function NominalCurrencyPrefixBlockComponent() {
-  const [nominal, setNominal] = useState<AutocompleteOption | string | null>(NOMINAL_OPTIONS[2]) // "50.000"
+  const [nominal, setNominal] = useState<AutocompleteOption | string | null>(NOMINAL_OPTIONS[2]) // 50.000
 
   return (
     <Paper elevation={0} sx={{ maxWidth: 440, p: 3, borderRadius: '16px', border: '1px solid #E2E8F0', bgcolor: '#FFFFFF' }}>
@@ -517,8 +527,9 @@ function NominalCurrencyPrefixBlockComponent() {
         options={NOMINAL_OPTIONS}
         value={nominal}
         onValueChange={setNominal}
+        filterOptions={filterNumericOptions({ thousandSeparator: '.' })}
         borderRadius={12}
-        helperText="Pilih dari daftar preset atau ketik nominal secara langsung"
+        helperText="Pilih dari daftar preset atau ketik nominal (bisa ketik '50' atau '50.000')"
       />
     </Paper>
   )
@@ -526,4 +537,36 @@ function NominalCurrencyPrefixBlockComponent() {
 export const NominalCurrencyPrefixBlock: Story = {
   name: 'Real-World — Nominal Currency with Prefix Block (Rp)',
   render: () => <NominalCurrencyPrefixBlockComponent />,
+}
+
+// ── 15. Numeric Amount Filter (Best Practice) ────────────────────────────────
+function NumericAmountFilterComponent() {
+  const [selected, setSelected] = useState<AutocompleteOption | null>(null)
+
+  return (
+    <Paper elevation={0} sx={{ maxWidth: 440, p: 3, borderRadius: '16px', border: '1px solid #E2E8F0', bgcolor: '#FFFFFF' }}>
+      <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.5 }}>
+        Paket Top-Up Pulsa / E-Money
+      </Typography>
+      <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 2 }}>
+        Data option menyimpan raw number ({`value: 50000`}), label terformat otomatis ({`label: '50.000'`}).
+      </Typography>
+
+      <Autocomplete
+        label="Pilih Nominal"
+        prefixBlock="Rp"
+        placeholder="Ketik 50 atau 50.000..."
+        options={NOMINAL_OPTIONS}
+        value={selected}
+        onValueChange={setSelected}
+        filterOptions={filterNumericOptions({ thousandSeparator: '.' })}
+        borderRadius={12}
+        helperText={`Nilai tersimpan di form/state: ${selected ? JSON.stringify(selected.value) : 'null'}`}
+      />
+    </Paper>
+  )
+}
+export const NumericAmountFilter: Story = {
+  name: 'Real-World — Numeric Search & Filter Best Practice',
+  render: () => <NumericAmountFilterComponent />,
 }
