@@ -1,4 +1,4 @@
-import { useState, useMemo, type ReactNode } from 'react'
+import { useState, useMemo, useCallback, type ReactNode } from 'react'
 import { useTheme, useMediaQuery } from '@mui/material'
 import { SidebarContext } from './SidebarContext'
 import type { SidebarContextValue } from './types'
@@ -40,15 +40,18 @@ export function SidebarProvider({
 
   const isCollapsed = controlledCollapsed ?? uncontrolledCollapsed
 
-  const handleSetCollapsed = (action: boolean | ((prev: boolean) => boolean)) => {
-    const nextState = typeof action === 'function' ? action(isCollapsed) : action
-    if (controlledCollapsed === undefined) {
-      setUncontrolledCollapsed(nextState)
-    }
-    if (onToggleCollapsed) {
-      onToggleCollapsed(nextState)
-    }
-  }
+  const handleSetCollapsed = useCallback(
+    (action: boolean | ((prev: boolean) => boolean)) => {
+      const nextState = typeof action === 'function' ? action(isCollapsed) : action
+      if (controlledCollapsed === undefined) {
+        setUncontrolledCollapsed(nextState)
+      }
+      if (onToggleCollapsed) {
+        onToggleCollapsed(nextState)
+      }
+    },
+    [isCollapsed, controlledCollapsed, onToggleCollapsed]
+  )
 
   const contextValue: SidebarContextValue = useMemo(
     () => ({
@@ -61,7 +64,7 @@ export function SidebarProvider({
       width,
       collapsedWidth,
     }),
-    [isMobile, isCollapsed, mobileOpen, activeKey, onSelect, width, collapsedWidth]
+    [isMobile, isCollapsed, handleSetCollapsed, mobileOpen, activeKey, onSelect, width, collapsedWidth]
   )
 
   return (

@@ -19,6 +19,7 @@ import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined'
 
 import SearchIcon from '@mui/icons-material/Search'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
+import ListAltIcon from '@mui/icons-material/ListAlt'
 
 import { AppShell } from './components/appShell'
 import { Sidebar } from './components/sidebar'
@@ -28,6 +29,7 @@ import { SidebarDemo } from './features/sidebarDemo/SidebarDemo'
 import { PageLayoutDemo } from './features/pageLayoutDemo/PageLayoutDemo'
 import { SearchDemoPage } from './features/searchDemo/SearchDemoPage'
 import { AutocompleteDemoPage } from './features/autocompleteDemo'
+import { SelectDemoPage } from './features/selectDemo'
 import { BusinessBankingDashboard } from './features/businessBankingDemo/BusinessBankingDashboard'
 import { PayrollPage } from './features/businessBankingDemo/PayrollPage'
 import { ManajemenAkunPage } from './features/businessBankingDemo/ManajemenAkunPage'
@@ -123,10 +125,16 @@ function App() {
 
                 <Sidebar.Section title="Component Docs" divider>
                   <Sidebar.Item
+                    itemKey="select-primitive"
+                    icon={<ListAltIcon />}
+                    label="Select Primitive"
+                    badge={<Chip label="New" size="small" sx={{ height: 18, fontSize: '0.7rem', bgcolor: '#00A99D', color: 'white', fontWeight: 700 }} />}
+                  />
+                  <Sidebar.Item
                     itemKey="autocomplete-primitive"
                     icon={<FormatListBulletedIcon />}
                     label="Autocomplete Primitive"
-                    badge={<Chip label="New" size="small" sx={{ height: 18, fontSize: '0.7rem', bgcolor: '#00A99D', color: 'white', fontWeight: 700 }} />}
+                    badge={<Chip label="Kit" size="small" sx={{ height: 18, fontSize: '0.7rem', bgcolor: '#64748B', color: 'white', fontWeight: 700 }} />}
                   />
                   <Sidebar.Item
                     itemKey="search-input"
@@ -161,6 +169,7 @@ function App() {
           {activeKey === 'manajemen-akun' && <ManajemenAkunPage onBack={() => setActiveKey('business-banking')} />}
           {activeKey === 'single-form' && <DemoForm />}
           {activeKey === 'wizard-form' && <MultiStepForm />}
+          {activeKey === 'select-primitive' && <SelectDemoPage />}
           {activeKey === 'autocomplete-primitive' && <AutocompleteDemoPage />}
           {activeKey === 'search-input' && <SearchDemoPage />}
           {activeKey === 'page-layout-architecture' && <PageLayoutDemo />}

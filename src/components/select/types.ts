@@ -81,6 +81,7 @@ export interface SelectProps {
   id?: string
   name?: string
   value?: string | number
+  defaultValue?: string | number
   onChange?: (event: SelectChangeEvent) => void
   onBlur?: (event: React.FocusEvent<HTMLElement>) => void
   onClose?: (event: React.SyntheticEvent) => void

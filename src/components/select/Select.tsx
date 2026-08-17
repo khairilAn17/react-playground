@@ -24,7 +24,8 @@ export function Select(props: SelectProps) {
   const {
     id,
     name,
-    value,
+    value: controlledValue,
+    defaultValue,
     onChange,
     onBlur,
     inputRef,
@@ -85,6 +86,10 @@ export function Select(props: SelectProps) {
   const labelId = label ? `${triggerId}-label` : undefined
   const listboxId = `${triggerId}-listbox`
 
+  const isControlled = controlledValue !== undefined
+  const [internalValue, setInternalValue] = useState<string | number>(defaultValue ?? '')
+  const value = isControlled ? controlledValue : internalValue
+
   const [open, setOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const triggerRef = useRef<HTMLDivElement>(null)
@@ -117,6 +122,9 @@ export function Select(props: SelectProps) {
 
   const handleSelect = (selectedVal: string | number) => {
     if (disabled) return
+    if (!isControlled) {
+      setInternalValue(selectedVal)
+    }
     onChange?.({ target: { name, value: selectedVal } })
     handleClose()
   }

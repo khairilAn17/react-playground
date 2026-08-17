@@ -6,4 +6,5 @@ export type {
   SelectProps,
   SelectOptionSlotSx,
   SelectSlotSx,
+  SelectChangeEvent,
 } from './types'
