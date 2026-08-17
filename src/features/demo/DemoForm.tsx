@@ -268,6 +268,9 @@ export function DemoForm() {
                   borderRadius={12}
                   rightTitleSx={{ fontWeight: 500 }}
                   rightSubtitleSx={{ color: '#64748B' }}
+                  searchInputProps={{
+                    disableFocusRing: true
+                  }}
                 />
 
                 {/* 7.2 Field.Select with Grouped Bank Options */}
