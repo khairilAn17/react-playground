@@ -859,7 +859,138 @@ export function AutocompleteDemoPage() {
             </Grid>
           </Card>
 
-          {/* ── SECTION 4: React Hook Form (RHF) + Zod Integration ── */}
+          {/* ── SECTION 4: Granular slotSx Sub-Slots Showcase ── */}
+          <Card
+            title="Granular slotSx Sub-Slots"
+            subtitle="Style every internal sub-element independently — option rows, chips, avatars, icons, overflow badges"
+          >
+            <Grid container spacing={3}>
+              {/* 4a: Option Row Sub-Slots */}
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Box sx={{ p: 2.5, bgcolor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', height: '100%' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: TEXT_MAIN, mb: 0.5 }}>
+                    1. Option Row Sub-Slots
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 0.5 }}>
+                    Open the dropdown to see custom rows.
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
+                    {['optionLabel', 'optionSubtitle', 'optionIcon', 'optionCheckbox', 'optionAvatar'].map((s) => (
+                      <Chip key={s} label={s} size="small" sx={{ fontFamily: 'monospace', fontSize: '0.65rem', height: 18, bgcolor: 'rgba(0,163,157,0.08)', color: TEAL_PRIMARY }} />
+                    ))}
+                  </Box>
+
+                  <Stack spacing={2.5}>
+                    <Autocomplete
+                      multiple
+                      label="Bold label, italic subtitle, amber checkbox"
+                      placeholder="Open to inspect rows..."
+                      options={INFAQ_OPTIONS}
+                      defaultValue={[INFAQ_OPTIONS[0], INFAQ_OPTIONS[2]]}
+                      checkboxPlacement="right"
+                      size="small"
+                      slotSx={{
+                        option: { px: 2.5, py: 1.25, mx: 0.5, borderRadius: '8px' },
+                        optionLabel: { fontWeight: 700, fontSize: '0.875rem' },
+                        optionSubtitle: { color: '#64748B', fontStyle: 'italic' },
+                        optionIcon: { fontSize: 20 },
+                        optionCheckbox: { '&.Mui-checked': { color: '#EAA827' } },
+                      }}
+                      helperText="optionLabel: bold · optionSubtitle: italic · optionCheckbox: amber"
+                    />
+
+                    <Autocomplete
+                      label="Monospace subtitle for bank accounts"
+                      placeholder="Open to inspect rows..."
+                      options={BANK_OPTIONS}
+                      defaultValue={BANK_OPTIONS[0]}
+                      size="small"
+                      slotSx={{
+                        optionLabel: { fontWeight: 700, color: TEXT_MAIN },
+                        optionSubtitle: { fontFamily: 'monospace', fontSize: '0.6875rem', color: '#0284C7' },
+                      }}
+                      helperText="optionSubtitle: monospace blue for account numbers"
+                    />
+                  </Stack>
+                </Box>
+              </Grid>
+
+              {/* 4b: Tag Chip Sub-Slots */}
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Box sx={{ p: 2.5, bgcolor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', height: '100%' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: TEXT_MAIN, mb: 0.5 }}>
+                    2. Tag Chip Sub-Slots
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 0.5 }}>
+                    Each chip slot applies independently.
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
+                    {['tagChip', 'tagAvatar', 'tagIcon', 'tagLabel', 'tagOverflow'].map((s) => (
+                      <Chip key={s} label={s} size="small" sx={{ fontFamily: 'monospace', fontSize: '0.65rem', height: 18, bgcolor: 'rgba(234,168,39,0.1)', color: '#B45309' }} />
+                    ))}
+                  </Box>
+
+                  <Stack spacing={2.5}>
+                    <Autocomplete
+                      multiple
+                      label="Gradient teal–blue chip (tagChip)"
+                      options={TECH_OPTIONS}
+                      defaultValue={[TECH_OPTIONS[0], TECH_OPTIONS[1], TECH_OPTIONS[2]]}
+                      maxVisibleTags={2}
+                      size="small"
+                      slotSx={{
+                        tagChip: {
+                          background: 'linear-gradient(135deg, #00A39D 0%, #0284C7 100%)',
+                          color: '#fff',
+                          fontWeight: 700,
+                          border: 'none',
+                          '& .MuiChip-deleteIcon': { color: 'rgba(255,255,255,0.75)', '&:hover': { color: '#fff' } },
+                        },
+                        tagOverflow: { bgcolor: '#0F172A', color: '#fff', fontWeight: 800, border: 'none' },
+                      }}
+                      helperText="tagChip: gradient · tagOverflow: dark badge"
+                    />
+
+                    <Autocomplete
+                      multiple
+                      label="Square avatars, wider gap (tagAvatar + tagLabel)"
+                      options={TECH_OPTIONS}
+                      defaultValue={[TECH_OPTIONS[0], TECH_OPTIONS[2], TECH_OPTIONS[3]]}
+                      size="small"
+                      tagDisplay="avatar+label"
+                      slotSx={{
+                        tagAvatar: { borderRadius: '3px', width: 18, height: 18 },
+                        tagLabel: { gap: 1 },
+                      }}
+                      helperText="tagAvatar: 3px square · tagLabel: wider gap"
+                    />
+
+                    <Autocomplete
+                      multiple
+                      label="Amber accent with solid +N overflow (tagChip + tagOverflow)"
+                      options={INFAQ_OPTIONS}
+                      defaultValue={[INFAQ_OPTIONS[0], INFAQ_OPTIONS[1], INFAQ_OPTIONS[2], INFAQ_OPTIONS[3]]}
+                      maxVisibleTags={2}
+                      size="small"
+                      slotSx={{
+                        tagChip: {
+                          bgcolor: 'rgba(245,158,11,0.1)',
+                          borderColor: 'rgba(245,158,11,0.45)',
+                          color: '#B45309',
+                          fontWeight: 700,
+                          '& .MuiChip-deleteIcon': { color: '#B45309', '&:hover': { color: '#78350F' } },
+                        },
+                        tagOverflow: { bgcolor: '#F59E0B', color: '#fff', fontWeight: 800, border: 'none' },
+                      }}
+                      helperText="tagChip: amber border · tagOverflow: solid amber"
+                    />
+                  </Stack>
+                </Box>
+              </Grid>
+            </Grid>
+          </Card>
+
+          {/* ── SECTION 5: React Hook Form (RHF) + Zod Integration ── */}
           <Card
             title="React Hook Form + Zod Integration"
             subtitle="Type-safe form connector using Field.Autocomplete via createTypedForm"
@@ -987,10 +1118,82 @@ export function AutocompleteDemoPage() {
                   desc: 'Controls corner radius for both the input field and dropdown paper popover.',
                 },
                 {
-                  prop: 'slotSx',
-                  type: 'AutocompleteSlotSx',
-                  def: '{}',
-                  desc: 'Deep styling overrides for root, formControl, inputLabel, textField, paper, listbox, option, tag, and helperText.',
+                  prop: 'slotSx.option',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the outer <li> row container for each dropdown option.',
+                },
+                {
+                  prop: 'slotSx.optionLabel',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the primary label <Typography> inside each option row. Overrides selection-state color and fontWeight defaults.',
+                },
+                {
+                  prop: 'slotSx.optionSubtitle',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the subtitle caption <Typography> inside each option row (e.g. monospace for IDs, italic for descriptions).',
+                },
+                {
+                  prop: 'slotSx.optionCheckbox',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the <Checkbox> element inside each option row. Only rendered when multiple is true.',
+                },
+                {
+                  prop: 'slotSx.optionAvatar',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the <Avatar> element inside each option row (string avatar variant). Customize size, borderRadius, bgcolor.',
+                },
+                {
+                  prop: 'slotSx.optionIcon',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the icon wrapper <Box> inside each option row (JSX icon variant). Controls color, fontSize.',
+                },
+                {
+                  prop: 'slotSx.tagChip',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the outer <Chip> element for each selected value tag. Overrides chip background, border, color, fontWeight.',
+                },
+                {
+                  prop: 'slotSx.tagAvatar',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the <Avatar> inside each selected chip (string avatar variant). Customize borderRadius, size, bgcolor.',
+                },
+                {
+                  prop: 'slotSx.tagIcon',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the icon wrapper <Box> inside each selected chip (JSX icon variant). Controls fontSize, color.',
+                },
+                {
+                  prop: 'slotSx.tagLabel',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the label container <Box> inside each chip that wraps avatar/icon + text. Controls gap, padding.',
+                },
+                {
+                  prop: 'slotSx.tagOverflow',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the +N overflow <Chip> badge independently. Apply different colors, fontWeight, or border from regular chips.',
+                },
+                {
+                  prop: 'slotSx.paper',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the dropdown <Paper> popover container. Customize boxShadow, border, borderRadius.',
+                },
+                {
+                  prop: 'slotSx.listbox',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the <ul> listbox inside the popover. Customize padding, maxHeight, scrollbar.',
                 },
               ].map((item) => (
                 <Grid key={item.prop} size={{ xs: 12, sm: 6 }}>
