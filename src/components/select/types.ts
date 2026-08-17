@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { SxProps, Theme, SelectProps as MuiSelectProps } from '@mui/material'
+import type { SxProps, Theme, SelectProps as MuiSelectProps, AvatarProps } from '@mui/material'
 
 export interface SelectOptionSlotSx {
   root?: SxProps<Theme>
@@ -13,6 +13,8 @@ export interface SelectOptionSlotSx {
   bulletList?: SxProps<Theme>
   bulletItem?: SxProps<Theme>
   bulletText?: SxProps<Theme>
+  bulletItemSx?: SxProps<Theme>
+  bulletTextSx?: SxProps<Theme>
 }
 
 export interface SelectOption {
@@ -38,7 +40,15 @@ export interface SelectOption {
   compactSelected?: boolean
 
   /* ── 4. Avatar & Status Metadata ── */
-  avatar?: ReactNode
+  /**
+   * Avatar text initials ("HB"), image URL ("https://...", "/logo.png"), ReactNode element (<Avatar src="..." />),
+   * or MUI AvatarProps object ({ src: '/logo.png', variant: 'square' }).
+   */
+  avatar?: ReactNode | AvatarProps
+  /**
+   * Additional MUI AvatarProps passed directly to the Avatar component.
+   */
+  avatarProps?: AvatarProps
   avatarBg?: string
   statusColor?: string
   statusIcon?: ReactNode

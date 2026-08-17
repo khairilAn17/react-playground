@@ -11,12 +11,6 @@ export interface SelectOptionBulletListProps {
   textSx?: SxProps<Theme>
 }
 
-/**
- * SelectOptionBulletList
- *
- * Dedicated presentational sub-component for rendering bulleted feature/rule lists
- * inside dropdown options (e.g. Transfer Methods, Plan Features, Service Rules).
- */
 export function SelectOptionBulletList({
   bullets,
   size = 'medium',

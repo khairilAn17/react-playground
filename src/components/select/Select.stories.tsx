@@ -114,7 +114,6 @@ export const BasicControlled: Story = {
     return (
       <Box sx={{ maxWidth: 400 }}>
         <Select
-          label="Select City"
           value={city}
           onChange={(e) => setCity(e.target.value as string)}
           options={SIMPLE_OPTIONS}
@@ -133,7 +132,6 @@ export const RichAccountSelector: Story = {
     return (
       <Box sx={{ maxWidth: 460 }}>
         <Select
-          label="Sumber Rekening"
           value={account}
           onChange={(e) => setAccount(e.target.value as string)}
           options={RICH_ACCOUNT_OPTIONS}
@@ -149,7 +147,6 @@ export const BulletTransferMethods: Story = {
     return (
       <Box sx={{ maxWidth: 460 }}>
         <Select
-          label="Metode Transfer"
           value={method}
           onChange={(e) => setMethod(e.target.value as string)}
           options={BULLET_TRANSFER_OPTIONS}
@@ -165,7 +162,6 @@ export const GroupedSearchableBank: Story = {
     return (
       <Box sx={{ maxWidth: 460 }}>
         <Select
-          label="Pilih Bank Tujuan"
           placeholder="Cari atau pilih bank"
           value={bank}
           onChange={(e) => setBank(e.target.value as string)}
@@ -186,4 +182,60 @@ export const SizeVariants: Story = {
       <Select size="large" label="Large Select" value="sby" options={SIMPLE_OPTIONS} />
     </Box>
   ),
+}
+
+export const ImageAvatarsDemo: Story = {
+  render: () => {
+    const [user, setUser] = useState('user1')
+
+    const IMAGE_AVATAR_OPTIONS: SelectOption[] = [
+      {
+        value: 'user1',
+        leftTitle: 'Alex Morgan',
+        leftSubtitle: 'Senior Software Engineer',
+        rightTitle: 'Full-time',
+        // 1. Direct Image URL string (circular default)
+        avatar: 'https://i.pravatar.cc/150?img=32',
+      },
+      {
+        value: 'user2',
+        leftTitle: 'Sarah Jenkins',
+        leftSubtitle: 'Lead UX Designer',
+        rightTitle: 'Full-time',
+        // 2. AvatarProps object with rounded variant & alt text
+        avatar: {
+          src: 'https://i.pravatar.cc/150?img=47',
+          variant: 'rounded',
+          alt: 'Sarah Jenkins',
+        },
+      },
+      {
+        value: 'user3',
+        leftTitle: 'David Chen',
+        leftSubtitle: 'Product Manager',
+        rightTitle: 'Contract',
+        // 3. Image URL + avatarProps for square variant styling
+        avatar: 'https://i.pravatar.cc/150?img=12',
+        avatarProps: {
+          variant: 'square',
+        },
+      },
+    ]
+
+    return (
+      <Box sx={{ maxWidth: 460 }}>
+        <Typography variant="subtitle2" sx={{ mb: 1.5, color: 'text.secondary' }}>
+          Select Option with Image Avatars (Image URL, Rounded AvatarProps, Square Variant)
+        </Typography>
+        <Select
+          label="Assignee"
+          value={user}
+          onChange={(e) => setUser(e.target.value as string)}
+          options={IMAGE_AVATAR_OPTIONS}
+          searchable
+          searchPlaceholder="Search team member..."
+        />
+      </Box>
+    )
+  },
 }

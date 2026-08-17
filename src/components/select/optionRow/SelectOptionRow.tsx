@@ -1,5 +1,10 @@
+import { isValidElement } from 'react'
 import { Box, Typography, Avatar } from '@mui/material'
-import type { SxProps, Theme } from '@mui/material'
+import type { SxProps, Theme, AvatarProps } from '@mui/material'
+
+function isImageUrl(val: string): boolean {
+  return /^(https?:\/\/|\/|data:image\/|blob:)/i.test(val) || /\.(png|jpg|jpeg|svg|webp|gif)$/i.test(val)
+}
 import CheckIcon from '@mui/icons-material/Check'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import { SelectOptionBulletList } from './SelectOptionBulletList'
@@ -181,30 +186,55 @@ export function SelectOptionRow({
     >
       {/* ── Left Column: Avatar + Title/Subtitle + Bullet List ── */}
       <Box sx={{ display: 'flex', alignItems: shouldRenderBullets ? 'flex-start' : 'center', gap: size === 'large' ? 2 : 1.5, minWidth: 0, flex: 1 }}>
-        {option.avatar && (
-          typeof option.avatar === 'string' ? (
+        {(() => {
+          const rawAvatar = option.avatar
+          const rawAvatarProps = option.avatarProps
+
+          if (!rawAvatar && !rawAvatarProps) return null
+
+          if (isValidElement(rawAvatar)) {
+            return rawAvatar
+          }
+
+          let mergedAvatarProps: AvatarProps = { ...rawAvatarProps }
+
+          if (typeof rawAvatar === 'string') {
+            if (isImageUrl(rawAvatar)) {
+              mergedAvatarProps = { src: rawAvatar, ...mergedAvatarProps }
+            } else {
+              mergedAvatarProps = { children: rawAvatar, ...mergedAvatarProps }
+            }
+          } else if (typeof rawAvatar === 'object' && rawAvatar !== null) {
+            mergedAvatarProps = { ...(rawAvatar as AvatarProps), ...mergedAvatarProps }
+          }
+
+          const { src, children: avatarChildren, sx: extraSx, ...restAvatarProps } = mergedAvatarProps
+          const hasSrc = Boolean(src)
+
+          return (
             <Avatar
+              src={src}
               sx={[
                 {
                   width: avatarSize,
                   height: avatarSize,
                   fontSize: avatarFontSize,
                   fontWeight: 700,
-                  bgcolor: option.avatarBg || '#F59E0B',
+                  bgcolor: hasSrc ? 'transparent' : (option.avatarBg || '#F59E0B'),
                   color: '#FFFFFF',
                   flexShrink: 0,
                   opacity: isOptionDisabled ? 0.8 : 1,
                   mt: shouldRenderBullets ? 0.25 : 0,
                 },
                 ...combinedAvatarSx,
+                ...(extraSx ? (Array.isArray(extraSx) ? extraSx : [extraSx]) : []),
               ]}
+              {...restAvatarProps}
             >
-              {option.avatar}
+              {!hasSrc && avatarChildren}
             </Avatar>
-          ) : (
-            option.avatar
           )
-        )}
+        })()}
 
         <Box sx={{ minWidth: 0, flex: 1 }}>
           <Typography

@@ -131,6 +131,29 @@ describe('Select (Standalone UI Primitive)', () => {
     expect(screen.getByText('Rekening Terblokir')).toBeInTheDocument()
   })
 
+  it('renders image URLs and AvatarProps objects in option avatars', () => {
+    render(
+      <Select
+        value="img_account"
+        options={[
+          {
+            value: 'img_account',
+            leftTitle: 'Bank BCA',
+            avatar: 'https://example.com/bca.png',
+          },
+          {
+            value: 'obj_account',
+            leftTitle: 'Bank Mandiri',
+            avatar: { src: '/mandiri.png', variant: 'rounded', alt: 'Mandiri' },
+          },
+        ]}
+      />
+    )
+
+    const imgAvatar = screen.getByRole('img')
+    expect(imgAvatar).toHaveAttribute('src', 'https://example.com/bca.png')
+  })
+
   it('renders bullet list options in dropdown menu', () => {
     render(
       <Select
