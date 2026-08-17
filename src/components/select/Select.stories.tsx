@@ -174,6 +174,79 @@ export const GroupedSearchableBank: Story = {
   },
 }
 
+export const SearchVariantsDemo: Story = {
+  render: () => {
+    const [b1, setB1] = useState('')
+    const [b2, setB2] = useState('')
+    const [b3, setB3] = useState('')
+    const [b4, setB4] = useState('')
+
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, maxWidth: 460 }}>
+        <Box>
+          <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', mb: 0.5, display: 'block' }}>
+            1. Pill Search Input (searchVariant="pill")
+          </Typography>
+          <Select
+            placeholder="Pill search box..."
+            value={b1}
+            onChange={(e) => setB1(e.target.value as string)}
+            options={GROUPED_BANK_OPTIONS}
+            searchable
+            searchVariant="pill"
+            searchPlaceholder="Search something..."
+          />
+        </Box>
+
+        <Box>
+          <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', mb: 0.5, display: 'block' }}>
+            2. Outlined with Clear Button (searchVariant="outlined" - Default)
+          </Typography>
+          <Select
+            placeholder="Outlined search box..."
+            value={b2}
+            onChange={(e) => setB2(e.target.value as string)}
+            options={GROUPED_BANK_OPTIONS}
+            searchable
+            searchVariant="outlined"
+            searchPlaceholder="Search something..."
+          />
+        </Box>
+
+        <Box>
+          <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', mb: 0.5, display: 'block' }}>
+            3. Filled Search Input (searchVariant="filled")
+          </Typography>
+          <Select
+            placeholder="Filled search box..."
+            value={b3}
+            onChange={(e) => setB3(e.target.value as string)}
+            options={GROUPED_BANK_OPTIONS}
+            searchable
+            searchVariant="filled"
+            searchPlaceholder="Search something..."
+          />
+        </Box>
+
+        <Box>
+          <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', mb: 0.5, display: 'block' }}>
+            4. Standard / Flush Search (searchVariant="standard")
+          </Typography>
+          <Select
+            placeholder="Standard flush search..."
+            value={b4}
+            onChange={(e) => setB4(e.target.value as string)}
+            options={GROUPED_BANK_OPTIONS}
+            searchable
+            searchVariant="standard"
+            searchPlaceholder="Search something..."
+          />
+        </Box>
+      </Box>
+    )
+  },
+}
+
 export const SizeVariants: Story = {
   render: () => (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, maxWidth: 400 }}>

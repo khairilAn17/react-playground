@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import type { SxProps, Theme, SelectProps as MuiSelectProps, AvatarProps } from '@mui/material'
+import type { SearchVariant } from '../search'
 
 export interface SelectOptionSlotSx {
   root?: SxProps<Theme>
@@ -74,6 +75,9 @@ export interface SelectProps
   options?: SelectOption[]
   searchable?: boolean
   searchPlaceholder?: string
+  searchVariant?: SearchVariant
+  searchClearable?: boolean
+  searchLoading?: boolean
   placeholder?: ReactNode
   showCheckmark?: boolean
   borderRadius?: number | string

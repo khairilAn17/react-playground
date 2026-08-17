@@ -6,15 +6,13 @@ import {
   MenuItem,
   FormHelperText,
   ListSubheader,
-  TextField,
-  InputAdornment,
   Box,
   Typography,
 } from '@mui/material'
 import type { SelectProps as MuiSelectProps, SxProps, Theme } from '@mui/material'
-import SearchIcon from '@mui/icons-material/Search'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 
+import { SearchInput } from '../search'
 import { SelectOptionRow } from './optionRow'
 import { formatRadius, filterSelectOptions, groupSelectOptions } from './utils'
 import type { SelectProps } from './types'
@@ -31,6 +29,9 @@ export function Select({
   children,
   searchable = false,
   searchPlaceholder = 'Search...',
+  searchVariant = 'outlined',
+  searchClearable = true,
+  searchLoading = false,
   placeholder,
   showCheckmark = true,
   borderRadius,
@@ -266,32 +267,27 @@ export function Select({
               ...(slotSx?.listSubheader ? (Array.isArray(slotSx.listSubheader) ? slotSx.listSubheader : [slotSx.listSubheader]) : []),
             ]}
           >
-            <TextField
+            <SearchInput
               size="small"
               fullWidth
               autoFocus
               placeholder={searchPlaceholder}
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(val) => setSearchTerm(val)}
+              onClear={() => setSearchTerm('')}
+              variant={searchVariant}
+              clearable={searchClearable}
+              loading={searchLoading}
               onKeyDown={(e) => {
                 const allowedKeys = ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', 'Tab']
                 if (!allowedKeys.includes(e.key)) {
                   e.stopPropagation()
                 }
               }}
-              sx={[
+              containerSx={[
                 ...(searchFieldSx ? (Array.isArray(searchFieldSx) ? searchFieldSx : [searchFieldSx]) : []),
                 ...(slotSx?.searchField ? (Array.isArray(slotSx.searchField) ? slotSx.searchField : [slotSx.searchField]) : []),
               ]}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon fontSize="small" color="action" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
             />
           </ListSubheader>
         )}
