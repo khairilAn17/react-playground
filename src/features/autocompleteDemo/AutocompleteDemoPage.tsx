@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   Box,
   Typography,
@@ -13,6 +13,8 @@ import {
   Slider,
   Paper,
   Button,
+  Tabs,
+  Tab,
 } from '@mui/material'
 import Grid from '@mui/material/Grid'
 
@@ -24,6 +26,9 @@ import SchoolIcon from '@mui/icons-material/School'
 import MosqueIcon from '@mui/icons-material/Mosque'
 import SelfImprovementIcon from '@mui/icons-material/SelfImprovement'
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
+import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined'
+import DataObjectOutlinedIcon from '@mui/icons-material/DataObjectOutlined'
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
 
 import { PageLayout } from '../../widgets/pageLayout'
 import { Card } from '../../components/card'
@@ -84,6 +89,13 @@ const TECH_OPTIONS: AutocompleteOption[] = [
   { label: 'SolidJS', value: 'solid', subtitle: 'Simple and performant reactivity', avatar: 'SO', avatarBg: '#2C4F7C' },
 ]
 
+const BANK_OPTIONS: AutocompleteOption[] = [
+  { value: '7200000001', label: 'PT Digital Commerce', subtitle: 'Rekening 8830000001 • Rp 850.000.000', icon: <AccountBalanceIcon sx={{ color: '#00A39D' }} /> },
+  { value: '7200000002', label: 'CV Surya Technology', subtitle: 'Rekening 8830000002 • Rp 120.000.000', icon: <AccountBalanceIcon sx={{ color: '#0284C7' }} /> },
+  { value: '7200000003', label: 'PT Maju Bersama', subtitle: 'Rekening 8830000003 • Rp 45.000.000', icon: <AccountBalanceIcon sx={{ color: '#EAA827' }} /> },
+  { value: '7200000004', label: 'PT Global Solusindo', subtitle: 'Rekening 8830000004 • Rp 920.000.000', icon: <AccountBalanceIcon sx={{ color: '#64748B' }} /> },
+]
+
 // ── Typed Form Schema for RHF Demo ───────────────────────────────────────────
 const miniFormSchema = z.object({
   category: z.string().min(1, 'Kategori wajib dipilih'),
@@ -93,14 +105,29 @@ const { Form, Field } = createTypedForm<MiniFormValues>()
 
 export function AutocompleteDemoPage() {
   // ── Interactive Sandbox State ──────────────────────────────────────────────
+  const [datasetKey, setDatasetKey] = useState<'infaq' | 'tech' | 'bank'>('infaq')
   const [size, setSize] = useState<'small' | 'medium' | 'large'>('medium')
   const [isMultiple, setIsMultiple] = useState(true)
   const [checkboxPlacement, setCheckboxPlacement] = useState<'right' | 'left' | 'none'>('right')
   const [maxVisibleTags, setMaxVisibleTags] = useState<number>(2)
   const [tagDisplay, setTagDisplay] = useState<'avatar+label' | 'label'>('avatar+label')
+  const [tagTheme, setTagTheme] = useState<'default' | 'amber' | 'indigo'>('default')
   const [borderRadius, setBorderRadius] = useState<number>(12)
   const [isError, setIsError] = useState(false)
   const [isDisabled, setIsDisabled] = useState(false)
+  const [activeTab, setActiveTab] = useState<'values' | 'json' | 'code'>('values')
+
+  // ── Active Options ─────────────────────────────────────────────────────────
+  const currentOptions = useMemo(() => {
+    switch (datasetKey) {
+      case 'tech':
+        return TECH_OPTIONS
+      case 'bank':
+        return BANK_OPTIONS
+      default:
+        return INFAQ_OPTIONS
+    }
+  }, [datasetKey])
 
   // ── Sandbox Live Values ────────────────────────────────────────────────────
   const [sandboxSingle, setSandboxSingle] = useState<AutocompleteOption | null>(INFAQ_OPTIONS[0])
@@ -109,6 +136,58 @@ export function AutocompleteDemoPage() {
     INFAQ_OPTIONS[1],
     INFAQ_OPTIONS[3],
   ])
+
+  // ── Custom Slot Theme ──────────────────────────────────────────────────────
+  const customTagSx = useMemo(() => {
+    if (tagTheme === 'amber') {
+      return {
+        bgcolor: 'rgba(245, 158, 11, 0.1)',
+        borderColor: 'rgba(245, 158, 11, 0.45)',
+        color: '#B45309',
+        fontWeight: 700,
+        '& .MuiChip-deleteIcon': {
+          color: '#B45309',
+          '&:hover': { color: '#78350F' },
+        },
+      }
+    }
+    if (tagTheme === 'indigo') {
+      return {
+        bgcolor: 'rgba(99, 102, 241, 0.1)',
+        borderColor: 'rgba(99, 102, 241, 0.45)',
+        color: '#4338CA',
+        fontWeight: 700,
+        '& .MuiChip-deleteIcon': {
+          color: '#4338CA',
+          '&:hover': { color: '#312E81' },
+        },
+      }
+    }
+    return undefined
+  }, [tagTheme])
+
+  // ── Generated JSX Code Snippet ─────────────────────────────────────────────
+  const generatedCode = useMemo(() => {
+    const lines: string[] = ['<Autocomplete']
+    if (isMultiple) lines.push('  multiple')
+    if (size !== 'medium') lines.push(`  size="${size}"`)
+    if (borderRadius !== 12) lines.push(`  borderRadius={${borderRadius}}`)
+    if (isMultiple && checkboxPlacement !== 'right') {
+      lines.push(`  checkboxPlacement=${checkboxPlacement === 'none' ? '{false}' : `"${checkboxPlacement}"`}`)
+    }
+    if (isMultiple && maxVisibleTags !== undefined) lines.push(`  maxVisibleTags={${maxVisibleTags}}`)
+    if (isMultiple && tagDisplay !== 'avatar+label') lines.push(`  tagDisplay="${tagDisplay}"`)
+    if (isError) lines.push('  error')
+    if (isDisabled) lines.push('  disabled')
+    if (tagTheme !== 'default') {
+      lines.push(`  slotSx={{ tag: { /* ${tagTheme} theme styles */ } }}`)
+    }
+    lines.push('  options={OPTIONS}')
+    lines.push(`  value={${isMultiple ? 'selectedItems' : 'selectedItem'}}`)
+    lines.push(`  onValueChange={${isMultiple ? 'setSelectedItems' : 'setSelectedItem'}}`)
+    lines.push('/>')
+    return lines.join('\n')
+  }, [isMultiple, size, borderRadius, checkboxPlacement, maxVisibleTags, tagDisplay, isError, isDisabled, tagTheme])
 
   // ── RHF Mini Form State ───────────────────────────────────────────────────
   const [formSubmitted, setFormSubmitted] = useState<MiniFormValues | null>(null)
@@ -131,7 +210,7 @@ export function AutocompleteDemoPage() {
           {/* ── SECTION 1: Interactive Configurator Sandbox ── */}
           <Card
             title="Interactive Prop Configurator"
-            subtitle="Customize and preview all Autocomplete props in real-time"
+            subtitle="Customize props, switch datasets, and inspect live rendered values in real-time"
           >
             <Grid container spacing={3}>
               {/* Controls Column */}
@@ -145,6 +224,28 @@ export function AutocompleteDemoPage() {
                   }}
                 >
                   <Stack spacing={2.5}>
+                    {/* Dataset Selector */}
+                    <FormControl component="fieldset" size="small">
+                      <FormLabel sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
+                        Dataset Source
+                      </FormLabel>
+                      <RadioGroup
+                        row
+                        value={datasetKey}
+                        onChange={(e) => {
+                          const key = e.target.value as 'infaq' | 'tech' | 'bank'
+                          setDatasetKey(key)
+                          const opts = key === 'tech' ? TECH_OPTIONS : key === 'bank' ? BANK_OPTIONS : INFAQ_OPTIONS
+                          setSandboxSingle(opts[0])
+                          setSandboxMulti([opts[0], opts[1]])
+                        }}
+                      >
+                        <FormControlLabel value="infaq" control={<Radio size="small" />} label="Infaq (Icons)" />
+                        <FormControlLabel value="tech" control={<Radio size="small" />} label="Tech (Avatars)" />
+                        <FormControlLabel value="bank" control={<Radio size="small" />} label="Bank Accounts" />
+                      </RadioGroup>
+                    </FormControl>
+
                     {/* Size Selector */}
                     <FormControl component="fieldset" size="small">
                       <FormLabel sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
@@ -237,6 +338,24 @@ export function AutocompleteDemoPage() {
                       </FormControl>
                     )}
 
+                    {/* Tag Custom Color Theme */}
+                    {isMultiple && (
+                      <FormControl component="fieldset" size="small">
+                        <FormLabel sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
+                          Custom Tag Theme (`slotSx.tag`)
+                        </FormLabel>
+                        <RadioGroup
+                          row
+                          value={tagTheme}
+                          onChange={(e) => setTagTheme(e.target.value as 'default' | 'amber' | 'indigo')}
+                        >
+                          <FormControlLabel value="default" control={<Radio size="small" />} label="Teal Default" />
+                          <FormControlLabel value="amber" control={<Radio size="small" />} label="Amber Accent" />
+                          <FormControlLabel value="indigo" control={<Radio size="small" />} label="Indigo Slate" />
+                        </RadioGroup>
+                      </FormControl>
+                    )}
+
                     {/* Border Radius Slider */}
                     <Box>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
@@ -296,9 +415,9 @@ export function AutocompleteDemoPage() {
                       <Autocomplete
                         multiple
                         size={size}
-                        label="Kategori Program Penyaluran (Multi-Select)"
-                        placeholder={sandboxMulti.length === 0 ? 'Pilih satu atau lebih kategori...' : ''}
-                        options={INFAQ_OPTIONS}
+                        label="Selected Items (Multi-Select)"
+                        placeholder={sandboxMulti.length === 0 ? 'Pilih satu atau lebih opsi...' : ''}
+                        options={currentOptions}
                         value={sandboxMulti}
                         onValueChange={setSandboxMulti}
                         checkboxPlacement={checkboxPlacement === 'none' ? false : checkboxPlacement}
@@ -307,18 +426,21 @@ export function AutocompleteDemoPage() {
                         borderRadius={borderRadius}
                         error={isError}
                         disabled={isDisabled}
+                        slotSx={{
+                          tag: customTagSx,
+                        }}
                         helperText={
                           isError
                             ? 'Terjadi kesalahan validasi pada pilihan ini'
-                            : `${sandboxMulti.length} kategori dipilih • onValueChange synced`
+                            : `${sandboxMulti.length} opsi terpilih • onValueChange synced`
                         }
                       />
                     ) : (
                       <Autocomplete
                         size={size}
-                        label="Kategori Program Penyaluran (Single Select)"
-                        placeholder="Pilih kategori program..."
-                        options={INFAQ_OPTIONS}
+                        label="Selected Item (Single Select)"
+                        placeholder="Pilih salah satu opsi..."
+                        options={currentOptions}
                         value={sandboxSingle}
                         onValueChange={setSandboxSingle}
                         borderRadius={borderRadius}
@@ -326,7 +448,7 @@ export function AutocompleteDemoPage() {
                         disabled={isDisabled}
                         helperText={
                           isError
-                            ? 'Wajib memilih minimal satu kategori'
+                            ? 'Wajib memilih minimal satu opsi'
                             : sandboxSingle
                               ? `✓ Terpilih: ${sandboxSingle.label}`
                               : 'Ketik atau klik untuk memilih'
@@ -335,26 +457,169 @@ export function AutocompleteDemoPage() {
                     )}
                   </Box>
 
-                  {/* Live JSON State Inspection */}
+                  {/* ── Tabs for Value Inspection & Code Generator ── */}
                   <Box sx={{ mt: 3 }}>
-                    <Typography variant="caption" sx={{ fontWeight: 700, color: TEXT_MUTED, mb: 0.75, display: 'block' }}>
-                      Current State (`onValueChange` payload):
-                    </Typography>
-                    <Paper
-                      elevation={0}
+                    <Tabs
+                      value={activeTab}
+                      onChange={(_, tab) => setActiveTab(tab)}
                       sx={{
-                        p: 1.5,
-                        bgcolor: '#0F172A',
-                        color: '#38BDF8',
-                        borderRadius: '8px',
-                        fontSize: '0.75rem',
-                        fontFamily: 'monospace',
-                        overflowX: 'auto',
-                        maxHeight: 140,
+                        minHeight: 36,
+                        mb: 1.5,
+                        '& .MuiTab-root': {
+                          minHeight: 36,
+                          py: 0.5,
+                          px: 1.5,
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          textTransform: 'none',
+                        },
                       }}
                     >
-                      {JSON.stringify(isMultiple ? sandboxMulti : sandboxSingle, null, 2)}
-                    </Paper>
+                      <Tab icon={<CheckCircleOutlinedIcon sx={{ fontSize: 16 }} />} iconPosition="start" value="values" label="Active Values Summary" />
+                      <Tab icon={<DataObjectOutlinedIcon sx={{ fontSize: 16 }} />} iconPosition="start" value="json" label="Raw JSON State" />
+                      <Tab icon={<CodeOutlinedIcon sx={{ fontSize: 16 }} />} iconPosition="start" value="code" label="Generated JSX Code" />
+                    </Tabs>
+
+                    {/* Tab 1: Formatted Custom Values Breakdown */}
+                    {activeTab === 'values' && (
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: 2,
+                          bgcolor: '#F8FAFC',
+                          border: '1px solid #E2E8F0',
+                          borderRadius: '8px',
+                          maxHeight: 180,
+                          overflowY: 'auto',
+                        }}
+                      >
+                        {isMultiple ? (
+                          sandboxMulti.length > 0 ? (
+                            <Stack spacing={1}>
+                              {sandboxMulti.map((item, idx) => (
+                                <Box
+                                  key={String(item.value)}
+                                  sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    p: 1,
+                                    bgcolor: '#FFFFFF',
+                                    borderRadius: '6px',
+                                    border: '1px solid #E2E8F0',
+                                  }}
+                                >
+                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Chip label={`#${idx + 1}`} size="small" sx={{ height: 20, fontSize: '0.6875rem', fontWeight: 700 }} />
+                                    <Typography variant="body2" sx={{ fontWeight: 700, color: TEXT_MAIN }}>
+                                      {item.label}
+                                    </Typography>
+                                    {item.subtitle && (
+                                      <Typography variant="caption" sx={{ color: TEXT_MUTED }}>
+                                        ({String(item.subtitle)})
+                                      </Typography>
+                                    )}
+                                  </Box>
+                                  <Chip
+                                    label={`value: "${item.value}"`}
+                                    size="small"
+                                    sx={{
+                                      height: 20,
+                                      fontSize: '0.6875rem',
+                                      fontFamily: 'monospace',
+                                      bgcolor: 'rgba(0, 163, 157, 0.08)',
+                                      color: TEAL_PRIMARY,
+                                    }}
+                                  />
+                                </Box>
+                              ))}
+                            </Stack>
+                          ) : (
+                            <Typography variant="caption" sx={{ color: TEXT_MUTED, fontStyle: 'italic' }}>
+                              Belum ada nilai terpilih (empty array: [])
+                            </Typography>
+                          )
+                        ) : sandboxSingle ? (
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              p: 1.5,
+                              bgcolor: '#FFFFFF',
+                              borderRadius: '6px',
+                              border: '1px solid #E2E8F0',
+                            }}
+                          >
+                            <Box>
+                              <Typography variant="body2" sx={{ fontWeight: 700, color: TEXT_MAIN }}>
+                                {sandboxSingle.label}
+                              </Typography>
+                              {sandboxSingle.subtitle && (
+                                <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block' }}>
+                                  {String(sandboxSingle.subtitle)}
+                                </Typography>
+                              )}
+                            </Box>
+                            <Chip
+                              label={`value: "${sandboxSingle.value}"`}
+                              size="small"
+                              sx={{
+                                height: 22,
+                                fontSize: '0.75rem',
+                                fontFamily: 'monospace',
+                                bgcolor: 'rgba(0, 163, 157, 0.08)',
+                                color: TEAL_PRIMARY,
+                                fontWeight: 700,
+                              }}
+                            />
+                          </Box>
+                        ) : (
+                          <Typography variant="caption" sx={{ color: TEXT_MUTED, fontStyle: 'italic' }}>
+                            Belum ada nilai terpilih (null)
+                          </Typography>
+                        )}
+                      </Paper>
+                    )}
+
+                    {/* Tab 2: Raw JSON Inspection */}
+                    {activeTab === 'json' && (
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: 1.5,
+                          bgcolor: '#0F172A',
+                          color: '#38BDF8',
+                          borderRadius: '8px',
+                          fontSize: '0.75rem',
+                          fontFamily: 'monospace',
+                          overflowX: 'auto',
+                          maxHeight: 180,
+                        }}
+                      >
+                        {JSON.stringify(isMultiple ? sandboxMulti : sandboxSingle, null, 2)}
+                      </Paper>
+                    )}
+
+                    {/* Tab 3: Generated JSX Code */}
+                    {activeTab === 'code' && (
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: 1.5,
+                          bgcolor: '#0F172A',
+                          color: '#4ADE80',
+                          borderRadius: '8px',
+                          fontSize: '0.75rem',
+                          fontFamily: 'monospace',
+                          overflowX: 'auto',
+                          maxHeight: 180,
+                          whiteSpace: 'pre',
+                        }}
+                      >
+                        {generatedCode}
+                      </Paper>
+                    )}
                   </Box>
                 </Box>
               </Grid>
@@ -672,7 +937,7 @@ export function AutocompleteDemoPage() {
             </Form>
           </Card>
 
-          {/* ── SECTION 4: Architecture & Prop Reference Matrix ── */}
+          {/* ── SECTION 5: Architecture & Prop Reference Matrix ── */}
           <Card
             title="Layer 1 Primitive API Reference"
             subtitle="Full breakdown of custom props supported by the Autocomplete component"
