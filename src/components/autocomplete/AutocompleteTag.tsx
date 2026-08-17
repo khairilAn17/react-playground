@@ -85,6 +85,7 @@ export function AutocompleteTag({
         display: 'inline-flex',
         alignItems: 'center',
         gap: 0.5,
+        py: 4,
         lineHeight: 1,
       }}
     >
@@ -153,7 +154,10 @@ export function renderDefaultTags<T>({
           key="__overflow"
           label={`+${hiddenCount}`}
           size={size === 'small' ? 'small' : 'medium'}
-          sx={[...toSxArray(getOverflowChipSx(size)), ...toSxArray(tagSx)]}
+          sx={[
+            ...toSxArray(getOverflowChipSx(size)),
+            ...toSxArray(tagSx),
+          ]}
         />
       )}
     </>

@@ -1,0 +1,763 @@
+import { useState } from 'react'
+import {
+  Box,
+  Typography,
+  Stack,
+  Chip,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormControl,
+  FormLabel,
+  Switch,
+  Slider,
+  Paper,
+  Button,
+} from '@mui/material'
+import Grid from '@mui/material/Grid'
+
+import TuneIcon from '@mui/icons-material/Tune'
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism'
+import NatureIcon from '@mui/icons-material/Nature'
+import FavoriteIcon from '@mui/icons-material/Favorite'
+import SchoolIcon from '@mui/icons-material/School'
+import MosqueIcon from '@mui/icons-material/Mosque'
+import SelfImprovementIcon from '@mui/icons-material/SelfImprovement'
+import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
+
+import { PageLayout } from '../../widgets/pageLayout'
+import { Card } from '../../components/card'
+import { Autocomplete, type AutocompleteOption } from '../../components/autocomplete'
+import { createTypedForm } from '../../components/form'
+import { z } from 'zod'
+
+const TEAL_PRIMARY = '#00A39D'
+const TEXT_MAIN = '#1E293B'
+const TEXT_MUTED = '#64748B'
+
+// ── Mock Datasets ────────────────────────────────────────────────────────────
+const INFAQ_OPTIONS: AutocompleteOption[] = [
+  {
+    value: 'yatim',
+    label: 'Anak Yatim',
+    subtitle: 'Kebutuhan pokok & santunan rutin anak yatim',
+    icon: <VolunteerActivismIcon sx={{ color: '#1E6BE6' }} />,
+  },
+  {
+    value: 'lingkungan',
+    label: 'Lingkungan',
+    subtitle: 'Pelestarian alam dan lingkungan hidup',
+    icon: <NatureIcon sx={{ color: '#3D8B37' }} />,
+  },
+  {
+    value: 'kemanusiaan',
+    label: 'Kemanusiaan',
+    subtitle: 'Bantuan darurat korban bencana alam',
+    icon: <FavoriteIcon sx={{ color: '#B0245C' }} />,
+  },
+  {
+    value: 'pendidikan',
+    label: 'Pendidikan',
+    subtitle: 'Bantuan pendidikan anak yatim dan dhuafa',
+    icon: <SchoolIcon sx={{ color: '#EAA827' }} />,
+  },
+  {
+    value: 'masjid',
+    label: 'Rumah Ibadah',
+    subtitle: 'Renovasi dan pembangunan masjid pelosok',
+    icon: <MosqueIcon sx={{ color: '#00A39D' }} />,
+  },
+  {
+    value: 'ekonomi',
+    label: 'Pemberdayaan Umat',
+    subtitle: 'Program kemandirian ekonomi masyarakat',
+    icon: <SelfImprovementIcon sx={{ color: '#7B5EA7' }} />,
+  },
+]
+
+const TECH_OPTIONS: AutocompleteOption[] = [
+  { label: 'React', value: 'react', subtitle: 'Component-based UI library', avatar: 'RC', avatarBg: '#00A39D' },
+  { label: 'Vue.js', value: 'vue', subtitle: 'Progressive JavaScript framework', avatar: 'VU', avatarBg: '#42B883' },
+  { label: 'Next.js', value: 'nextjs', subtitle: 'The React framework for the Web', avatar: 'NX', avatarBg: '#1E293B' },
+  { label: 'Svelte', value: 'svelte', subtitle: 'Cybernetically enhanced web apps', avatar: 'SV', avatarBg: '#FF3E00' },
+  { label: 'Angular', value: 'angular', subtitle: 'Enterprise-scale platform', avatar: 'NG', avatarBg: '#DD0031' },
+  { label: 'SolidJS', value: 'solid', subtitle: 'Simple and performant reactivity', avatar: 'SO', avatarBg: '#2C4F7C' },
+]
+
+// ── Typed Form Schema for RHF Demo ───────────────────────────────────────────
+const miniFormSchema = z.object({
+  category: z.string().min(1, 'Kategori wajib dipilih'),
+})
+type MiniFormValues = z.infer<typeof miniFormSchema>
+const { Form, Field } = createTypedForm<MiniFormValues>()
+
+export function AutocompleteDemoPage() {
+  // ── Interactive Sandbox State ──────────────────────────────────────────────
+  const [size, setSize] = useState<'small' | 'medium' | 'large'>('medium')
+  const [isMultiple, setIsMultiple] = useState(true)
+  const [checkboxPlacement, setCheckboxPlacement] = useState<'right' | 'left' | 'none'>('right')
+  const [maxVisibleTags, setMaxVisibleTags] = useState<number>(2)
+  const [tagDisplay, setTagDisplay] = useState<'avatar+label' | 'label'>('avatar+label')
+  const [borderRadius, setBorderRadius] = useState<number>(12)
+  const [isError, setIsError] = useState(false)
+  const [isDisabled, setIsDisabled] = useState(false)
+
+  // ── Sandbox Live Values ────────────────────────────────────────────────────
+  const [sandboxSingle, setSandboxSingle] = useState<AutocompleteOption | null>(INFAQ_OPTIONS[0])
+  const [sandboxMulti, setSandboxMulti] = useState<AutocompleteOption[]>([
+    INFAQ_OPTIONS[0],
+    INFAQ_OPTIONS[1],
+    INFAQ_OPTIONS[3],
+  ])
+
+  // ── RHF Mini Form State ───────────────────────────────────────────────────
+  const [formSubmitted, setFormSubmitted] = useState<MiniFormValues | null>(null)
+
+  return (
+    <PageLayout
+      maxWidth="lg"
+      bgVariant="transparent"
+      title="Autocomplete Component"
+      subtitle="Universal Layer 1 Autocomplete & Multi-Select Primitive"
+      subtitleDescription="Type-safe, customizable autocomplete component supporting checkable rows, custom pill chips (+N overflow tags), and the modern onValueChange pattern."
+      breadcrumbs={[
+        { label: 'Component Docs', href: '#' },
+        { label: 'Autocomplete Primitive' },
+      ]}
+      status={<Chip label="Layer 1 UI Primitive" color="primary" size="small" />}
+    >
+      <PageLayout.Content>
+        <Stack spacing={4}>
+          {/* ── SECTION 1: Interactive Configurator Sandbox ── */}
+          <Card
+            title="Interactive Prop Configurator"
+            subtitle="Customize and preview all Autocomplete props in real-time"
+          >
+            <Grid container spacing={3}>
+              {/* Controls Column */}
+              <Grid size={{ xs: 12, md: 5 }}>
+                <Box
+                  sx={{
+                    p: 2.5,
+                    bgcolor: '#F8FAFC',
+                    borderRadius: '12px',
+                    border: '1px solid #E2E8F0',
+                  }}
+                >
+                  <Stack spacing={2.5}>
+                    {/* Size Selector */}
+                    <FormControl component="fieldset" size="small">
+                      <FormLabel sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
+                        Size (`size`)
+                      </FormLabel>
+                      <RadioGroup
+                        row
+                        value={size}
+                        onChange={(e) => setSize(e.target.value as 'small' | 'medium' | 'large')}
+                      >
+                        <FormControlLabel value="small" control={<Radio size="small" />} label="Small (40px)" />
+                        <FormControlLabel value="medium" control={<Radio size="small" />} label="Medium (48px)" />
+                        <FormControlLabel value="large" control={<Radio size="small" />} label="Large (56px)" />
+                      </RadioGroup>
+                    </FormControl>
+
+                    {/* Mode Toggle */}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Box>
+                        <Typography variant="body2" sx={{ fontWeight: 700, color: TEXT_MAIN }}>
+                          Multi-Select (`multiple`)
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: TEXT_MUTED }}>
+                          Toggle between single and multiple chips
+                        </Typography>
+                      </Box>
+                      <Switch
+                        checked={isMultiple}
+                        onChange={(e) => setIsMultiple(e.target.checked)}
+                        color="primary"
+                      />
+                    </Box>
+
+                    {/* Checkbox Placement */}
+                    {isMultiple && (
+                      <FormControl component="fieldset" size="small">
+                        <FormLabel sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
+                          Checkbox Placement (`checkboxPlacement`)
+                        </FormLabel>
+                        <RadioGroup
+                          row
+                          value={checkboxPlacement}
+                          onChange={(e) => setCheckboxPlacement(e.target.value as 'right' | 'left' | 'none')}
+                        >
+                          <FormControlLabel value="right" control={<Radio size="small" />} label="Right" />
+                          <FormControlLabel value="left" control={<Radio size="small" />} label="Left" />
+                          <FormControlLabel value="none" control={<Radio size="small" />} label="None" />
+                        </RadioGroup>
+                      </FormControl>
+                    )}
+
+                    {/* Max Visible Tags Overflow */}
+                    {isMultiple && (
+                      <Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                          <Typography variant="body2" sx={{ fontWeight: 700, color: TEXT_MAIN }}>
+                            Max Visible Tags (`maxVisibleTags: {maxVisibleTags}`)
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: TEXT_MUTED }}>
+                            Overflow renders +N chip
+                          </Typography>
+                        </Box>
+                        <Slider
+                          value={maxVisibleTags}
+                          onChange={(_, v) => setMaxVisibleTags(v as number)}
+                          min={1}
+                          max={5}
+                          step={1}
+                          marks
+                          valueLabelDisplay="auto"
+                          sx={{ color: TEAL_PRIMARY }}
+                        />
+                      </Box>
+                    )}
+
+                    {/* Tag Display Mode */}
+                    {isMultiple && (
+                      <FormControl component="fieldset" size="small">
+                        <FormLabel sx={{ fontWeight: 700, fontSize: '0.8125rem', color: TEXT_MAIN, mb: 0.5 }}>
+                          Tag Display Mode (`tagDisplay`)
+                        </FormLabel>
+                        <RadioGroup
+                          row
+                          value={tagDisplay}
+                          onChange={(e) => setTagDisplay(e.target.value as 'avatar+label' | 'label')}
+                        >
+                          <FormControlLabel value="avatar+label" control={<Radio size="small" />} label="Avatar + Label" />
+                          <FormControlLabel value="label" control={<Radio size="small" />} label="Label Only" />
+                        </RadioGroup>
+                      </FormControl>
+                    )}
+
+                    {/* Border Radius Slider */}
+                    <Box>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 700, color: TEXT_MAIN }}>
+                          Border Radius (`{borderRadius}px`)
+                        </Typography>
+                      </Box>
+                      <Slider
+                        value={borderRadius}
+                        onChange={(_, v) => setBorderRadius(v as number)}
+                        min={4}
+                        max={24}
+                        step={2}
+                        valueLabelDisplay="auto"
+                        sx={{ color: TEAL_PRIMARY }}
+                      />
+                    </Box>
+
+                    {/* States (Error & Disabled) */}
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                      <FormControlLabel
+                        control={<Switch checked={isError} onChange={(e) => setIsError(e.target.checked)} />}
+                        label={<Typography variant="body2" sx={{ fontWeight: 600 }}>Error</Typography>}
+                      />
+                      <FormControlLabel
+                        control={<Switch checked={isDisabled} onChange={(e) => setIsDisabled(e.target.checked)} />}
+                        label={<Typography variant="body2" sx={{ fontWeight: 600 }}>Disabled</Typography>}
+                      />
+                    </Box>
+                  </Stack>
+                </Box>
+              </Grid>
+
+              {/* Preview Column */}
+              <Grid size={{ xs: 12, md: 7 }}>
+                <Box
+                  sx={{
+                    p: 3,
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    bgcolor: '#FFFFFF',
+                    borderRadius: '12px',
+                    border: '1px solid #E2E8F0',
+                  }}
+                >
+                  <Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                      <TuneIcon sx={{ color: TEAL_PRIMARY, fontSize: 20 }} />
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: TEXT_MAIN }}>
+                        Live Interactive Preview
+                      </Typography>
+                    </Box>
+
+                    {isMultiple ? (
+                      <Autocomplete
+                        multiple
+                        size={size}
+                        label="Kategori Program Penyaluran (Multi-Select)"
+                        placeholder={sandboxMulti.length === 0 ? 'Pilih satu atau lebih kategori...' : ''}
+                        options={INFAQ_OPTIONS}
+                        value={sandboxMulti}
+                        onValueChange={setSandboxMulti}
+                        checkboxPlacement={checkboxPlacement === 'none' ? false : checkboxPlacement}
+                        maxVisibleTags={maxVisibleTags}
+                        tagDisplay={tagDisplay}
+                        borderRadius={borderRadius}
+                        error={isError}
+                        disabled={isDisabled}
+                        helperText={
+                          isError
+                            ? 'Terjadi kesalahan validasi pada pilihan ini'
+                            : `${sandboxMulti.length} kategori dipilih • onValueChange synced`
+                        }
+                      />
+                    ) : (
+                      <Autocomplete
+                        size={size}
+                        label="Kategori Program Penyaluran (Single Select)"
+                        placeholder="Pilih kategori program..."
+                        options={INFAQ_OPTIONS}
+                        value={sandboxSingle}
+                        onValueChange={setSandboxSingle}
+                        borderRadius={borderRadius}
+                        error={isError}
+                        disabled={isDisabled}
+                        helperText={
+                          isError
+                            ? 'Wajib memilih minimal satu kategori'
+                            : sandboxSingle
+                              ? `✓ Terpilih: ${sandboxSingle.label}`
+                              : 'Ketik atau klik untuk memilih'
+                        }
+                      />
+                    )}
+                  </Box>
+
+                  {/* Live JSON State Inspection */}
+                  <Box sx={{ mt: 3 }}>
+                    <Typography variant="caption" sx={{ fontWeight: 700, color: TEXT_MUTED, mb: 0.75, display: 'block' }}>
+                      Current State (`onValueChange` payload):
+                    </Typography>
+                    <Paper
+                      elevation={0}
+                      sx={{
+                        p: 1.5,
+                        bgcolor: '#0F172A',
+                        color: '#38BDF8',
+                        borderRadius: '8px',
+                        fontSize: '0.75rem',
+                        fontFamily: 'monospace',
+                        overflowX: 'auto',
+                        maxHeight: 140,
+                      }}
+                    >
+                      {JSON.stringify(isMultiple ? sandboxMulti : sandboxSingle, null, 2)}
+                    </Paper>
+                  </Box>
+                </Box>
+              </Grid>
+            </Grid>
+          </Card>
+
+          {/* ── SECTION 2: Real-World Use Cases & Presets ── */}
+          <Grid container spacing={3}>
+            {/* Real-World Use Case 1: Infaq Filter Drawer Card */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Card
+                title="Infaq & Shadaqah Filter Card"
+                subtitle="Custom card with rich icon metadata & checkbox options"
+              >
+                <Stack spacing={3}>
+                  <Box>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: TEXT_MAIN, mb: 0.5 }}>
+                      1. Single Select with Icons & Subtitle Metadata
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 1 }}>
+                      Uses custom icon JSX, muted subtitles, and teal focus ring.
+                    </Typography>
+                    <Autocomplete
+                      placeholder="Filter Berdasarkan Kategori..."
+                      options={INFAQ_OPTIONS}
+                      defaultValue={INFAQ_OPTIONS[0]}
+                      borderRadius={12}
+                    />
+                  </Box>
+
+                  <Box>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: TEXT_MAIN, mb: 0.5 }}>
+                      2. Multi-Select with Tag Overflow (+N)
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 1 }}>
+                      Shows 2 tags maximum; extra selections collapse to `+N`.
+                    </Typography>
+                    <Autocomplete
+                      multiple
+                      placeholder="Pilih Kategori..."
+                      options={INFAQ_OPTIONS}
+                      defaultValue={[INFAQ_OPTIONS[0], INFAQ_OPTIONS[1], INFAQ_OPTIONS[2], INFAQ_OPTIONS[4]]}
+                      maxVisibleTags={2}
+                      borderRadius={12}
+                    />
+                  </Box>
+                </Stack>
+              </Card>
+            </Grid>
+
+            {/* Real-World Use Case 2: Tech Stack Tagger (Avatars) */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Card
+                title="Developer Tech Stack Tagger"
+                subtitle="Rich avatar badges, initial letters, and custom colors"
+              >
+                <Stack spacing={3}>
+                  <Box>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: TEXT_MAIN, mb: 0.5 }}>
+                      1. Avatar Initials Badges (`tagDisplay="avatar+label"`)
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 1 }}>
+                      Each chip displays the framework logo initial badge with brand background color.
+                    </Typography>
+                    <Autocomplete
+                      multiple
+                      placeholder="Select tech stack..."
+                      options={TECH_OPTIONS}
+                      defaultValue={[TECH_OPTIONS[0], TECH_OPTIONS[1], TECH_OPTIONS[2]]}
+                      tagDisplay="avatar+label"
+                    />
+                  </Box>
+
+                  <Box>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: TEXT_MAIN, mb: 0.5 }}>
+                      2. Clean Text Chips (`tagDisplay="label"`)
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 1 }}>
+                      Compact chips showing only the option text label.
+                    </Typography>
+                    <Autocomplete
+                      multiple
+                      placeholder="Select tech stack..."
+                      options={TECH_OPTIONS}
+                      defaultValue={[TECH_OPTIONS[0], TECH_OPTIONS[3]]}
+                      tagDisplay="label"
+                    />
+                  </Box>
+                </Stack>
+              </Card>
+            </Grid>
+          </Grid>
+
+          {/* ── SECTION 3: Custom Tokens & Prop Showcase (BorderRadius, MaxVisibleTags, Sizes) ── */}
+          <Card
+            title="Custom Sizing, Corner Radii & Tag Overflow Matrix"
+            subtitle="Explore how borderRadius, maxVisibleTags, size, and slotSx customize the component appearance"
+          >
+            <Grid container spacing={3}>
+              {/* Row 1: Custom Corner Radii */}
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Box sx={{ p: 2.5, bgcolor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', height: '100%' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: TEXT_MAIN, mb: 0.5 }}>
+                    1. Custom Corner Radii (`borderRadius`)
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 2 }}>
+                    Accepts any number (`4`, `12`, `20`) or CSS string (`&quot;999px&quot;`, `&quot;1rem&quot;`). Applies to both field and menu.
+                  </Typography>
+
+                  <Stack spacing={2.5}>
+                    <Autocomplete
+                      placeholder="Sharp / Enterprise (borderRadius={4})"
+                      options={TECH_OPTIONS}
+                      borderRadius={4}
+                      size="small"
+                    />
+
+                    <Autocomplete
+                      placeholder="BYOND Standard (borderRadius={12})"
+                      options={TECH_OPTIONS}
+                      borderRadius={12}
+                      size="small"
+                    />
+
+                    <Autocomplete
+                      placeholder="Soft Curved (borderRadius={20})"
+                      options={TECH_OPTIONS}
+                      borderRadius={20}
+                      size="small"
+                    />
+
+                    <Autocomplete
+                      placeholder="Full Organic Pill (borderRadius=&quot;999px&quot;)"
+                      options={TECH_OPTIONS}
+                      borderRadius="999px"
+                      size="small"
+                    />
+                  </Stack>
+                </Box>
+              </Grid>
+
+              {/* Row 2: Custom Tag Overflow (maxVisibleTags) */}
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Box sx={{ p: 2.5, bgcolor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', height: '100%' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: TEXT_MAIN, mb: 0.5 }}>
+                    2. Tag Overflow Progression (`maxVisibleTags`)
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 2 }}>
+                    Controls the maximum number of tags displayed before collapsing extra items into a `+N` badge.
+                  </Typography>
+
+                  <Stack spacing={2.5}>
+                    <Autocomplete
+                      multiple
+                      label="maxVisibleTags={1}"
+                      options={INFAQ_OPTIONS}
+                      defaultValue={[INFAQ_OPTIONS[0], INFAQ_OPTIONS[1], INFAQ_OPTIONS[2], INFAQ_OPTIONS[3], INFAQ_OPTIONS[4]]}
+                      maxVisibleTags={1}
+                      size="small"
+                      helperText="Shows 1 tag, remaining 4 collapsed into '+4'"
+                    />
+
+                    <Autocomplete
+                      multiple
+                      label="maxVisibleTags={2}"
+                      options={INFAQ_OPTIONS}
+                      defaultValue={[INFAQ_OPTIONS[0], INFAQ_OPTIONS[1], INFAQ_OPTIONS[2], INFAQ_OPTIONS[3], INFAQ_OPTIONS[4]]}
+                      maxVisibleTags={2}
+                      size="small"
+                      helperText="Shows 2 tags, remaining 3 collapsed into '+3'"
+                    />
+
+                    <Autocomplete
+                      multiple
+                      label="maxVisibleTags={3}"
+                      options={INFAQ_OPTIONS}
+                      defaultValue={[INFAQ_OPTIONS[0], INFAQ_OPTIONS[1], INFAQ_OPTIONS[2], INFAQ_OPTIONS[3], INFAQ_OPTIONS[4]]}
+                      maxVisibleTags={3}
+                      size="small"
+                      helperText="Shows 3 tags, remaining 2 collapsed into '+2'"
+                    />
+                  </Stack>
+                </Box>
+              </Grid>
+
+              {/* Row 3: Custom Theme Overrides via slotSx */}
+              <Grid size={{ xs: 12 }}>
+                <Box sx={{ p: 2.5, bgcolor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: TEXT_MAIN, mb: 0.5 }}>
+                    3. Deep Theming via `slotSx` (Custom Accent Colors & Popover Shadows)
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 2 }}>
+                    Override individual slots (`slotSx.tag`, `slotSx.paper`, `slotSx.listbox`, `slotSx.option`) without modifying base component code.
+                  </Typography>
+
+                  <Grid container spacing={3}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Autocomplete
+                        multiple
+                        label="Gold / Orange Accent Theme (slotSx.tag)"
+                        options={TECH_OPTIONS}
+                        defaultValue={[TECH_OPTIONS[0], TECH_OPTIONS[1]]}
+                        slotSx={{
+                          tag: {
+                            bgcolor: 'rgba(245, 158, 11, 0.1)',
+                            borderColor: 'rgba(245, 158, 11, 0.4)',
+                            color: '#B45309',
+                            fontWeight: 700,
+                            '& .MuiChip-deleteIcon': {
+                              color: '#B45309',
+                              '&:hover': { color: '#78350F' },
+                            },
+                          },
+                        }}
+                        helperText="Customized chip border, background, and delete icon"
+                      />
+                    </Grid>
+
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <Autocomplete
+                        label="Custom Paper & Listbox Shadow (slotSx.paper)"
+                        options={INFAQ_OPTIONS}
+                        defaultValue={INFAQ_OPTIONS[0]}
+                        slotSx={{
+                          paper: {
+                            boxShadow: '0 20px 40px rgba(0, 163, 157, 0.18)',
+                            borderColor: '#00A39D',
+                            borderWidth: '1.5px',
+                          },
+                        }}
+                        helperText="Elevated teal popover border and diffused drop shadow"
+                      />
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Grid>
+            </Grid>
+          </Card>
+
+          {/* ── SECTION 4: React Hook Form (RHF) + Zod Integration ── */}
+          <Card
+            title="React Hook Form + Zod Integration"
+            subtitle="Type-safe form connector using Field.Autocomplete via createTypedForm"
+          >
+            <Form
+              schema={miniFormSchema}
+              defaultValues={{ category: '' }}
+              onSubmit={(data) => setFormSubmitted(data)}
+            >
+              <Grid container spacing={3} sx={{ alignItems: 'flex-start' }}>
+                <Grid size={{ xs: 12, md: 7 }}>
+                  <Stack spacing={2}>
+                    <Field.Autocomplete
+                      name="category"
+                      label="Program Penyaluran Dana (RHF Validated)"
+                      placeholder="Cari dan pilih kategori program..."
+                      options={INFAQ_OPTIONS}
+                      helperText="Validasi otomatis: input wajib dipilih sebelum submit"
+                    />
+
+                    <Box sx={{ display: 'flex', gap: 1.5, pt: 1 }}>
+                      <Button type="submit" variant="contained" sx={{ minWidth: 140, bgcolor: TEAL_PRIMARY }}>
+                        Submit Form
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outlined"
+                        color="inherit"
+                        onClick={() => setFormSubmitted(null)}
+                      >
+                        Reset Result
+                      </Button>
+                    </Box>
+                  </Stack>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 5 }}>
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      p: 2,
+                      bgcolor: formSubmitted ? 'rgba(0, 163, 157, 0.06)' : '#F8FAFC',
+                      border: `1px dashed ${formSubmitted ? TEAL_PRIMARY : '#CBD5E1'}`,
+                      borderRadius: '12px',
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                      <CheckCircleOutlinedIcon sx={{ color: formSubmitted ? TEAL_PRIMARY : TEXT_MUTED }} />
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: TEXT_MAIN }}>
+                        Form Submission Output
+                      </Typography>
+                    </Box>
+
+                    {formSubmitted ? (
+                      <Box
+                        component="pre"
+                        sx={{
+                          m: 0,
+                          fontSize: '0.8125rem',
+                          fontFamily: 'monospace',
+                          color: TEAL_PRIMARY,
+                          fontWeight: 600,
+                        }}
+                      >
+                        {JSON.stringify(formSubmitted, null, 2)}
+                      </Box>
+                    ) : (
+                      <Typography variant="caption" sx={{ color: TEXT_MUTED }}>
+                        Pilih opsi dan klik &quot;Submit Form&quot; untuk melihat payload form yang tervalidasi.
+                      </Typography>
+                    )}
+                  </Paper>
+                </Grid>
+              </Grid>
+            </Form>
+          </Card>
+
+          {/* ── SECTION 4: Architecture & Prop Reference Matrix ── */}
+          <Card
+            title="Layer 1 Primitive API Reference"
+            subtitle="Full breakdown of custom props supported by the Autocomplete component"
+          >
+            <Grid container spacing={2}>
+              {[
+                {
+                  prop: 'onValueChange',
+                  type: '(value: T | T[] | null) => void',
+                  def: 'undefined',
+                  desc: 'Modern value-first change handler (Radix/Mantine/Shadcn pattern). Receives updated value without throwaway event param.',
+                },
+                {
+                  prop: 'multiple',
+                  type: 'boolean',
+                  def: 'false',
+                  desc: 'Enables multi-selection mode with pill chip rendering and checkable dropdown options.',
+                },
+                {
+                  prop: 'checkboxPlacement',
+                  type: "'right' | 'left' | false",
+                  def: "'right'",
+                  desc: 'Positions the selection checkbox in each option row. Set to false to disable checkboxes.',
+                },
+                {
+                  prop: 'maxVisibleTags',
+                  type: 'number',
+                  def: 'undefined',
+                  desc: 'Caps visible chip tags inside the input, grouping excess selections into a +N overflow badge.',
+                },
+                {
+                  prop: 'tagDisplay',
+                  type: "'avatar+label' | 'label'",
+                  def: "'avatar+label'",
+                  desc: 'Controls whether selected chips include the avatar/icon decoration or only text labels.',
+                },
+                {
+                  prop: 'size',
+                  type: "'small' | 'medium' | 'large'",
+                  def: "'medium'",
+                  desc: 'Controls field height: small (40px), medium (48px), or large (56px).',
+                },
+                {
+                  prop: 'borderRadius',
+                  type: 'number | string',
+                  def: "'12px'",
+                  desc: 'Controls corner radius for both the input field and dropdown paper popover.',
+                },
+                {
+                  prop: 'slotSx',
+                  type: 'AutocompleteSlotSx',
+                  def: '{}',
+                  desc: 'Deep styling overrides for root, formControl, inputLabel, textField, paper, listbox, option, tag, and helperText.',
+                },
+              ].map((item) => (
+                <Grid key={item.prop} size={{ xs: 12, sm: 6 }}>
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      p: 2,
+                      height: '100%',
+                      border: '1px solid #E2E8F0',
+                      borderRadius: '10px',
+                      bgcolor: '#FAFAFA',
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                      <Typography variant="subtitle2" sx={{ fontFamily: 'monospace', color: TEAL_PRIMARY, fontWeight: 700 }}>
+                        {item.prop}
+                      </Typography>
+                      <Chip label={`default: ${item.def}`} size="small" sx={{ fontSize: '0.6875rem', height: 20 }} />
+                    </Box>
+                    <Typography variant="caption" sx={{ fontFamily: 'monospace', color: TEXT_MUTED, display: 'block', mb: 1 }}>
+                      {item.type}
+                    </Typography>
+                    <Typography variant="body2" sx={{ fontSize: '0.8125rem', color: TEXT_MAIN }}>
+                      {item.desc}
+                    </Typography>
+                  </Paper>
+                </Grid>
+              ))}
+            </Grid>
+          </Card>
+        </Stack>
+      </PageLayout.Content>
+    </PageLayout>
+  )
+}
