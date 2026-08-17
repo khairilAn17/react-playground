@@ -712,6 +712,241 @@ export function TextFieldDemoPage() {
               </Paper>
             )}
           </Card>
+
+          {/* ── SECTION 4: Primitive API Reference ── */}
+          <Card
+            title="Primitive API Reference (TextField)"
+            subtitle="Complete TypeScript properties and slotSx tokens for the Layer 1 TextField primitive"
+          >
+            <Grid container spacing={2}>
+              {[
+                {
+                  prop: 'value',
+                  type: 'string | number',
+                  def: 'undefined',
+                  desc: 'Controlled text value.',
+                },
+                {
+                  prop: 'defaultValue',
+                  type: 'string | number',
+                  def: 'undefined',
+                  desc: 'Initial text value for uncontrolled usage.',
+                },
+                {
+                  prop: 'onValueChange',
+                  type: '(value: string) => void',
+                  def: 'undefined',
+                  desc: 'Simplified change callback emitting the updated text string directly.',
+                },
+                {
+                  prop: 'onChange',
+                  type: '(event: ChangeEvent) => void',
+                  def: 'undefined',
+                  desc: 'Standard React SyntheticEvent change handler.',
+                },
+                {
+                  prop: 'label',
+                  type: 'ReactNode',
+                  def: 'undefined',
+                  desc: 'Floating or static label displayed above the field.',
+                },
+                {
+                  prop: 'placeholder',
+                  type: 'string',
+                  def: 'undefined',
+                  desc: 'Placeholder text displayed when the input is empty.',
+                },
+                {
+                  prop: 'prefixBlock',
+                  type: 'ReactNode',
+                  def: 'undefined',
+                  desc: 'Left shaded block (e.g. "Rp", "$", "+62") integrated flush with outer container.',
+                },
+                {
+                  prop: 'suffixBlock',
+                  type: 'ReactNode',
+                  def: 'undefined',
+                  desc: 'Right shaded block (e.g. ".com", "/bln", "IDR") integrated flush with outer container.',
+                },
+                {
+                  prop: 'startAdornment',
+                  type: 'ReactNode',
+                  def: 'undefined',
+                  desc: 'Inline leading icon or element (e.g. search icon, lock icon).',
+                },
+                {
+                  prop: 'endAdornment',
+                  type: 'ReactNode',
+                  def: 'undefined',
+                  desc: 'Inline trailing icon or element.',
+                },
+                {
+                  prop: 'clearable',
+                  type: 'boolean',
+                  def: 'false',
+                  desc: 'Displays a quick clear "X" icon button when text is present.',
+                },
+                {
+                  prop: 'showPasswordToggle',
+                  type: 'boolean',
+                  def: 'false',
+                  desc: 'Displays an eye icon button to toggle password visibility when type="password".',
+                },
+                {
+                  prop: 'showCount',
+                  type: 'boolean',
+                  def: 'false',
+                  desc: 'Displays an inline character count indicator (e.g. "15/75").',
+                },
+                {
+                  prop: 'maxLength',
+                  type: 'number',
+                  def: 'undefined',
+                  desc: 'Maximum allowed character limit; prevents additional typing when exceeded.',
+                },
+                {
+                  prop: 'multiline',
+                  type: 'boolean',
+                  def: 'false',
+                  desc: 'Renders a multi-line <textarea> input instead of a single-line input.',
+                },
+                {
+                  prop: 'rows',
+                  type: 'number | string',
+                  def: 'undefined',
+                  desc: 'Number of visible text lines when multiline=true.',
+                },
+                {
+                  prop: 'size',
+                  type: "'small' | 'medium' | 'large'",
+                  def: "'medium'",
+                  desc: 'Controls component height: small (40px), medium (48px), or large (56px).',
+                },
+                {
+                  prop: 'borderRadius',
+                  type: 'number | string',
+                  def: "'12px'",
+                  desc: 'Controls corner border radius for the input container.',
+                },
+                {
+                  prop: 'error',
+                  type: 'boolean',
+                  def: 'false',
+                  desc: 'Applies red error border (#EF4444) and helper text styling.',
+                },
+                {
+                  prop: 'disabled',
+                  type: 'boolean',
+                  def: 'false',
+                  desc: 'Disables user interaction and applies muted background styling.',
+                },
+                {
+                  prop: 'readOnly',
+                  type: 'boolean',
+                  def: 'false',
+                  desc: 'Prevents editing while maintaining normal active background styling.',
+                },
+                {
+                  prop: 'required',
+                  type: 'boolean',
+                  def: 'false',
+                  desc: 'Displays a red asterisk on the field label.',
+                },
+                {
+                  prop: 'fullWidth',
+                  type: 'boolean',
+                  def: 'true',
+                  desc: 'Expands the field width to 100% of its parent container.',
+                },
+                {
+                  prop: 'helperText',
+                  type: 'ReactNode',
+                  def: 'undefined',
+                  desc: 'Helper caption or error message displayed below the field.',
+                },
+                {
+                  prop: 'slotSx.root',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the outer FormControl container wrapper.',
+                },
+                {
+                  prop: 'slotSx.input',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the inner OutlinedInput / InputBase element.',
+                },
+                {
+                  prop: 'slotSx.inputLabel',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the InputLabel text above the field.',
+                },
+                {
+                  prop: 'slotSx.prefixBlock',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the left shaded prefix container.',
+                },
+                {
+                  prop: 'slotSx.suffixBlock',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the right shaded suffix container.',
+                },
+                {
+                  prop: 'slotSx.characterCount',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the character counter typography element.',
+                },
+                {
+                  prop: 'slotSx.clearButton',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the clear "X" icon button.',
+                },
+                {
+                  prop: 'slotSx.passwordToggleButton',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the eye visibility toggle icon button.',
+                },
+                {
+                  prop: 'slotSx.helperText',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the FormHelperText below the input.',
+                },
+              ].map((item) => (
+                <Grid key={item.prop} size={{ xs: 12, sm: 6 }}>
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      p: 2,
+                      height: '100%',
+                      border: '1px solid #E2E8F0',
+                      borderRadius: '10px',
+                      bgcolor: '#FAFAFA',
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                      <Typography variant="subtitle2" sx={{ fontFamily: 'monospace', color: TEAL_PRIMARY, fontWeight: 700 }}>
+                        {item.prop}
+                      </Typography>
+                      <Chip label={`default: ${item.def}`} size="small" sx={{ fontSize: '0.6875rem', height: 20 }} />
+                    </Box>
+                    <Typography variant="caption" sx={{ fontFamily: 'monospace', color: '#64748B', display: 'block', mb: 1 }}>
+                      {item.type}
+                    </Typography>
+                    <Typography variant="body2" sx={{ fontSize: '0.8125rem', color: TEXT_MAIN }}>
+                      {item.desc}
+                    </Typography>
+                  </Paper>
+                </Grid>
+              ))}
+            </Grid>
+          </Card>
         </Stack>
       </PageLayout.Content>
     </PageLayout>

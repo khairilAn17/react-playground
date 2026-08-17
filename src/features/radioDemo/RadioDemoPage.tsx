@@ -638,6 +638,157 @@ export function RadioDemoPage() {
               </Paper>
             )}
           </Card>
+
+          {/* ── SECTION 5: Primitive API Reference ── */}
+          <Card
+            title="Primitive API Reference (RadioGroup & RadioCard)"
+            subtitle="Complete TypeScript properties and slotSx tokens for the Layer 1 Radio primitive"
+          >
+            <Grid container spacing={2}>
+              {[
+                {
+                  prop: 'options',
+                  type: 'RadioOption[]',
+                  def: '[]',
+                  desc: 'Array of option objects containing label, value, description, icon, badge, endContent, and disabled.',
+                },
+                {
+                  prop: 'value',
+                  type: 'string | number | boolean',
+                  def: 'undefined',
+                  desc: 'Controlled selected value matching one of the options value.',
+                },
+                {
+                  prop: 'defaultValue',
+                  type: 'string | number | boolean',
+                  def: 'undefined',
+                  desc: 'Initial selected value for uncontrolled usage.',
+                },
+                {
+                  prop: 'onValueChange',
+                  type: '(value: string | number | boolean) => void',
+                  def: 'undefined',
+                  desc: 'Simplified change callback emitting the newly selected option value directly.',
+                },
+                {
+                  prop: 'variant',
+                  type: "'default' | 'card'",
+                  def: "'card'",
+                  desc: 'Switches between the modern BYOND selectable Card variant and standard inline Radio buttons.',
+                },
+                {
+                  prop: 'layout',
+                  type: "'row' | 'column' | 'grid'",
+                  def: "'row'",
+                  desc: 'Defines how options are positioned: horizontal row, vertical column stack, or responsive grid.',
+                },
+                {
+                  prop: 'gridColumns',
+                  type: 'number | { xs?: number; sm?: number; md?: number }',
+                  def: '2',
+                  desc: 'Number of columns when layout="grid" is active. Supports responsive breakpoint objects.',
+                },
+                {
+                  prop: 'radioPlacement',
+                  type: "'left' | 'right' | 'none'",
+                  def: "'left'",
+                  desc: 'Position of the circular indicator inside card tiles. "none" hides the circle for button tiles.',
+                },
+                {
+                  prop: 'size',
+                  type: "'small' | 'medium' | 'large'",
+                  def: "'medium'",
+                  desc: 'Controls typography size and card padding density.',
+                },
+                {
+                  prop: 'borderRadius',
+                  type: 'number | string',
+                  def: "'12px'",
+                  desc: 'Border radius for selectable card containers.',
+                },
+                {
+                  prop: 'label',
+                  type: 'ReactNode',
+                  def: 'undefined',
+                  desc: 'Optional group header label displayed above the radio group.',
+                },
+                {
+                  prop: 'helperText',
+                  type: 'ReactNode',
+                  def: 'undefined',
+                  desc: 'Optional helper text or validation error message displayed below the group.',
+                },
+                {
+                  prop: 'error',
+                  type: 'boolean',
+                  def: 'false',
+                  desc: 'Applies error color styling to the label, cards, and helper text.',
+                },
+                {
+                  prop: 'disabled',
+                  type: 'boolean',
+                  def: 'false',
+                  desc: 'Disables all radio options in the group.',
+                },
+                {
+                  prop: 'slotSx.root',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the outer FormControl container wrapper.',
+                },
+                {
+                  prop: 'slotSx.card',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the individual RadioCard containers (border, background, hover, active).',
+                },
+                {
+                  prop: 'slotSx.radio',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the custom SVG radio indicator circle element.',
+                },
+                {
+                  prop: 'slotSx.label',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the FormLabel header text above the group.',
+                },
+                {
+                  prop: 'slotSx.helperText',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the FormHelperText container below the group.',
+                },
+              ].map((item) => (
+                <Grid key={item.prop} size={{ xs: 12, sm: 6 }}>
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      p: 2,
+                      height: '100%',
+                      border: '1px solid #E2E8F0',
+                      borderRadius: '10px',
+                      bgcolor: '#FAFAFA',
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                      <Typography variant="subtitle2" sx={{ fontFamily: 'monospace', color: TEAL_PRIMARY, fontWeight: 700 }}>
+                        {item.prop}
+                      </Typography>
+                      <Chip label={`default: ${item.def}`} size="small" sx={{ fontSize: '0.6875rem', height: 20 }} />
+                    </Box>
+                    <Typography variant="caption" sx={{ fontFamily: 'monospace', color: TEXT_MUTED, display: 'block', mb: 1 }}>
+                      {item.type}
+                    </Typography>
+                    <Typography variant="body2" sx={{ fontSize: '0.8125rem', color: TEXT_MAIN }}>
+                      {item.desc}
+                    </Typography>
+                  </Paper>
+                </Grid>
+              ))}
+            </Grid>
+          </Card>
         </Stack>
       </PageLayout.Content>
     </PageLayout>
