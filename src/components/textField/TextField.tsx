@@ -15,7 +15,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff'
 
 import type { TextFieldProps } from './types'
 import { toSxArray, getTextFieldInputSx, getBlockSidebarSx } from './utils'
-import { formatNumberValue, parseNumberValue } from './formatUtils'
+import { formatNumberValue, parseNumberValue } from './utils/formatUtils'
 
 export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldProps>(
   function TextField(

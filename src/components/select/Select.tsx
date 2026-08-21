@@ -68,6 +68,7 @@ export function Select(props: SelectProps) {
     bulletTextSx,
     groupHeaderSx,
     selectSx,
+    placeholderSx,
     menuPaperSx,
     menuItemSx,
     listSubheaderSx,
@@ -215,7 +216,18 @@ export function Select(props: SelectProps) {
   const renderTriggerContent = () => {
     if ((value === '' || value === undefined) && placeholder) {
       return (
-        <Typography variant="body2" sx={{ color: '#94A3B8', fontSize: isLarge ? '1.125rem' : isSmall ? '0.875rem' : undefined, userSelect: 'none' }}>
+        <Typography
+          variant="body2"
+          sx={[
+            {
+              color: '#94A3B8',
+              fontSize: isLarge ? '1.125rem' : isSmall ? '0.875rem' : undefined,
+              userSelect: 'none',
+            },
+            ...toSxArray(placeholderSx),
+            ...toSxArray(slotSx?.placeholder),
+          ]}
+        >
           {placeholder}
         </Typography>
       )

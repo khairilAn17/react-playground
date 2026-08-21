@@ -662,3 +662,56 @@ export const PrefixBlockNominalCurrency: Story = {
   render: () => <PrefixBlockNominalCurrencyStory />,
 }
 
+// ── 15. Custom Placeholder Styling (placeholderSx & slotSx.placeholder) ──────
+export const CustomPlaceholderStyling: Story = {
+  name: 'Styling — Custom Placeholder (placeholderSx & slotSx)',
+  render: () => (
+    <Stack spacing={3} sx={{ maxWidth: 440 }}>
+      <Select
+        label="Direct placeholderSx (Italic Slate Blue)"
+        placeholder="Pilih rekening tujuan transfer..."
+        options={GROUPED_BANK_OPTIONS}
+        value=""
+        borderRadius={12}
+        placeholderSx={{
+          fontStyle: 'italic',
+          color: '#0284C7',
+          fontWeight: 500,
+        }}
+        helperText="placeholderSx: italic ocean blue (#0284C7)"
+      />
+
+      <Select
+        label="slotSx.placeholder (Warm Amber)"
+        placeholder="Pilih metode transfer pembayaran..."
+        options={TRANSFER_METHOD_OPTIONS}
+        value=""
+        borderRadius={12}
+        slotSx={{
+          placeholder: {
+            color: '#D97706',
+            fontWeight: 600,
+            letterSpacing: '0.01em',
+          },
+        }}
+        helperText="slotSx.placeholder: amber (#D97706) & 600 font weight"
+      />
+
+      <Select
+        label="Themed Teal Muted Placeholder"
+        placeholder="Cari atau pilih mata uang..."
+        options={SIMPLE_OPTIONS}
+        value=""
+        borderRadius={12}
+        placeholderSx={{
+          color: '#00A39D',
+          opacity: 0.85,
+          fontWeight: 600,
+        }}
+        helperText="placeholderSx: BYOND Teal (#00A39D)"
+      />
+    </Stack>
+  ),
+}
+
+

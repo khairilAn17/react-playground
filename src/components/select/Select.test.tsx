@@ -333,5 +333,35 @@ describe('Select (Standalone UI Primitive)', () => {
     fireEvent.scroll(paper)
     expect(customOnScroll).toHaveBeenCalledTimes(1)
   })
+
+  it('applies custom placeholder styling via placeholderSx and slotSx.placeholder', () => {
+    const { rerender } = render(
+      <Select
+        value=""
+        options={SIMPLE_OPTIONS}
+        placeholder="Custom Styled Placeholder"
+        placeholderSx={{ color: 'rgb(255, 0, 0)', fontStyle: 'italic' }}
+      />
+    )
+
+    const placeholderEl = screen.getByText('Custom Styled Placeholder')
+    expect(placeholderEl).toBeInTheDocument()
+    expect(placeholderEl).toHaveStyle({ color: 'rgb(255, 0, 0)', fontStyle: 'italic' })
+
+    rerender(
+      <Select
+        value=""
+        options={SIMPLE_OPTIONS}
+        placeholder="Slot Styled Placeholder"
+        slotSx={{
+          placeholder: { color: 'rgb(0, 128, 0)', fontWeight: 700 },
+        }}
+      />
+    )
+
+    const slotPlaceholderEl = screen.getByText('Slot Styled Placeholder')
+    expect(slotPlaceholderEl).toBeInTheDocument()
+    expect(slotPlaceholderEl).toHaveStyle({ color: 'rgb(0, 128, 0)', fontWeight: 700 })
+  })
 })
 

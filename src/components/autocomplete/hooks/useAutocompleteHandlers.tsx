@@ -17,8 +17,8 @@ import {
   getAutocompleteListboxSx,
 } from '../utils'
 import { extractMuiInputProps } from '../utils/defaults'
-import { formatNumberValue, parseNumberValue } from '../../textField/formatUtils'
-import type { NumberFormatOptions } from '../../textField/formatUtils'
+import { formatNumberValue, parseNumberValue } from '../../textField'
+import type { NumberFormatOptions } from '../../textField'
 import { filterNumericOptions } from '../utils/numberFormat'
 
 // ── Param types ───────────────────────────────────────────────────────────────

@@ -60,6 +60,7 @@ export interface SelectSlotSx {
   formControl?: SxProps<Theme>
   inputLabel?: SxProps<Theme>
   select?: SxProps<Theme>
+  placeholder?: SxProps<Theme>
   menuPaper?: SxProps<Theme>
   menuItem?: SxProps<Theme>
   groupHeader?: SxProps<Theme>
@@ -184,6 +185,10 @@ export interface SelectProps {
   bulletTextSx?: SxProps<Theme>
   groupHeaderSx?: SxProps<Theme>
   selectSx?: SxProps<Theme>
+  /**
+   * Custom sx styling applied directly to the trigger placeholder text.
+   */
+  placeholderSx?: SxProps<Theme>
   menuPaperSx?: SxProps<Theme>
   menuItemSx?: SxProps<Theme>
   listSubheaderSx?: SxProps<Theme>

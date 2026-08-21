@@ -1,5 +1,5 @@
-import { formatNumberValue, parseNumberValue } from '../../textField/formatUtils'
-import type { NumberFormatOptions } from '../../textField/formatUtils'
+import { formatNumberValue, parseNumberValue } from '../../textField'
+import type { NumberFormatOptions } from '../../textField'
 import type { AutocompleteOption } from '../types'
 import type { FilterOptionsState } from '@mui/material'
 

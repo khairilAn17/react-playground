@@ -1002,6 +1002,78 @@ export function SelectDemoPage() {
                   </Stack>
                 </Box>
               </Grid>
+
+              {/* 4c: Placeholder & Trigger Sub-Slots */}
+              <Grid size={{ xs: 12 }}>
+                <Box sx={{ p: 2.5, bgcolor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: TEXT_MAIN, mb: 0.5 }}>
+                    3. Placeholder & Trigger Styling (`placeholderSx`, `slotSx.placeholder`)
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: TEXT_MUTED, display: 'block', mb: 1.5 }}>
+                    Pass custom styling to placeholder typography directly via <code>placeholderSx</code> or granularly via <code>slotSx.placeholder</code>.
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 2 }}>
+                    {['placeholderSx', 'slotSx.placeholder', 'slotSx.select'].map((s) => (
+                      <Chip key={s} label={s} size="small" sx={{ fontFamily: 'monospace', fontSize: '0.65rem', height: 18, bgcolor: 'rgba(14,165,233,0.1)', color: '#0284C7' }} />
+                    ))}
+                  </Box>
+
+                  <Grid container spacing={2.5}>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <Select
+                        label="Direct placeholderSx (Italic Slate)"
+                        placeholder="Pilih rekening tujuan transfer..."
+                        options={GROUPED_BANK_OPTIONS}
+                        value=""
+                        borderRadius={12}
+                        size="small"
+                        placeholderSx={{
+                          fontStyle: 'italic',
+                          color: '#0284C7',
+                          fontWeight: 500,
+                        }}
+                        helperText="placeholderSx: italic ocean blue with 500 weight"
+                      />
+                    </Grid>
+
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <Select
+                        label="slotSx.placeholder (Warm Amber)"
+                        placeholder="Pilih metode transfer pembayaran..."
+                        options={TRANSFER_METHOD_OPTIONS}
+                        value=""
+                        borderRadius={12}
+                        size="small"
+                        slotSx={{
+                          placeholder: {
+                            color: '#D97706',
+                            fontWeight: 600,
+                            letterSpacing: '0.01em',
+                          },
+                        }}
+                        helperText="slotSx.placeholder: amber color & 600 weight"
+                      />
+                    </Grid>
+
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <Select
+                        label="Muted Teal Styled Placeholder"
+                        placeholder="Cari atau pilih mata uang..."
+                        options={COUNTRY_OPTIONS}
+                        value=""
+                        borderRadius={12}
+                        size="small"
+                        placeholderSx={{
+                          color: TEAL_PRIMARY,
+                          opacity: 0.8,
+                          fontWeight: 600,
+                        }}
+                        helperText="placeholderSx: themed teal primary with 80% opacity"
+                      />
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Grid>
             </Grid>
           </Card>
 
@@ -1165,6 +1237,18 @@ export function SelectDemoPage() {
                   type: "'small' | 'medium' | 'large'",
                   def: "'medium'",
                   desc: 'Controls component height: small (40px), medium (48px), or large (56px).',
+                },
+                {
+                  prop: 'placeholderSx',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Directly styles the trigger placeholder Typography text (color, fontStyle, fontWeight, opacity).',
+                },
+                {
+                  prop: 'slotSx.placeholder',
+                  type: 'SxProps<Theme>',
+                  def: 'undefined',
+                  desc: 'Styles the trigger placeholder Typography component via the slotSx prop dictionary.',
                 },
                 {
                   prop: 'slotSx.select',
